@@ -1,11 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-void print_hello() {
-    printf("Hello, World!\n");
-}
+#include "CPU.h"
 
 int main() {
-    print_hello();
+    print_register();
     return 0;
 }
