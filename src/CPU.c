@@ -1,6 +1,6 @@
 #include "CPU.h"
 
-// Inicializa os registradores do core e os outros componentes da CPU
+
 void init_core(Core *c) {
     for (int i = 0; i < 32; i++) {
         c->registers[i] = 0;
@@ -9,14 +9,14 @@ void init_core(Core *c) {
     c->IR = 0;
 }
 
-// Define o valor de um registrador
+
 void set_register(Core *c, int reg_num, int value) {
     if (reg_num >= 0 && reg_num < 32) {
         c->registers[reg_num] = value;
     }
 }
 
-// Obtém o valor de um registrador
+
 int get_register(Core *c, int reg_num) {
     if (reg_num >= 0 && reg_num < 32) {
         return c->registers[reg_num];
@@ -24,7 +24,7 @@ int get_register(Core *c, int reg_num) {
     return 0; 
 }
 
-// Função para imprimir os registradores em uma tabela formatada
+
 void print_registers(Core *c) {
     printf("\n   -------------------------------------------------------------------------------------------------\n");
     printf("   |\t\t\t\t\t\tREGISTRADORES DA CPU\t\t\t\t|\n");
@@ -42,14 +42,14 @@ void print_registers(Core *c) {
     printf("   -------------------------------------------------------------------------------------------------\n");
 }
 
-// Inicializa a memória principal
+
 void init_memory(Memory *mem) {
     for (int i = 0; i < MEMORY_SIZE; i++) {
         mem->data[i] = 0;
     }
 }
 
-// Função para imprimir a memória em um layout organizado
+
 void print_memory(Memory *mem) {
     printf("\n   -------------------------------------------------------------------------------------------------\n");
     printf("   |\t\t\t\t\t\tMEMÓRIA PRINCIPAL\t\t\t\t|\n");
