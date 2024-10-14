@@ -21,6 +21,7 @@ void init_core(Core *c);
 void set_register(Core *c, int reg_num, int value);
 int get_register(Core *c, int reg_num);
 void print_registers(Core *c);
+void print_memory(Memory *mem);
 
 // Funções de memória
 void init_memory(Memory *mem);

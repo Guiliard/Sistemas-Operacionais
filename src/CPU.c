@@ -1,5 +1,6 @@
 #include "CPU.h"
 
+// Inicializa os registradores do core e os outros componentes da CPU
 void init_core(Core *c) {
     for (int i = 0; i < 32; i++) {
         c->registers[i] = 0;
@@ -8,12 +9,14 @@ void init_core(Core *c) {
     c->IR = 0;
 }
 
+// Define o valor de um registrador
 void set_register(Core *c, int reg_num, int value) {
     if (reg_num >= 0 && reg_num < 32) {
         c->registers[reg_num] = value;
     }
 }
 
+// Obtém o valor de um registrador
 int get_register(Core *c, int reg_num) {
     if (reg_num >= 0 && reg_num < 32) {
         return c->registers[reg_num];
@@ -21,19 +24,44 @@ int get_register(Core *c, int reg_num) {
     return 0; 
 }
 
+// Função para imprimir os registradores em uma tabela formatada
 void print_registers(Core *c) {
+    printf("\n   -------------------------------------------------------------------------------------------------\n");
+    printf("   |\t\t\t\t\t\tREGISTRADORES DA CPU\t\t\t\t|\n");
+    printf("   -------------------------------------------------------------------------------------------------\n");
+    printf("   |\tRegistrador\t|\tValor\t|\n");
+    printf("   -------------------------------------------------------------------------------------------------\n");
+    
     for (int i = 0; i < 32; i++) {
-        printf("Register %d: %d\n", i, c->registers[i]);
+        printf("   |\t   R%d\t\t|\t  %d\t|\n", i, c->registers[i]);
     }
-    printf("PC: %d\n", c->PC);
-    printf("IR: %d\n", c->IR);
+    
+    printf("   -------------------------------------------------------------------------------------------------\n");
+    printf("   |\tPC\t\t|\t  %d\t|\n", c->PC);
+    printf("   |\tIR\t\t|\t  %d\t|\n", c->IR);
+    printf("   -------------------------------------------------------------------------------------------------\n");
 }
 
-// Implementação da Memória
+// Inicializa a memória principal
 void init_memory(Memory *mem) {
     for (int i = 0; i < MEMORY_SIZE; i++) {
         mem->data[i] = 0;
     }
+}
+
+// Função para imprimir a memória em um layout organizado
+void print_memory(Memory *mem) {
+    printf("\n   -------------------------------------------------------------------------------------------------\n");
+    printf("   |\t\t\t\t\t\tMEMÓRIA PRINCIPAL\t\t\t\t|\n");
+    printf("   -------------------------------------------------------------------------------------------------\n");
+    printf("   |\tEndereço\t|\tValor\t|\n");
+    printf("   -------------------------------------------------------------------------------------------------\n");
+    
+    for (int i = 0; i < MEMORY_SIZE; i += 4) {
+        printf("   |\t  %d-%d\t\t|\t  %d\t|\n", i, i+3, mem->data[i]);
+    }
+    
+    printf("   -------------------------------------------------------------------------------------------------\n");
 }
 
 void write_memory(Memory *mem, int address, int value) {
