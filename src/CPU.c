@@ -1,82 +1,93 @@
 #include "CPU.h"
 
-
-void init_core(Core *c) {
-    for (int i = 0; i < 32; i++) {
-        c->registers[i] = 0;
+void control_unit(si opcode) {
+    switch(opcode) {
+    case 0: // ADD
+    // Instruções para soma
+    break;
+    case 1: // SUB
+    // Instruções para subtração
+    break;
+    case 2: // AND
+    // Instruções para AND
+    break;
+    case 3: // OR
+    // Instruções para OR
+    break;
+    case 4: // XOR
+    // Instruções para XOR
+    break;
+    case 5: // SLL
+    // Instruções para SLL
+    break;
+    case 6: // SRL
+    // Instruções para SRL
+    break;
+    case 7: // JUMP
+    // Instruções para JUMP
+    break;
+    case 8: //LOAD
+    // Instruções para LOAD
+    break;
+    case 9: //STORE
+    // Instruções para STORE
+    break;
+    default:
+    // Instruções para instruções não reconhecidas 
+    break;
     }
-    c->PC = 0;
-    c->IR = 0;
 }
 
-
-void set_register(Core *c, int reg_num, int value) {
-    if (reg_num >= 0 && reg_num < 32) {
-        c->registers[reg_num] = value;
+si ula_operation(CPU cpu, si a, si b, si operation, RAM memoria) {
+    switch(operation) {
+        case 0: // ADD
+        return a + b;
+        break;
+        case 1: // SUB
+        return a - b;
+        break;
+        case 2: // AND
+        return a & b;
+        break;
+        case 3: // OR
+        return a | b;
+        break;
+        case 4: // XOR
+        return a ^ b;
+        break;
+        case 5: // SLL
+        return a << b;
+        break;
+        case 6: // SRL
+        return a >> b;
+        break;
+        case 7: // JUMP
+        jump(cpu, 2);
+        break;
+        case 8: //LOAD
+        load(cpu, 2, 3, 4, memoria);
+        break;
+        case 9: //STORE
+        store(cpu, 2, 3, 4, memoria);
+        break;
+        default:
+        return 0; 
+        break;
     }
 }
 
-
-int get_register(Core *c, int reg_num) {
-    if (reg_num >= 0 && reg_num < 32) {
-        return c->registers[reg_num];
-    }
-    return 0; 
+void jump (CPU cpu, si address) {
+    cpu.PC = address;
 }
 
-
-void print_registers(Core *c) {
-    printf("\n   -------------------------------------------------------------------------------------------------\n");
-    printf("   |\t\t\t\t\t\tREGISTRADORES DA CPU\t\t\t\t|\n");
-    printf("   -------------------------------------------------------------------------------------------------\n");
-    printf("   |\tRegistrador\t|\tValor\t|\n");
-    printf("   -------------------------------------------------------------------------------------------------\n");
+void load(CPU cpu, si registrador_destino, si offset, si registrador_base, RAM memoria) {
+    si endereco = cpu.registers[registrador_base] + offset;
     
-    for (int i = 0; i < 32; i++) {
-        printf("   |\t   R%d\t\t|\t  %d\t|\n", i, c->registers[i]);
-    }
-    
-    printf("   -------------------------------------------------------------------------------------------------\n");
-    printf("   |\tPC\t\t|\t  %d\t|\n", c->PC);
-    printf("   |\tIR\t\t|\t  %d\t|\n", c->IR);
-    printf("   -------------------------------------------------------------------------------------------------\n");
+    cpu.registers[registrador_destino] = memoria.vector[endereco];
 }
 
+void store(CPU cpu, si registrador_fonte, si offset, si registrador_base, RAM memoria) {
+    si endereco = cpu.registers[registrador_base] + offset;
 
-void init_memory(Memory *mem) {
-    for (int i = 0; i < MEMORY_SIZE; i++) {
-        mem->data[i] = 0;
-    }
-}
-
-
-void print_memory(Memory *mem) {
-    printf("\n   -------------------------------------------------------------------------------------------------\n");
-    printf("   |\t\t\t\t\t\tMEMÓRIA PRINCIPAL\t\t\t\t|\n");
-    printf("   -------------------------------------------------------------------------------------------------\n");
-    printf("   |\tEndereço\t|\tValor\t|\n");
-    printf("   -------------------------------------------------------------------------------------------------\n");
-    
-    for (int i = 0; i < MEMORY_SIZE; i += 4) {
-        printf("   |\t  %d-%d\t\t|\t  %d\t|\n", i, i+3, mem->data[i]);
-    }
-    
-    printf("   -------------------------------------------------------------------------------------------------\n");
-}
-
-void write_memory(Memory *mem, int address, int value) {
-    if (address >= 0 && address < MEMORY_SIZE) {
-        mem->data[address] = value;
-    } else {
-        printf("Erro: Endereço de memória inválido para escrita.\n");
-    }
-}
-
-int read_memory(Memory *mem, int address) {
-    if (address >= 0 && address < MEMORY_SIZE) {
-        return mem->data[address];
-    } else {
-        printf("Erro: Endereço de memória inválido para leitura.\n");
-        return 0;
-    }
+    memoria.vector[endereco] = cpu.registers[registrador_fonte]; //memoria
 }

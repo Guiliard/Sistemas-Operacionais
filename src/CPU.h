@@ -3,29 +3,39 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "ULA.h"
+#include <stdbool.h>
 
-#define MEMORY_SIZE 1024 
+#include "uthash.h"
 
-typedef struct Core {
-    int registers[32];
-    int PC;             
-    int IR;
-} Core;
+#define NUM_CORES 4
+#define NUM_REGISTERS 32
+#define NUM_MEMORY 1024
 
-typedef struct Memory {
-    int data[MEMORY_SIZE];
-} Memory;
+typedef short int si;
 
-void init_core(Core *c);
-void set_register(Core *c, int reg_num, int value);
-int get_register(Core *c, int reg_num);
-void print_registers(Core *c);
-void print_memory(Memory *mem);
+typedef struct CPU {
+    si core[NUM_CORES];
+    si registers[NUM_REGISTERS];
+    si PC;
+} CPU;
 
-// Funções de memória
-void init_memory(Memory *mem);
-void write_memory(Memory *mem, int address, int value);
-int read_memory(Memory *mem, int address);
+typedef struct cashe {
+    UT_hash_handle hash;
+} cashe;
+
+typedef struct RAM {
+    si vector[NUM_MEMORY];
+} RAM;
+
+typedef struct disc {
+    si matriz [NUM_MEMORY][NUM_MEMORY];
+} disc;
+
+typedef struct peripherals {
+    bool input;
+} peripherals;
+
+void control_unit(si opcode);
+si ula_operation(CPU cpu, si a, si b, si opration);
 
 #endif
