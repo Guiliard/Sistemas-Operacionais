@@ -5,5 +5,6 @@
 
 char* read_program(char *filename);
 char* get_line_of_program(char *program, int line_number);
+int count_lines(char *program);
 
 #endif

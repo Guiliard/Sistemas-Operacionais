@@ -37,3 +37,19 @@ char* get_line_of_program(char *program, int line_number) {
     }
     return line;  
 }
+
+int count_lines(char *program) {
+    int count = 0;
+    char *line = strtok(program, "\n"); 
+
+    while (line != NULL) {
+        count++; 
+        line = strtok(NULL, "\n"); 
+    }
+
+    if (count > 0 || (count == 0 && *program != '\0')) {
+        count++;
+    }
+
+    return count; 
+}
