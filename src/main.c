@@ -1,21 +1,14 @@
-#include "CPU.h"
+#include "architecture.h"
+#include "reader.h"
 
 int main() {
-    Core cpu;
-    Memory memory;
+    char *program = read_program("dataset/program.txt");  
+    printf("program:\n%s\n", program);
 
-    init_core(&cpu);
-    init_memory(&memory);
-    
-    // Simulação de alteração dos registradores e memória
-    set_register(&cpu, 0, 10);
-    set_register(&cpu, 1, 20);
-    write_memory(&memory, 0, 1234);
-    write_memory(&memory, 4, 5678);
+    char *line = get_line_of_program(program, 3);
 
-    // Impressão formatada dos registradores e da memória
-    print_registers(&cpu);
-    print_memory(&memory);
+    printf("line 3: %s\n", line);
     
+    free(program);  
     return 0;
 }

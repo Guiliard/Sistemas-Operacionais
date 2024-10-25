@@ -1,0 +1,4 @@
+LOAD A 10
+LOAD B 10 
+ADD A B 
+STORE A
