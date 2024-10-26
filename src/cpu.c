@@ -1,76 +1,66 @@
 #include "cpu.h"
 
 void init_cpu(cpu* cpu) {
-    cpu->core = malloc(NUM_CORES * sizeof(unsigned short int));
+    cpu->core = malloc(NUM_CORES * sizeof(core));
     if (cpu->core == NULL) {
         printf("memory allocation failed in cpu\n");
         exit(1);
     }
-    cpu->registers = malloc(NUM_REGISTERS * sizeof(unsigned short int));
-    if (cpu->registers == NULL) {
-        printf("memory allocation failed in cpu\n");
-        exit(1);
+
+    for (unsigned short int i = 0; i < NUM_CORES; i++) {
+        cpu->core[i].registers = malloc(NUM_REGISTERS * sizeof(unsigned short int));
+        if (cpu->core[i].registers == NULL) {
+            printf("memory allocation failed in cpu->core[%d].registers\n", i);
+            exit(1);
+        }
+        cpu->core[i].PC = 0;  
     }
-    cpu->PC = 0;
 }
 
-// void control_unit(si opcode) {
-//     switch(opcode) {
-//     case 0: // ADD
-//     // Instruções para soma
-//     break;
-//     case 1: // SUB
-//     // Instruções para subtração
-//     break;
-//     case 2: // AND
-//     // Instruções para AND
-//     break;
-//     case 3: // OR
-//     // Instruções para OR
-//     break;
-//     case 4: // XOR
-//     // Instruções para XOR
-//     break;
-//     case 5: // SLL
-//     // Instruções para SLL
-//     break;
-//     case 6: // SRL
-//     // Instruções para SRL
-//     break;
-//     default:
-//     // Instruções para instruções não reconhecidas 
-//     break;
-//     }
-// }
+void control_unit(opcode command) {
+    switch(command) {
+    case 0: // LOAD
+    break;
+    case 1: // STORE
+    break;
+    case 2: // ADD
+    break;
+    case 3: // SUB
+    break;
+    case 4: // MUL
+    break;
+    case 5: // DIV
+    break;
+    case 6: // IF
+    break;
+    case 7: // ELSE
+    break;
+    case 8: // LOOP
+    break;
+    default:
+    break;
+    }
+}
 
-// si ula_operation(si operating_a, si operating_b, si operation) {
-//     switch(operation) {
-//         case 0: // ADD
-//         return operating_a + operating_b;
-//         break;
-//         case 1: // SUB
-//         return operating_a - operating_b;
-//         break;
-//         case 2: // AND
-//         return operating_a & operating_b;
-//         break;
-//         case 3: // OR
-//         return operating_a | operating_b;
-//         break;
-//         case 4: // XOR
-//         return operating_a ^ operating_b;
-//         break;
-//         case 5: // SLL
-//         return operating_a << operating_b;
-//         break;
-//         case 6: // SRL
-//         return operating_a >> operating_b;
-//         break;
-//         default:
-//         return 0; 
-//         break;
-//     }
-// }
+unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, ula_operation operation) {
+    switch(operation) {
+        case ADD:
+            return operating_a + operating_b;
+
+        case SUB:
+            return operating_a - operating_b;
+
+        case MUL:
+            return operating_a * operating_b;
+
+        case DIV:
+            if (operating_b == 0) {
+                printf("Error: Division by zero.\n");
+                return 0; 
+            }
+            return operating_a / operating_b;
+    }
+}
 
 // void jump (CPU* cpu, si address) {
 //     cpu->PC = address;

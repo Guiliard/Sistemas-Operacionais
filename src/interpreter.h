@@ -20,6 +20,6 @@ char** check_add_format(char *line);
 char** check_sub_format(char *line);
 char** check_mul_format(char *line);
 char** check_div_format(char *line);
-char** check_if_format(char *line);
+char** check_if_format(char *line, signs *sign);
 
 #endif

@@ -62,12 +62,22 @@ char** get_instruction(char *line, int line_number) {
             printf("Error: Invalid IF instruction on line %d\n", line_number + 1);
             return NULL;
         }
-    } else if (strstr(line, "ENDIF") != NULL) {
-        //return ENDIF;
     } else if (strstr(line, "ELSE") != NULL) {
-        //return ELSE;
+        instruction = check_else_format(line);
+        if (instruction != NULL) {
+            return instruction;
+        } else {
+            printf("Error: Invalid ELSE instruction on line %d\n", line_number + 1);
+            return NULL;
+        }
     } else if (strstr(line, "LOOP") != NULL) {
-        //return LOOP;
+        instruction = check_loop_format(line);
+        if (instruction != NULL) {
+            return instruction;
+        } else {
+            printf("Error: Invalid LOOP instruction on line %d\n", line_number + 1);
+            return NULL;
+        }
     } else {
         printf("Error: Unrecognized instruction on line %d\n", line_number);
         return NULL;
@@ -75,7 +85,7 @@ char** get_instruction(char *line, int line_number) {
 }
 
 
-char** check_load_format(char *line) {
+char** check_load_format(char *line) {  // LOAD <register> <value> 
 
     char **instruction = malloc(3 * sizeof(char*));     
 
@@ -96,7 +106,7 @@ char** check_load_format(char *line) {
     }
 }
 
-char** check_store_format(char *line) {
+char** check_store_format(char *line) { // STORE <register> <register>
     char **instruction = malloc(3 * sizeof(char*));     
 
     for (int i = 0; i < 3; i++) {
@@ -113,7 +123,7 @@ char** check_store_format(char *line) {
     }
 }
 
-char** check_add_format(char *line) {
+char** check_add_format(char *line) {  // ADD <register> <value> ou ADD <register> <register>
     char **instruction = malloc(3 * sizeof(char*));     
 
     for (int i = 0; i < 3; i++) {
@@ -140,7 +150,7 @@ char** check_add_format(char *line) {
     }
 }
 
-char** check_sub_format(char *line) {
+char** check_sub_format(char *line) {  // SUB <register> <value> ou SUB <register> <register>
     char **instruction = malloc(3 * sizeof(char*));     
 
     for (int i = 0; i < 3; i++) {
@@ -167,7 +177,7 @@ char** check_sub_format(char *line) {
     }
 }
 
-char** check_mul_format(char *line) {
+char** check_mul_format(char *line) {  // MUL <register> <value> ou MUL <register> <register>
     char **instruction = malloc(3 * sizeof(char*));     
 
     for (int i = 0; i < 3; i++) {
@@ -194,7 +204,7 @@ char** check_mul_format(char *line) {
     }
 }
 
-char** check_div_format(char *line) {
+char** check_div_format(char *line) {  // DIV <register> <value> ou DIV <register> <register>
     char **instruction = malloc(3 * sizeof(char*));     
 
     for (int i = 0; i < 3; i++) {
@@ -221,7 +231,7 @@ char** check_div_format(char *line) {
     }
 }
 
-char** check_if_format(char *line, signs *sign) {
+char** check_if_format(char *line, signs *sign) {  // IF <register> <operator> <value> ou IF <register> <operator> <register>
     char **instruction = malloc(4 * sizeof(char*));  
 
     for (int i = 0; i < 4; i++) {
@@ -267,5 +277,40 @@ char** check_if_format(char *line, signs *sign) {
 
     return NULL;
 }
+
+char** check_else_format(char *line) {  // ELSE
+    char **instruction = malloc(1 * sizeof(char*));     
+    instruction[0] = malloc(10 * sizeof(char));  
+    
+    unsigned short int num_tokens = sscanf(line, "ELSE");
+
+    if (num_tokens == 0) {  
+        return NULL;          
+    }
+
+    strcpy(instruction[0], "ELSE"); 
+    return instruction; 
+}
+
+char** check_loop_format(char *line) {  // LOOP <value> ou LOOP <register>
+
+    char **instruction = malloc(2 * sizeof(char*));     
+    instruction[0] = malloc(10 * sizeof(char));  // Para armazenar "LOOP"
+    instruction[1] = malloc(10 * sizeof(char));  // Para armazenar o valor ou registrador
+
+    unsigned short int num_tokens;
+
+    num_tokens = sscanf(line, "LOOP %9s", instruction[1]);
+
+    if (num_tokens == 1) {
+        strcpy(instruction[0], "LOOP"); 
+        return instruction; 
+    } else {
+        return NULL; 
+    }
+}
+
+
+
 
 
