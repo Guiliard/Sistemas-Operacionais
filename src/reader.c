@@ -27,28 +27,34 @@ char* read_program(char *filename) {
 }
 
 char* get_line_of_program(char *program, int line_number) {
-    char *line = strtok(program, "\n"); 
+
+    char* program_copy = strdup(program); 
+
+    char *line = strtok(program_copy, "\n"); 
     for (int i = 0; i < line_number; i++) {
         if (line != NULL) {
             line = strtok(NULL, "\n");  
         } else {
+            free(program_copy);
             return NULL;  
         }
     }
-    return line;  
+
+    char* line_copy = strdup(line);
+    free(program_copy);
+    return line_copy;  
 }
 
-int count_lines(char *program) {
-    int count = 0;
-    char *line = strtok(program, "\n"); 
+unsigned short int count_lines(char *program) {
+    unsigned short int count = 0;
+
+    char* program_copy = strdup(program);
+
+    char *line = strtok(program_copy, "\n"); 
 
     while (line != NULL) {
         count++; 
         line = strtok(NULL, "\n"); 
-    }
-
-    if (count > 0 || (count == 0 && *program != '\0')) {
-        count++;
     }
 
     return count; 

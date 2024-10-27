@@ -95,7 +95,7 @@ char** check_load_format(char *line) {  // LOAD <register> <value>
 
     unsigned short int value;
 
-    unsigned short int num_tokens = sscanf(line, "LOAD %9s %d", instruction[1], &value);
+    unsigned short int num_tokens = sscanf(line, "LOAD %9s %hu", instruction[1], &value);
 
     if (num_tokens == 2) {
         strcpy(instruction[0], "LOAD"); 
@@ -123,7 +123,7 @@ char** check_store_format(char *line) { // STORE <register> <register>
     }
 }
 
-char** check_add_format(char *line) {  // ADD <register> <value> ou ADD <register> <register>
+char** check_add_format(char *line) {  // ADD <register> <value> ou ADD <register> <register> 
     char **instruction = malloc(3 * sizeof(char*));     
 
     for (int i = 0; i < 3; i++) {

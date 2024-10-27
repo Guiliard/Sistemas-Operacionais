@@ -21,5 +21,7 @@ char** check_sub_format(char *line);
 char** check_mul_format(char *line);
 char** check_div_format(char *line);
 char** check_if_format(char *line, signs *sign);
+char** check_else_format(char *line);
+char** check_loop_format(char *line);
 
 #endif

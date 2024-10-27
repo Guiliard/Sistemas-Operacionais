@@ -14,32 +14,35 @@ void init_cpu(cpu* cpu) {
             exit(1);
         }
         cpu->core[i].PC = 0;  
+        for (unsigned short int j = 0; j < NUM_REGISTERS; j++) {
+            cpu->core[i].registers[j] = 0;
+        }
     }
 }
 
-void control_unit(opcode command) {
-    switch(command) {
-    case 0: // LOAD
-    break;
-    case 1: // STORE
-    break;
-    case 2: // ADD
-    break;
-    case 3: // SUB
-    break;
-    case 4: // MUL
-    break;
-    case 5: // DIV
-    break;
-    case 6: // IF
-    break;
-    case 7: // ELSE
-    break;
-    case 8: // LOOP
-    break;
-    default:
-    break;
+void control_unit(cpu* cpu, char** instruction) {
+    if (strcmp(instruction[0], "LOAD") == 0) {
+        load(cpu, instruction);
+    } else if (strcmp(instruction[0], "STORE") == 0) {
+        // store
+    } else if (strcmp(instruction[0], "ADD") == 0) {
+        // add
+    } else if (strcmp(instruction[0], "SUB") == 0) {
+        // sub
+    } else if (strcmp(instruction[0], "MUL") == 0) {
+        // mul
+    } else if (strcmp(instruction[0], "DIV") == 0) {
+        // div
+    } else if (strcmp(instruction[0], "IF") == 0) {
+        // if
+    } else if (strcmp(instruction[0], "ELSE") == 0) {
+        // else
+    } else if (strcmp(instruction[0], "LOOP") == 0) {
+        // loop
+    } else {
+        printf("Error: Unrecognized instruction\n");
     }
+    
 }
 
 unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, ula_operation operation) {
@@ -51,7 +54,7 @@ unsigned short int ula(unsigned short int operating_a, unsigned short int operat
             return operating_a - operating_b;
 
         case MUL:
-            return operating_a * operating_b;
+            return operating_a * operating_b; 
 
         case DIV:
             if (operating_b == 0) {
@@ -59,18 +62,39 @@ unsigned short int ula(unsigned short int operating_a, unsigned short int operat
                 return 0; 
             }
             return operating_a / operating_b;
+
+        default:
+            printf("Error: Invalid operation.\n");
+            return 0;
     }
 }
 
-// void jump (CPU* cpu, si address) {
-//     cpu->PC = address;
-// }
+int get_register_index(const char* reg_name) {
+    char* register_names[] = {
+        "A0", "B0", "C0", "D0", "E0", "F0", "G0", "H0",
+        "I0", "J0", "K0", "L0", "M0", "N0", "O0", "P0",
+        "A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1",
+        "I1", "J1", "K1", "L1", "M1", "N1", "O1", "P1"
+    };
 
-// void load(CPU* cpu, si destination_register, si offset, si base_register, RAM* memory) {
-//     si address = cpu->registers[base_register] + offset;
+    for (int i = 0; i < NUM_REGISTERS; i++) {
+        if (strcmp(reg_name, register_names[i]) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
 
-//     cpu->registers[destination_register] = memory->vector[address];
-// }
+void load (cpu* cpu, char** instruction) {
+    int register_index = get_register_index(instruction[1]);
+    if (register_index == -1) {
+        printf("Error: Invalid register name %s\n", instruction[1]);
+        return;
+    }
+
+    unsigned short int value = (unsigned short int) atoi(instruction[2]);
+    cpu->core[0].registers[register_index] = value;
+}
 
 // void store(CPU* cpu, si source_register, si offset, si base_register, RAM* memory) {
 //     si address = cpu->registers[base_register] + offset;

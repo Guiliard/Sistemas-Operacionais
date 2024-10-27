@@ -6,9 +6,10 @@
 #include "libs.h"
 
 typedef struct ram {
-    unsigned short int *vector;
+    char *vector;
 } ram;
 
 void init_ram(ram* memory);
+void print_ram(ram* memory);
 
 #endif 
