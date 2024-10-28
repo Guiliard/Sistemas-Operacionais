@@ -14,3 +14,16 @@ void load_program_on_ram(ram* memory_ram, char* program) {
         memory_ram->vector[i] = program[i];
     }
 }
+
+void check_instructions_on_ram(ram* memory_ram) {
+    
+    char* line;
+    unsigned short int num_line = 0;
+    unsigned short int num = count_lines(memory_ram->vector);
+
+    while (num_line < num) {
+        line = get_line_of_program(memory_ram->vector, num_line);
+        verify_instruction(line, num_line);
+        num_line++;
+    }
+}

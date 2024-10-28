@@ -25,6 +25,8 @@ int main() {
     printf("RAM:\n");
 
     print_ram(memory_ram);
+
+    check_instructions_on_ram(memory_ram);
     
     free(program);  
     return 0;
