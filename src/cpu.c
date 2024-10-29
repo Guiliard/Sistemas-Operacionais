@@ -20,24 +20,24 @@ void init_cpu(cpu* cpu) {
     }
 }
 
-void control_unit(cpu* cpu, char** instruction) {
-    if (strcmp(instruction[0], "LOAD") == 0) {
+void control_unit(cpu* cpu, type_of_instruction type, char* instruction) {
+    if (type == LOAD) {
         load(cpu, instruction);
-    } else if (strcmp(instruction[0], "STORE") == 0) {
+    } else if (type == STORE) {
         // store
-    } else if (strcmp(instruction[0], "ADD") == 0) {
+    } else if (type == ADD) {
         // add
-    } else if (strcmp(instruction[0], "SUB") == 0) {
+    } else if (type == SUB) {
         // sub
-    } else if (strcmp(instruction[0], "MUL") == 0) {
+    } else if (type == MUL) {
         // mul
-    } else if (strcmp(instruction[0], "DIV") == 0) {
+    } else if (type == DIV) {
         // div
-    } else if (strcmp(instruction[0], "IF") == 0) {
+    } else if (type == IF) {
         // if
-    } else if (strcmp(instruction[0], "ELSE") == 0) {
+    } else if (type == ELSE) {
         // else
-    } else if (strcmp(instruction[0], "LOOP") == 0) {
+    } else if (type == LOOP) {
         // loop
     } else {
         printf("Error: Unrecognized instruction\n");
@@ -69,32 +69,39 @@ unsigned short int ula(unsigned short int operating_a, unsigned short int operat
     }
 }
 
-int get_register_index(const char* reg_name) {
+unsigned short int get_register_index(char* reg_name) {
     char* register_names[] = {
         "A0", "B0", "C0", "D0", "E0", "F0", "G0", "H0",
         "I0", "J0", "K0", "L0", "M0", "N0", "O0", "P0",
         "A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1",
         "I1", "J1", "K1", "L1", "M1", "N1", "O1", "P1"
     };
-
+    
     for (int i = 0; i < NUM_REGISTERS; i++) {
         if (strcmp(reg_name, register_names[i]) == 0) {
             return i;
         }
     }
-    return -1;
+    
+    printf("Error: Invalid register name.\n");
+    return 0;
 }
 
-void load (cpu* cpu, char** instruction) {
-    int register_index = get_register_index(instruction[1]);
-    if (register_index == -1) {
-        printf("Error: Invalid register name %s\n", instruction[1]);
-        return;
-    }
+void load (cpu* cpu, char* instruction) {
 
-    unsigned short int value = (unsigned short int) atoi(instruction[2]);
-    cpu->core[0].registers[register_index] = value;
+    char *token;
+    char *register_name;
+    unsigned short int value;
+
+    token = strtok(instruction, " "); 
+    token = strtok(NULL, " ");
+    register_name = token;
+    token = strtok(NULL, " ");
+    value = atoi(token);
+
+    cpu->core[0].registers[get_register_index(register_name)] = value;
 }
+    
 
 // void store(CPU* cpu, si source_register, si offset, si base_register, RAM* memory) {
 //     si address = cpu->registers[base_register] + offset;

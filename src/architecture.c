@@ -27,3 +27,33 @@ void check_instructions_on_ram(ram* memory_ram) {
         num_line++;
     }
 }
+
+void pipiline(cpu* cpu, ram* memory) {
+    char* instruction;
+    unsigned short int num_instruction = 0;
+
+    instruction = instruction_fetch(cpu, memory);
+
+    instruction_decode(instruction, num_instruction);
+
+    // execute(cpu);
+
+    // memory_access(cpu, memory);
+
+    // write_back(cpu);
+}
+
+char* instruction_fetch(cpu* cpu, ram* memory) {
+    char* instruction = get_line_of_program(memory->vector, cpu->core[0].PC);
+    cpu->core[0].PC++;
+
+    return instruction;
+}
+
+void instruction_decode(char* instruction, unsigned short int num_instruction) {
+    type_of_instruction type = verify_instruction(instruction, num_instruction);
+
+    if (type == INVALID) {
+        exit(1);    
+    } 
+}

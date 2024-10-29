@@ -1,46 +1,65 @@
 #include "interpreter.h"
 
-void verify_instruction(char *line, unsigned short int line_number) {
+type_of_instruction verify_instruction(char *line, unsigned short int line_number) {
 
     if (strstr(line, "LOAD") != NULL) {
         if (!check_load_format(line)) {
             printf("Error: Invalid LOAD instruction on line %d\n", line_number + 1);
-        }
+            return INVALID;
+        } else 
+            return LOAD;
         
     } else if (strstr(line, "STORE") != NULL) {
         if (!check_store_format(line)) {
             printf("Error: Invalid STORE instruction on line %d\n", line_number + 1);
-        }
+            return INVALID;
+        } else 
+            return STORE;
     } else if (strstr(line, "ADD") != NULL) {
         if (!check_add_format(line)) {
             printf("Error: Invalid ADD instruction on line %d\n", line_number + 1);
-        }
+            return INVALID;
+        } else 
+            return ADD;
     } else if (strstr(line, "SUB") != NULL) {
         if (!check_sub_format(line)) {
             printf("Error: Invalid SUB instruction on line %d\n", line_number + 1);
-        }
+            return INVALID;
+        } else 
+            return SUB;
     } else if (strstr(line, "MUL") != NULL) {
         if (!check_mul_format(line)) {
             printf("Error: Invalid MUL instruction on line %d\n", line_number + 1);
-        }
+            return INVALID;
+        } else 
+            return MUL;
     } else if (strstr(line, "DIV") != NULL) {
         if (!check_div_format(line)) {
             printf("Error: Invalid DIV instruction on line %d\n", line_number + 1);
-        }
+            return INVALID;
+        } else 
+            return DIV;
     } else if (strstr(line, "IF") != NULL) {
         if (!check_if_format(line)) {
             printf("Error: Invalid IF instruction on line %d\n", line_number + 1);
-        }
+            return INVALID;
+        } else 
+            return IF;
     } else if (strstr(line, "ELSE") != NULL) {
         if (!check_else_format(line)) {
             printf("Error: Invalid ELSE instruction on line %d\n", line_number + 1);
-        }
+            return INVALID;
+        } else 
+            return ELSE;
     } else if (strstr(line, "LOOP") != NULL) {
         if (!check_loop_format(line)) {
             printf("Error: Invalid LOOP instruction on line %d\n", line_number + 1);
-        }
+            return INVALID;
+        } else 
+            return LOOP;
     } else {
         printf("Error: Unrecognized instruction on line %d\n", line_number);
+        return INVALID;
     } 
 }
 

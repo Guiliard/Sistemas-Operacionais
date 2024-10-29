@@ -4,7 +4,20 @@
 #include "libs.h"
 #include "reader.h"
 
-void verify_instruction(char *line, unsigned short int line_number);
+typedef enum type_ofinstruction {
+    LOAD,
+    STORE,
+    ADD,
+    SUB,
+    MUL,
+    DIV,
+    IF,
+    ELSE,
+    LOOP, 
+    INVALID
+} type_of_instruction;
+
+type_of_instruction verify_instruction(char *line, unsigned short int line_number);
 bool check_load_format(char *line);
 bool check_store_format(char *line);
 bool check_add_format(char *line);
