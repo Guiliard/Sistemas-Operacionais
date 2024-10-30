@@ -9,24 +9,14 @@ int main() {
     init_architecture(cpu, memory_ram, memory_disc, peripherals);
 
     char *program = read_program("dataset/program.txt");  
-    printf("program:\n%s\n", program);
-
-    unsigned short int num_lines = count_lines(program);
-
-    printf("number of lines: %hu\n", num_lines);
-
-    for (int i = 0; i < num_lines; i++) {
-        char* line = get_line_of_program(program, i);
-        printf("line %d: %s\n", i, line);
-    }
 
     load_program_on_ram(memory_ram, program);
 
-    printf("RAM:\n");
+    check_instructions_on_ram(memory_ram);
+
+    pipiline(cpu, memory_ram);
 
     print_ram(memory_ram);
-
-    check_instructions_on_ram(memory_ram);
     
     free(program);  
     return 0;

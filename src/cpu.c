@@ -20,19 +20,19 @@ void init_cpu(cpu* cpu) {
     }
 }
 
-void control_unit(cpu* cpu, type_of_instruction type, char* instruction) {
+void control_unit(cpu* cpu, ram* memory_ram, type_of_instruction type, char* instruction) {
     if (type == LOAD) {
         load(cpu, instruction);
     } else if (type == STORE) {
-        // store
+        store(cpu, memory_ram, instruction);
     } else if (type == ADD) {
-        // add
+        add(cpu, instruction);
     } else if (type == SUB) {
-        // sub
+        sub(cpu, instruction);
     } else if (type == MUL) {
-        // mul
+        mul(cpu, instruction);
     } else if (type == DIV) {
-        // div
+        div_c(cpu, instruction);
     } else if (type == IF) {
         // if
     } else if (type == ELSE) {
@@ -47,16 +47,16 @@ void control_unit(cpu* cpu, type_of_instruction type, char* instruction) {
 
 unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, ula_operation operation) {
     switch(operation) {
-        case ADD:
+        case ADD_ULA:
             return operating_a + operating_b;
 
-        case SUB:
+        case SUB_ULA:
             return operating_a - operating_b;
 
-        case MUL:
+        case MUL_ULA:
             return operating_a * operating_b; 
 
-        case DIV:
+        case DIV_ULA:
             if (operating_b == 0) {
                 printf("Error: Division by zero.\n");
                 return 0; 
@@ -87,6 +87,26 @@ unsigned short int get_register_index(char* reg_name) {
     return 0;
 }
 
+unsigned short int verify_address(ram* memory_ram, char* address, unsigned short int num_positions) {
+    unsigned short int address_without_a;
+    
+    address_without_a = atoi(address + 1);  
+
+    if (address_without_a + num_positions > NUM_MEMORY) {
+        printf("Error: Invalid memory address - out of bounds.\n");
+        exit(1);
+    }
+
+    for (unsigned short int i = 0; i < num_positions; i++) {
+        if (memory_ram->vector[address_without_a + i] != '\0') {
+            printf("Error: Invalid memory address - position %d is already occupied.\n", address_without_a + i);
+            exit(1);
+        }
+    }
+
+    return address_without_a; 
+}
+
 void load (cpu* cpu, char* instruction) {
 
     char *token;
@@ -94,93 +114,183 @@ void load (cpu* cpu, char* instruction) {
     unsigned short int value;
 
     token = strtok(instruction, " "); 
+
+    if (strcmp(token, "LOAD") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
     token = strtok(NULL, " ");
+
     register_name = token;
+
     token = strtok(NULL, " ");
     value = atoi(token);
 
     cpu->core[0].registers[get_register_index(register_name)] = value;
 }
+
+void store (cpu* cpu, ram* memory_ram, char* instruction) {
+    char *token;
+    char *register_name1, *memory_address;
+    char buffer[10]; 
+    unsigned short int address, num_positions;
+
+    token = strtok(instruction, " "); 
+
+    if (strcmp(token, "STORE") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+    token = strtok(NULL, " ");
+
+    register_name1 = token;
+
+    token = strtok(NULL, " ");
+   
+    memory_address = token;
+
+    unsigned short int register_value = cpu->core[0].registers[get_register_index(register_name1)];
+
+    sprintf(buffer, "%d", register_value);  
+
+    num_positions = strlen(buffer); 
+
+    address = verify_address(memory_ram, memory_address, num_positions);
+
+    strcpy(&memory_ram->vector[address], buffer);
+}
+
+void add(cpu* cpu, char* instruction) {
+    char *token;
+    char *register_name1, *register_name2;
+    unsigned short int value;
+
+    token = strtok(instruction, " "); 
+
+    if (strcmp(token, "ADD") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
+    token = strtok(NULL, " ");
+
+    register_name1 = token;
+
+    token = strtok(NULL, " ");
     
+    unsigned short int result;
 
-// void store(CPU* cpu, si source_register, si offset, si base_register, RAM* memory) {
-//     si address = cpu->registers[base_register] + offset;
+    if (isdigit(token[0])) {
+        value = atoi(token);
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, ADD_ULA);
+        cpu->core[0].registers[get_register_index(register_name1)] = result;
+    } else {
+        register_name2 = token;
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
+                     cpu->core[0].registers[get_register_index(register_name2)], 
+                     ADD_ULA);
+        cpu->core[0].registers[get_register_index(register_name1)] = result;
+    }
+}
 
-//     memory->vector[address] = cpu->registers[source_register]; // memory
-// }
 
-// void writeondisk(disc* disco, si end1, si end2, si valor) {
-//     if (end1>=0 && end1 < NUM_MEMORY && end2>=0 && end2 < NUM_MEMORY)
-//         disco->matriz[end1][end2] = valor;
-//     else
-//         printf("Memoria de disco indisponivel");
-// }
+void sub(cpu* cpu, char* instruction) {
+    char *token;
+    char *register_name1, *register_name2;
+    unsigned short int value;
 
-// si readfromdisk(disc* disco, si end1, si end2) {
-//     if (end1>=0 && end1 < NUM_MEMORY && end2>=0 && end2 < NUM_MEMORY)
-//         return disco->matriz[end1][end2];
-//     else {
-//         printf("Memoria de disco indisponivel");
-//         return -1;
-//     }
-// }
+    token = strtok(instruction, " "); 
 
-// /*char* initdisk() {
-//     char *disco = (char*) malloc(DISCO_SIZE);
+    if (strcmp(token, "SUB") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
+    token = strtok(NULL, " ");
+
+    register_name1 = token;
+
+    token = strtok(NULL, " ");
     
-//     if (disco == NULL) {
-//         printf("Erro ao alocar memoria para o disco.\n");
-//         exit(1);
-//     }
-//     return disco;
-// }
+    unsigned short int result;
 
-// void writeondisk(char* disco, int endereco, int valor) {
-//     if (endereco>=0 && endereco < DISCO_SIZE)
-//         disco[endereco] = valor;
-//     else
-//         printf("Memoria de disco indisponivel");
-// }
+    if (isdigit(token[0])) {
+        value = atoi(token);
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, SUB_ULA);
+        cpu->core[0].registers[get_register_index(register_name1)] = result;
+    } else {
+        register_name2 = token;
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
+                     cpu->core[0].registers[get_register_index(register_name2)], 
+                     SUB_ULA);
+        cpu->core[0].registers[get_register_index(register_name1)] = result;
+    }
+}
 
-// char readfromdisk(char* disco, int endereco) {
-//     if (endereco>=0 && endereco < DISCO_SIZE)
-//         return disco[endereco];
-//     else {
-//         printf("Memoria de disco indisponivel");
-//         return -1;
-//     }
-// }*/
+void mul(cpu* cpu, char* instruction) {
+    char *token;
+    char *register_name1, *register_name2;
+    unsigned short int value;
 
+    token = strtok(instruction, " "); 
 
+    if (strcmp(token, "MUL") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
 
+    token = strtok(NULL, " ");
 
-// // // pipeline
-// // void instruction_fetch(CPU* cpu, RAM* memory){
-//    // si instruction = cpu->current_instruction;
+    register_name1 = token;
 
-// // }
+    token = strtok(NULL, " ");
+    
+    unsigned short int result;
 
-// // void instruction_decode(CPU* cpu) {
+    if (isdigit(token[0])) {
+        value = atoi(token);
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, MUL_ULA);
+        cpu->core[0].registers[get_register_index(register_name1)] = result;
+    } else {
+        register_name2 = token;
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
+                     cpu->core[0].registers[get_register_index(register_name2)], 
+                     MUL_ULA);
+        cpu->core[0].registers[get_register_index(register_name1)] = result;
+    }
+}
 
-// // }
+void div_c(cpu* cpu, char* instruction) {
+    char *token;
+    char *register_name1, *register_name2;
+    unsigned short int value;
 
-// // void execute(CPU* cpu){
-//         // instruction_fetch(cpu, memory);
-//         // instruction_decode(cpu);
-//         // execute(cpu);
-//         // memory_access(cpu, memory);
-//         // write_back(cpu);
-// // }
+    token = strtok(instruction, " "); 
 
-// // void memory_access(CPU* cpu, RAM* memory) {
-// //     load
-// //     store
-// // }
+    if (strcmp(token, "DIV") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
 
-// // void write_back(CPU* cpu){
-//     // cpu->registers[cpu->rd] = cpu->result;
-// // }
+    token = strtok(NULL, " ");
 
-// // void pipeline_cycle(CPU* cpu, RAM* memory){
+    register_name1 = token;
 
-// // }
+    token = strtok(NULL, " ");
+    
+    unsigned short int result;
+
+    if (isdigit(token[0])) {
+        value = atoi(token);
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, DIV_ULA);
+        cpu->core[0].registers[get_register_index(register_name1)] = result;
+    } else {
+        register_name2 = token;
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
+                     cpu->core[0].registers[get_register_index(register_name2)], 
+                     DIV_ULA);
+        cpu->core[0].registers[get_register_index(register_name1)] = result;
+    }
+}
+

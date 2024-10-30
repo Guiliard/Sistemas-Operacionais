@@ -4,7 +4,7 @@
 #include "libs.h"
 #include "reader.h"
 
-typedef enum type_ofinstruction {
+typedef enum type_of_instruction {
     LOAD,
     STORE,
     ADD,

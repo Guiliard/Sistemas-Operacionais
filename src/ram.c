@@ -7,6 +7,10 @@ void init_ram(ram* memory_ram) {
             printf("memory allocation failed in ram\n");
             exit(1);
         }
+    
+    for (unsigned short int i = 0; i < NUM_MEMORY; i++) {
+        memory_ram->vector[i] = '\0'; 
+    }
 }
 
 void print_ram(ram* memory_ram) {

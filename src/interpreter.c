@@ -80,11 +80,11 @@ bool check_load_format(char *line) {  // "LOAD <register> <value>
     }
 }
 
-bool check_store_format(char *line) {  // STORE <register> <register>
+bool check_store_format(char *line) {  // STORE <register> A<memory_address>
     char register_name1[10];
-    char register_name2[10];
+    char memory_address[10];
     
-    int num_tokens = sscanf(line, "STORE %9s %9s", register_name1, register_name2);
+    int num_tokens = sscanf(line, "STORE %9s %9s", register_name1, memory_address);
 
     unsigned short int num_total_tokens = count_tokens_in_line(line);
 
