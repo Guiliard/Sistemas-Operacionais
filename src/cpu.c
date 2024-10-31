@@ -31,6 +31,8 @@ unsigned short int control_unit(cpu* cpu, type_of_instruction type, char* instru
         result = mul(cpu, instruction);
     } else if (type == DIV) {
         result = div_c(cpu, instruction);
+    } else if (type == LOOP) {
+        result = loop(cpu, instruction);
     } else {
         result = 0;
     }
@@ -289,4 +291,24 @@ unsigned short int div_c(cpu* cpu, char* instruction) {
     return result;  
 }
 
+unsigned short int loop(cpu* cpu, char* instruction) {
+    char *instruction_copy, *token;
+    unsigned short int value;
+
+    instruction_copy = strdup(instruction);
+
+    token = strtok(instruction_copy, " "); 
+
+    if (strcmp(token, "LOOP") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
+    token = strtok(NULL, " ");
+    unsigned short int result;
+    value = atoi(token);
+    result = value;
+
+    return result; 
+}
 

@@ -32,5 +32,6 @@ unsigned short int add(cpu* cpu, char* instruction);
 unsigned short int sub(cpu* cpu, char* instruction);
 unsigned short int mul(cpu* cpu, char* instruction);
 unsigned short int div_c(cpu* cpu, char* instruction);
+unsigned short int loop(cpu* cpu, char* instruction);
 
 #endif

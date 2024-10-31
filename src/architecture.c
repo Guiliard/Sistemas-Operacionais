@@ -35,7 +35,7 @@ void check_instructions_on_ram(ram* memory_ram) {
 
 void init_pipeline(cpu* cpu, ram* memory_ram) {
     char* instruction;
-    unsigned short int num_instruction = 0, num_lines = 0, result;
+    unsigned short int num_instruction = 0, num_lines = 0, result, loop;
     type_of_instruction type;
 
     num_lines = count_lines(memory_ram->vector);
@@ -48,13 +48,31 @@ void init_pipeline(cpu* cpu, ram* memory_ram) {
 
         printf("Instruction %d: %s\n", num_instruction, instruction);
 
-        type = instruction_decode(instruction, num_instruction);
+        if (type == 8) {
+            loop = result;
 
-        printf("Type of instruction: %d\n", type);
+            type = instruction_decode(instruction, num_instruction);
 
-        result = execute(cpu, type, instruction);
+            printf("Type of instruction: %d\n", type);
 
-        printf("Result: %d\n", result);
+            for (int i=0; i<loop; i++) {
+                if (i==0)
+                    result = execute(cpu, type, instruction);
+                else
+                    result += execute(cpu, type, instruction);
+            }
+
+            printf("Result: %d\n", result);
+        }
+        else {
+            type = instruction_decode(instruction, num_instruction);
+
+            printf("Type of instruction: %d\n", type);
+
+            result = execute(cpu, type, instruction);
+
+            printf("Result: %d\n", result);
+        }
 
         memory_access(cpu, memory_ram, type, instruction);
 

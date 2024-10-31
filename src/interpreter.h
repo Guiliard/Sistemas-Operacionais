@@ -13,8 +13,9 @@ typedef enum type_of_instruction {
     DIV,
     IF,
     ELSE,
-    LOOP, 
-    INVALID
+    LOOP,
+    L_END,
+    INVALID,
 } type_of_instruction;
 
 type_of_instruction verify_instruction(char *line, unsigned short int line_number);
@@ -27,5 +28,6 @@ bool check_div_format(char *line);
 bool check_if_format(char *line);
 bool check_else_format(char *line);
 bool check_loop_format(char *line);
+bool check_loop_end_format(char *line);
 
 #endif

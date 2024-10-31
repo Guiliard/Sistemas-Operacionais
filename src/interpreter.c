@@ -57,6 +57,12 @@ type_of_instruction verify_instruction(char *line, unsigned short int line_numbe
             return INVALID;
         } else 
             return LOOP;
+    } else if (strstr(line, "L_END") != NULL) {
+        if (!check_loop_end_format(line)) {
+            printf("Error: Invalid END_LOOP instruction on line %d\n", line_number + 1);
+            return INVALID;
+        } else 
+            return L_END;
     } else {
         printf("Error: Unrecognized instruction on line %d\n", line_number);
         return INVALID;
@@ -188,6 +194,7 @@ bool check_if_format(char *line) {  // IF <register> <operator> <value> ou IF <r
 
 bool check_else_format(char *line) {  // ELSE
     int num_tokens = sscanf(line, "ELSE");
+    printf ("tokens %d",num_tokens);
 
     unsigned short int num_total_tokens = count_tokens_in_line(line);
 
@@ -209,6 +216,18 @@ bool check_loop_format(char *line) {  // LOOP <value> ou LOOP <register>
         return true;
     } 
     else {
+        return false;
+    }
+}
+
+bool check_loop_end_format(char *line) {  // ENDLOOP
+    int num_tokens = sscanf(line, "L_END");
+
+    unsigned short int num_total_tokens = count_tokens_in_line(line);
+
+    if (num_tokens == 0 && num_total_tokens == 1) {
+        return true;
+    } else {
         return false;
     }
 }
