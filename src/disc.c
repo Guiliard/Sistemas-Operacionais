@@ -10,4 +10,10 @@ void init_disc(disc* memory_disc) {
         printf("memory allocation failed in disc\n");
         exit(1);
     }
+
+    for (int i = 0; i < NUM_MEMORY; i++) {
+        for (int j = 0; j < NUM_MEMORY; j++) {
+            memory_disc->matriz[i][j] = 0;
+        }
+    }
 }

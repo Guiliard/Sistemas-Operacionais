@@ -14,7 +14,7 @@ int main() {
 
     check_instructions_on_ram(memory_ram);
 
-    pipiline(cpu, memory_ram);
+    init_pipeline(cpu, memory_ram);
 
     print_ram(memory_ram);
     

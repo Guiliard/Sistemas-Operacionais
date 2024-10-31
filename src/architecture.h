@@ -1,18 +1,14 @@
 #ifndef ARCHITECTURE_H
 #define ARCHITECTURE_H
 
-#include "cpu.h"
-#include "ram.h"
 #include "disc.h"
 #include "peripherals.h"
 #include "cache.h"
+#include "pipeline.h"
 
 void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals);
 void load_program_on_ram(ram* memory, char* program);
-void check_instructions_on_ram(ram* memory);
-void pipiline(cpu* cpu, ram* memory);
-char* instruction_fetch(cpu* cpu, ram* memory);
-type_of_instruction instruction_decode(char* instruction, unsigned short int num_instruction);
-void execute(cpu* cpu, ram* memory_ram, type_of_instruction type, char* instruction);
+void check_instructions_on_ram(ram* memory_ram);
+void init_pipeline(cpu* cpu, ram* memory_ram);
 
 #endif

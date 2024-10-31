@@ -17,26 +17,20 @@ typedef struct cpu {
    core *core;
 } cpu;
 
-typedef enum ula_operation {
-    ADD_ULA,
-    SUB_ULA,
-    MUL_ULA,
-    DIV_ULA
-} ula_operation;
-
 void init_cpu(cpu* cpu);
 
-void control_unit(cpu* cpu, ram* memory_ram, type_of_instruction type, char* instruction);
-unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, ula_operation operation);
+unsigned short int control_unit(cpu* cpu, type_of_instruction type, char* instruction);
+unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation);
 
 unsigned short int get_register_index(char* reg_name);
 unsigned short int verify_address(ram* memory_ram, char* address, unsigned short int num_positions);
 
 void load(cpu* cpu, char* instruction);
 void store(cpu* cpu, ram* memory_ram, char* instruction);
-void add(cpu* cpu, char* instruction);
-void sub(cpu* cpu, char* instruction);
-void mul(cpu* cpu, char* instruction);
-void div_c(cpu* cpu, char* instruction);
+
+unsigned short int add(cpu* cpu, char* instruction);
+unsigned short int sub(cpu* cpu, char* instruction);
+unsigned short int mul(cpu* cpu, char* instruction);
+unsigned short int div_c(cpu* cpu, char* instruction);
 
 #endif

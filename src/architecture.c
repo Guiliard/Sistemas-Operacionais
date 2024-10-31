@@ -33,42 +33,33 @@ void check_instructions_on_ram(ram* memory_ram) {
     }
 }
 
-void pipiline(cpu* cpu, ram* memory) {
+void init_pipeline(cpu* cpu, ram* memory_ram) {
     char* instruction;
-    unsigned short int num_instruction = 0, num_lines = 0;
+    unsigned short int num_instruction = 0, num_lines = 0, result;
     type_of_instruction type;
 
-    num_lines = count_lines(memory->vector);
+    num_lines = count_lines(memory_ram->vector);
+
+    printf("Number of instructions: %d\n", num_lines);
 
     while (num_instruction < num_lines) {
 
-    instruction = instruction_fetch(cpu, memory);
+        instruction = instruction_fetch(cpu, memory_ram);
 
-    type = instruction_decode(instruction, num_instruction);
+        printf("Instruction %d: %s\n", num_instruction, instruction);
 
-    execute(cpu, memory, type, instruction);
+        type = instruction_decode(instruction, num_instruction);
 
-    num_instruction++;
+        printf("Type of instruction: %d\n", type);
+
+        result = execute(cpu, type, instruction);
+
+        printf("Result: %d\n", result);
+
+        memory_access(cpu, memory_ram, type, instruction);
+
+        write_back(cpu, type, instruction, result);
+
+        num_instruction++;
     }
-}
-
-char* instruction_fetch(cpu* cpu, ram* memory) {
-    char* instruction = get_line_of_program(memory->vector, cpu->core[0].PC);
-    cpu->core[0].PC++;
-
-    return instruction;
-}
-
-type_of_instruction instruction_decode(char* instruction, unsigned short int num_instruction) {
-    type_of_instruction type = verify_instruction(instruction, num_instruction);
-
-    if (type == INVALID) {
-        exit(1);    
-    } else {
-        return type;
-    }
-}
-
-void execute(cpu* cpu, ram* memory_ram, type_of_instruction type, char* instruction) {
-    control_unit(cpu, memory_ram, type, instruction);
 }

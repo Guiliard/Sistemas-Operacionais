@@ -20,43 +20,37 @@ void init_cpu(cpu* cpu) {
     }
 }
 
-void control_unit(cpu* cpu, ram* memory_ram, type_of_instruction type, char* instruction) {
-    if (type == LOAD) {
-        load(cpu, instruction);
-    } else if (type == STORE) {
-        store(cpu, memory_ram, instruction);
-    } else if (type == ADD) {
-        add(cpu, instruction);
+unsigned short int control_unit(cpu* cpu, type_of_instruction type, char* instruction) {
+    unsigned short int result = 0;
+
+    if (type == ADD) {
+        result = add(cpu, instruction);
     } else if (type == SUB) {
-        sub(cpu, instruction);
+        result = sub(cpu, instruction);
     } else if (type == MUL) {
-        mul(cpu, instruction);
+        result = mul(cpu, instruction);
     } else if (type == DIV) {
-        div_c(cpu, instruction);
-    } else if (type == IF) {
-        // if
-    } else if (type == ELSE) {
-        // else
-    } else if (type == LOOP) {
-        // loop
+        result = div_c(cpu, instruction);
     } else {
-        printf("Error: Unrecognized instruction\n");
+        result = 0;
     }
-    
+
+    return result;  
 }
 
-unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, ula_operation operation) {
+
+unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation) {
     switch(operation) {
-        case ADD_ULA:
+        case ADD:
             return operating_a + operating_b;
 
-        case SUB_ULA:
+        case SUB:
             return operating_a - operating_b;
 
-        case MUL_ULA:
+        case MUL:
             return operating_a * operating_b; 
 
-        case DIV_ULA:
+        case DIV:
             if (operating_b == 0) {
                 printf("Error: Division by zero.\n");
                 return 0; 
@@ -109,11 +103,12 @@ unsigned short int verify_address(ram* memory_ram, char* address, unsigned short
 
 void load (cpu* cpu, char* instruction) {
 
-    char *token;
-    char *register_name;
+    char *instruction_copy, *token, *register_name;
     unsigned short int value;
 
-    token = strtok(instruction, " "); 
+    instruction_copy = strdup(instruction);
+
+    token = strtok(instruction_copy, " "); 
 
     if (strcmp(token, "LOAD") != 0) {
         printf("Error: Invalid instruction\n");
@@ -128,15 +123,18 @@ void load (cpu* cpu, char* instruction) {
     value = atoi(token);
 
     cpu->core[0].registers[get_register_index(register_name)] = value;
+
+    printf("Register %s: %d\n", register_name, value);
 }
 
 void store (cpu* cpu, ram* memory_ram, char* instruction) {
-    char *token;
-    char *register_name1, *memory_address;
+    char *instruction_copy, *token, *register_name1, *memory_address;
     char buffer[10]; 
     unsigned short int address, num_positions;
 
-    token = strtok(instruction, " "); 
+    instruction_copy = strdup(instruction);
+
+    token = strtok(instruction_copy, " "); 
 
     if (strcmp(token, "STORE") != 0) {
         printf("Error: Invalid instruction\n");
@@ -159,14 +157,17 @@ void store (cpu* cpu, ram* memory_ram, char* instruction) {
     address = verify_address(memory_ram, memory_address, num_positions);
 
     strcpy(&memory_ram->vector[address], buffer);
+
+    printf("Memory address %d: %s\n", address, buffer);
 }
 
-void add(cpu* cpu, char* instruction) {
-    char *token;
-    char *register_name1, *register_name2;
+unsigned short int add(cpu* cpu, char* instruction) {
+    char *instruction_copy, *token,*register_name1, *register_name2;
     unsigned short int value;
 
-    token = strtok(instruction, " "); 
+    instruction_copy = strdup(instruction);
+
+    token = strtok(instruction_copy, " "); 
 
     if (strcmp(token, "ADD") != 0) {
         printf("Error: Invalid instruction\n");
@@ -174,33 +175,31 @@ void add(cpu* cpu, char* instruction) {
     }
 
     token = strtok(NULL, " ");
-
     register_name1 = token;
 
     token = strtok(NULL, " ");
-    
     unsigned short int result;
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, ADD_ULA);
-        cpu->core[0].registers[get_register_index(register_name1)] = result;
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, ADD);
     } else {
         register_name2 = token;
         result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
                      cpu->core[0].registers[get_register_index(register_name2)], 
-                     ADD_ULA);
-        cpu->core[0].registers[get_register_index(register_name1)] = result;
+                     ADD);
     }
+
+    return result; 
 }
 
-
-void sub(cpu* cpu, char* instruction) {
-    char *token;
-    char *register_name1, *register_name2;
+unsigned short int sub(cpu* cpu, char* instruction) {
+    char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value;
 
-    token = strtok(instruction, " "); 
+    instruction_copy = strdup(instruction);
+
+    token = strtok(instruction_copy, " "); 
 
     if (strcmp(token, "SUB") != 0) {
         printf("Error: Invalid instruction\n");
@@ -208,32 +207,31 @@ void sub(cpu* cpu, char* instruction) {
     }
 
     token = strtok(NULL, " ");
-
     register_name1 = token;
 
     token = strtok(NULL, " ");
-    
     unsigned short int result;
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, SUB_ULA);
-        cpu->core[0].registers[get_register_index(register_name1)] = result;
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, SUB);
     } else {
         register_name2 = token;
         result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
                      cpu->core[0].registers[get_register_index(register_name2)], 
-                     SUB_ULA);
-        cpu->core[0].registers[get_register_index(register_name1)] = result;
+                     SUB);
     }
+
+    return result; 
 }
 
-void mul(cpu* cpu, char* instruction) {
-    char *token;
-    char *register_name1, *register_name2;
+unsigned short int mul(cpu* cpu, char* instruction) {
+    char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value;
 
-    token = strtok(instruction, " "); 
+    instruction_copy = strdup(instruction);
+
+    token = strtok(instruction_copy, " "); 
 
     if (strcmp(token, "MUL") != 0) {
         printf("Error: Invalid instruction\n");
@@ -241,32 +239,31 @@ void mul(cpu* cpu, char* instruction) {
     }
 
     token = strtok(NULL, " ");
-
     register_name1 = token;
 
     token = strtok(NULL, " ");
-    
     unsigned short int result;
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, MUL_ULA);
-        cpu->core[0].registers[get_register_index(register_name1)] = result;
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, MUL);
     } else {
         register_name2 = token;
         result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
                      cpu->core[0].registers[get_register_index(register_name2)], 
-                     MUL_ULA);
-        cpu->core[0].registers[get_register_index(register_name1)] = result;
+                     MUL);
     }
+
+    return result; 
 }
 
-void div_c(cpu* cpu, char* instruction) {
-    char *token;
-    char *register_name1, *register_name2;
+unsigned short int div_c(cpu* cpu, char* instruction) {
+    char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value;
 
-    token = strtok(instruction, " "); 
+    instruction_copy = strdup(instruction);
+
+    token = strtok(instruction_copy, " "); 
 
     if (strcmp(token, "DIV") != 0) {
         printf("Error: Invalid instruction\n");
@@ -274,23 +271,22 @@ void div_c(cpu* cpu, char* instruction) {
     }
 
     token = strtok(NULL, " ");
-
     register_name1 = token;
 
     token = strtok(NULL, " ");
-    
     unsigned short int result;
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, DIV_ULA);
-        cpu->core[0].registers[get_register_index(register_name1)] = result;
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, DIV);
     } else {
         register_name2 = token;
         result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
                      cpu->core[0].registers[get_register_index(register_name2)], 
-                     DIV_ULA);
-        cpu->core[0].registers[get_register_index(register_name1)] = result;
+                     DIV);
     }
+
+    return result;  
 }
+
 
