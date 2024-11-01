@@ -17,9 +17,20 @@ typedef struct cpu {
    core *core;
 } cpu;
 
+typedef struct pipe {
+    char *instruction;
+    unsigned short int num_instruction;
+    type_of_instruction type;
+    unsigned short int result;
+    bool loop;
+    unsigned short int loop_start;
+    unsigned short int loop_value;
+} pipe;
+
 void init_cpu(cpu* cpu);
 
-unsigned short int control_unit(cpu* cpu, type_of_instruction type, char* instruction);
+//unsigned short int control_unit(cpu* cpu, type_of_instruction type, char* instruction);
+void control_unit(cpu* cpu, pipe* p);
 unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation);
 
 unsigned short int get_register_index(char* reg_name);
@@ -32,6 +43,8 @@ unsigned short int add(cpu* cpu, char* instruction);
 unsigned short int sub(cpu* cpu, char* instruction);
 unsigned short int mul(cpu* cpu, char* instruction);
 unsigned short int div_c(cpu* cpu, char* instruction);
-unsigned short int loop(cpu* cpu, char* instruction);
+void loop(cpu* cpu, pipe* p);
+void loop_end(cpu* cpu, pipe *p);
+void decrease_pc(cpu* cpu);
 
 #endif

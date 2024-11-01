@@ -34,50 +34,35 @@ void check_instructions_on_ram(ram* memory_ram) {
 }
 
 void init_pipeline(cpu* cpu, ram* memory_ram) {
-    char* instruction;
-    unsigned short int num_instruction = 0, num_lines = 0, result, loop;
-    type_of_instruction type;
+    pipe p;
+    unsigned short int num_lines = 0;
+    p.num_instruction = 0;
+    //char* instruction;
+    //unsigned short int num_instruction = 0, num_lines = 0, result, loop;
+    //type_of_instruction type;
 
     num_lines = count_lines(memory_ram->vector);
 
     printf("Number of instructions: %d\n", num_lines);
 
-    while (num_instruction < num_lines) {
+    while (p.num_instruction < num_lines) {
 
-        instruction = instruction_fetch(cpu, memory_ram);
+        p.instruction = instruction_fetch(cpu, memory_ram);
 
-        printf("Instruction %d: %s\n", num_instruction, instruction);
+        printf("Instruction %d: %s\n", p.num_instruction, p.instruction);
 
-        if (type == 8) {
-            loop = result;
+        p.type = instruction_decode(p.instruction, p.num_instruction);
 
-            type = instruction_decode(instruction, num_instruction);
+        printf("Type of instruction: %d\n", p.type);
 
-            printf("Type of instruction: %d\n", type);
+        //result = execute(cpu, type, instruction);
+        execute(cpu, &p);
 
-            for (int i=0; i<loop; i++) {
-                if (i==0)
-                    result = execute(cpu, type, instruction);
-                else
-                    result += execute(cpu, type, instruction);
-            }
+        printf("Result: %d\n", p.result);
 
-            printf("Result: %d\n", result);
-        }
-        else {
-            type = instruction_decode(instruction, num_instruction);
+        memory_access(cpu, memory_ram, p.type, p.instruction);
 
-            printf("Type of instruction: %d\n", type);
+        write_back(cpu, p.type, p.instruction, p.result);
 
-            result = execute(cpu, type, instruction);
-
-            printf("Result: %d\n", result);
-        }
-
-        memory_access(cpu, memory_ram, type, instruction);
-
-        write_back(cpu, type, instruction, result);
-
-        num_instruction++;
     }
 }

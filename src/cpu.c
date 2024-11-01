@@ -20,7 +20,7 @@ void init_cpu(cpu* cpu) {
     }
 }
 
-unsigned short int control_unit(cpu* cpu, type_of_instruction type, char* instruction) {
+/*unsigned short int control_unit(cpu* cpu, type_of_instruction type, char* instruction) {
     unsigned short int result = 0;
 
     if (type == ADD) {
@@ -38,6 +38,31 @@ unsigned short int control_unit(cpu* cpu, type_of_instruction type, char* instru
     }
 
     return result;  
+}*/
+
+void control_unit(cpu* cpu, pipe* p) {
+    p->result = 0;
+
+    if (p->type == ADD) {
+        p->result = add(cpu, p->instruction);
+        p->num_instruction++;
+    } else if (p->type == SUB) {
+        p->result = sub(cpu, p->instruction);
+        p->num_instruction++;
+    } else if (p->type == MUL) {
+        p->result = mul(cpu, p->instruction);
+        p->num_instruction++;
+    } else if (p->type == DIV) {
+        p->result = div_c(cpu, p->instruction);
+        p->num_instruction++;
+    } else if (p->type == LOOP) {
+        loop(cpu, p);
+        p->num_instruction++;
+    } else if (p->type == L_END) {
+        loop_end(cpu, p);
+    } else {
+        p->num_instruction++;
+    }
 }
 
 
@@ -291,11 +316,11 @@ unsigned short int div_c(cpu* cpu, char* instruction) {
     return result;  
 }
 
-unsigned short int loop(cpu* cpu, char* instruction) {
+void loop(cpu* cpu, pipe* p) {
     char *instruction_copy, *token;
     unsigned short int value;
 
-    instruction_copy = strdup(instruction);
+    instruction_copy = strdup(p->instruction);
 
     token = strtok(instruction_copy, " "); 
 
@@ -304,11 +329,42 @@ unsigned short int loop(cpu* cpu, char* instruction) {
         exit(1);
     }
 
-    token = strtok(NULL, " ");
-    unsigned short int result;
-    value = atoi(token);
-    result = value;
-
-    return result; 
+    if (!p->loop) {
+        p->loop_start = p->num_instruction;
+        token = strtok(NULL, " ");
+        value = atoi(token);
+        p->loop_value = value;
+        p->loop = true;
+    }
 }
 
+void loop_end(cpu* cpu, pipe* p) {
+    char *instruction_copy, *token;
+
+    instruction_copy = strdup(p->instruction);
+
+    token = strtok(instruction_copy, " "); 
+
+    if (strcmp(token, "L_END") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
+    int decrease = p->num_instruction - p->loop_start + 1;
+    p->loop_value--;
+    if (p->loop_value == 0) {
+        p->loop = false;
+        p->loop_start = 0;
+        p->num_instruction++;
+    }
+    else {
+        for (int i=0; i<decrease; i++) {
+            decrease_pc(cpu);
+        }
+        p->num_instruction = p->loop_start;
+    }
+}
+
+void decrease_pc(cpu* cpu) {
+    cpu->core[0].PC--;
+}

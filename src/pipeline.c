@@ -17,8 +17,12 @@ type_of_instruction instruction_decode(char* instruction, unsigned short int num
     }
 }
 
-unsigned short int execute(cpu* cpu, type_of_instruction type, char* instruction) {
+/*unsigned short int execute(cpu* cpu, type_of_instruction type, char* instruction) {
     return control_unit(cpu, type, instruction);
+}*/
+
+void execute(cpu* cpu, pipe *p) {
+    control_unit(cpu, p);
 }
 
 void memory_access(cpu* cpu, ram* memory_ram, type_of_instruction type, char* instruction) {
