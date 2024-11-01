@@ -21,6 +21,8 @@
     <a href="#Contatos">Contatos</a>
 </p>
 
+ <div align="justify">
+
 ## Introdução
 
 O objetivo deste projeto é desenvolver um sistema operacional simplificado utilizando a linguagem C, que se caracteriza por seu baixo nível de abstração e alto controle sobre os recursos de hardware. Este trabalho acadêmico, proposto pelo professor <a href="https://github.com/mpiress" target="_blank">Michel Pires</a> (CEFET/MG), foi realizado para oferecer uma compreensão dos conceitos fundamentais de sistemas operacionais, como gerenciamento de processos, controle de memória e interação com dispositivos de entrada e saída. A escolha da linguagem C permite uma experiência prática de como os sistemas operacionais gerenciam diretamente os recursos de hardware, proporcionando uma visão detalhada da arquitetura de computadores.
@@ -50,6 +52,11 @@ Responsável por armazenar dados temporários e instruções em uso durante a ex
 
 ##### Memória Secundária (Armazenamento):
 Utilizada para armazenar dados de forma persistente, mesmo quando o computador está desligado. Exemplos incluem discos rígidos (HDDs) e unidades de estado sólido (SSDs).
+
+
+##### Hierarquia de Memória:
+
+Os sistemas modernos muitas vezes implementam uma hierarquia de memória para otimizar o desempenho. Caches de alta velocidade são utilizados para armazenar temporariamente dados frequentemente acessados, reduzindo a necessidade de acessar a memória principal mais lenta.
 
 #### Unidade de Entrada/Saída (E/S)
 Os dispositivos de input e output são os periféricos usados em um computador, ou seja, todo equipamento externo que usamos para controlar a máquina. O mouse, teclado...
@@ -132,19 +139,64 @@ Instruções O programa precisa simular apenas um subconjunto do conjunto de ins
 ## Detalhemento do Código e Lógica Utilizada
 
 #### Instruções
- O programa precisa simular...
+ A execução de instruções em um sistema baseado na arquitetura de Von Neumann segue um ciclo característico, conhecido como ciclo de instrução. Esse ciclo consiste em quatro fases:
+ Busca (Fetch): A unidade de controle busca a próxima instrução na memória principal.
+
+* Decodificação (Decode): A instrução é decodificada para que a unidade de controle compreenda qual operação deve ser realizada.
+
+* Execução (Execute): A instrução é executada pela unidade lógica e aritmética (ULA) ou outra unidade especializada.
+
+* Armazenamento (Store): O resultado da execução pode ser armazenado de volta na memória ou em outro local apropriado.
+
+ | Instrução | Descrição                                                                                  | Observações                       |
+|-----------|--------------------------------------------------------------------------------------------|-----------------------------------|
+| `LOAD`    | Carrega um valor de uma posição de memória para um registrador.                            | ---                               |
+| `STORE`   | Armazena o valor de um registrador em uma posição de memória.                              | ---                               |
+| `ADD`     | Soma os valores de dois registradores e armazena o resultado em um registrador.            | ---                               |
+| `SUB`     | Subtrai o valor de um registrador pelo valor de outro e armazena o resultado.              | ---                               |
+| `MUL`     | Multiplica os valores de dois registradores e armazena o resultado.                        | ---                               |
+| `DIV`     | Divide o valor de um registrador pelo valor de outro e armazena o resultado.               | ---                               |
+| `IF`      | Inicia uma instrução condicional.                                                          | ---                               |
+| `ELSE`    | Define a alternativa a ser executada caso a condição de `IF` seja falsa.                   | ---                               |
+| `LOOP`    | Inicia um loop, repetindo instruções até que uma condição seja atendida.                   | ---                               |
+| `INVALID` | Instrução não reconhecida ou inválida.                                                     | ---                               |
+
 
 
  #### Simulação
- O programa deve receber uma sequência de instruções especificadas anteriormente...
+A tabela abaixo fornece uma visão detalhada de cada instrução utilizada no exemplo de entrada. Para cada instrução, são especificados o propósito e o efeito no sistema. Isso permite uma compreensão clara das operações e facilita a análise do fluxo de execução do programa.
+
+Cada instrução é responsável por realizar uma operação específica sobre os registradores e/ou posições de memória, permitindo a manipulação de dados conforme a lógica do programa. Abaixo estão os detalhes das instruções
+
+| Instrução       | Descrição                                                                                      |
+|-----------------|------------------------------------------------------------------------------------------------|
+| `LOAD A0 10`    | Carrega o valor `10` no registrador `A0`.                                                      |
+| `LOAD B0 5`     | Carrega o valor `5` no registrador `B0`.                                                       |
+| `LOAD C0 6`     | Carrega o valor `6` no registrador `C0`.                                                       |
+| `ADD A0 B0`     | Soma o valor de `A0` com o valor de `B0` e armazena o resultado em `A0`.                       |
+| `ADD C0 A0`     | Soma o valor de `C0` com o valor atualizado de `A0` e armazena o resultado em `C0`.            |
+| `STORE C0 A72`  | Armazena o valor de `C0` na posição de memória `A72`.                                          |
+
+
 
 
 ## Objetivos
 O objetivo deste trabalho envolve a realização de uma...
 
 ## Testes e Análises dos Resultados
+
+testeeeeeeeeeeeeee
 A solução aqui proposta é capaz de fazer...
 
+| Registrador | Valor |
+|-------------|-------|
+| A0          | 0     |
+| B0          | 0     |
+| C0          | 0     |
+
+| Posição de Memória | Valor |
+|--------------------|-------|
+| A72               | 0     |
 
 
 ## Conclusão
