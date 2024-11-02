@@ -25,6 +25,10 @@ typedef struct pipe {
     bool loop;
     unsigned short int loop_start;
     unsigned short int loop_value;
+    bool has_if;
+    bool valid_if;
+    bool running_if;
+    ram* mem_ram;
 } pipe;
 
 void init_cpu(cpu* cpu);
@@ -43,9 +47,12 @@ unsigned short int add(cpu* cpu, char* instruction);
 unsigned short int sub(cpu* cpu, char* instruction);
 unsigned short int mul(cpu* cpu, char* instruction);
 unsigned short int div_c(cpu* cpu, char* instruction);
-unsigned short int if_i(cpu* cpu, pipe* pipe);
+void if_i(cpu* cpu, pipe* pipe);
+void if_end(cpu* cpu, pipe* pipe);
 void loop(cpu* cpu, pipe* p);
 void loop_end(cpu* cpu, pipe *p);
 void decrease_pc(cpu* cpu);
+char* instruc_fetch(cpu* cpu, ram* memory);
+type_of_instruction instruc_decode(char* instruction, unsigned short int num_instruction);
 
 #endif

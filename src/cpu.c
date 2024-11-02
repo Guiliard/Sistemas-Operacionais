@@ -62,8 +62,11 @@ void control_unit(cpu* cpu, pipe* p) {
         p->num_instruction++;
     } else if (p->type == L_END) {
         loop_end(cpu, p);
-    }else if(p->type == IF) {
+    } else if(p->type == IF) {
         if_i(cpu,p);
+        p->num_instruction++;
+    } else if(p->type == I_END) {
+        if_end(cpu,p);
         p->num_instruction++;
     }
     else {
@@ -322,9 +325,10 @@ unsigned short int div_c(cpu* cpu, char* instruction) {
     return result;  
 }
 
-unsigned short int if_i(cpu* cpu, pipe* pipe) {
-    char *instruction_copy = strdup(pipe->instruction);
+void if_i(cpu* cpu, pipe* p) {
+    char *instruction_copy = strdup(p->instruction);
     char *token = strtok(instruction_copy, " ");
+    p->has_if = true;
 
     if (strcmp(token, "IF") != 0) {
         printf("Error: Invalid instruction\n");
@@ -332,13 +336,14 @@ unsigned short int if_i(cpu* cpu, pipe* pipe) {
     }
 
     token = strtok(NULL, " ");
-    int register1_value = get_register_index(token);
+    unsigned short int register1_value = get_register_index(token);
+    register1_value = cpu->core[0].registers[register1_value];
 
     token = strtok(NULL, " ");
     const char *operator = token;
 
     token = strtok(NULL, " ");
-    int operand_value;
+    unsigned short int operand_value;
     if (isdigit(token[0])) {
         operand_value = atoi(token);
     } else {
@@ -362,37 +367,51 @@ unsigned short int if_i(cpu* cpu, pipe* pipe) {
         printf("Error: Invalid operator\n");
     }
 
-    if (!result) {
-        printf("Skipping instruction: %d\n", cpu->core[0].PC);
-        while (strcmp(token, "I_END") != 0) {
-            // pipe->num_instruction++;
-            cpu->core[0].PC++;
-            // pipe->instruction++;
-            instruction_copy = strdup(pipe->instruction);
+    if (result == 0) {
+        p->valid_if = false;
+        printf("(False IF) Skipping instruction: %d\n", cpu->core[0].PC);
+        while (1) {
+            p->num_instruction++;
+            p->instruction = instruc_fetch(cpu, p->mem_ram);
 
-            // token = strtok(instruction_copy, " ");
-            printf("Skipping instruction: %s\n", pipe->instruction);
-            free(instruction_copy); // Free the memory
+            printf("Instruction %d: %s\n", p->num_instruction, p->instruction);
+
+            p->type = instruc_decode(p->instruction, p->num_instruction);
+
+            printf("Type of instruction: %d\n", p->type);
+            instruction_copy = strdup(p->instruction);
+            token = strtok(instruction_copy, " "); 
+
+            if (strcmp(token, "I_END") == 0)
+                break;
+
+            free(token);
+            printf("Skipping instruction: %s\n", p->instruction);
+            free(instruction_copy);
         }
+    } else {
+        printf("(True IF)\n");
+        p->valid_if = true;
+        p->running_if = false;
     }
 
     free(instruction_copy);
-    return result;
 }
 
+void if_end(cpu* cpu, pipe* p) {
+    char *instruction_copy, *token;
 
+    instruction_copy = strdup(p->instruction);
 
+    token = strtok(instruction_copy, " "); 
 
+    if (strcmp(token, "I_END") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
 
-
-
-
-
-
-
-
-
-
+    p->running_if = false;
+}
 
 void loop(cpu* cpu, pipe* p) {
     char *instruction_copy, *token, *register_name;
@@ -424,24 +443,6 @@ void loop(cpu* cpu, pipe* p) {
         p->loop_start = p->num_instruction;
         p->loop = true;
     }
-
-    /*if (!p->loop) {
-        p->loop_start = p->num_instruction;
-        token = strtok(NULL, " ");
-        value = atoi(token);
-        p->loop_value = value;
-        p->loop = true;
-    }*/
-
-    /*if (isdigit(token[0])) {
-        value = atoi(token);
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, ADD);
-    } else {
-        register_name2 = token;
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
-                     cpu->core[0].registers[get_register_index(register_name2)], 
-                     ADD);
-    }*/
 }
 
 void loop_end(cpu* cpu, pipe* p) {
@@ -473,4 +474,21 @@ void loop_end(cpu* cpu, pipe* p) {
 
 void decrease_pc(cpu* cpu) {
     cpu->core[0].PC--;
+}
+
+char* instruc_fetch(cpu* cpu, ram* memory) {
+    char* instruction = get_line_of_program(memory->vector, cpu->core[0].PC);
+    cpu->core[0].PC++;
+
+    return instruction;
+}
+
+type_of_instruction instruc_decode(char* instruction, unsigned short int num_instruction) {
+    type_of_instruction type = verify_instruction(instruction, num_instruction);
+
+    if (type == INVALID) {
+        exit(1);    
+    } else {
+        return type;
+    }
 }

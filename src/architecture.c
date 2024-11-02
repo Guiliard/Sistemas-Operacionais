@@ -37,6 +37,7 @@ void init_pipeline(cpu* cpu, ram* memory_ram) {
     pipe p;
     unsigned short int num_lines = 0;
     p.num_instruction = 0;
+    p.mem_ram = memory_ram;
     //char* instruction;
     //unsigned short int num_instruction = 0, num_lines = 0, result, loop;
     //type_of_instruction type;
