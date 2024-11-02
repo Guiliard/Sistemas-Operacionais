@@ -206,7 +206,6 @@ bool check_if_format(char *line) {  // IF <register> <operator> <value> ou IF <r
 
 bool check_else_format(char *line) {  // ELSE
     int num_tokens = sscanf(line, "ELSE");
-    printf ("tokens %d",num_tokens);
 
     unsigned short int num_total_tokens = count_tokens_in_line(line);
 

@@ -22,25 +22,6 @@ void init_cpu(cpu* cpu) {
     }
 }
 
-/*unsigned short int control_unit(cpu* cpu, type_of_instruction type, char* instruction) {
-    unsigned short int result = 0;
-
-    if (type == ADD) {
-        result = add(cpu, instruction);
-    } else if (type == SUB) {
-        result = sub(cpu, instruction);
-    } else if (type == MUL) {
-        result = mul(cpu, instruction);
-    } else if (type == DIV) {
-        result = div_c(cpu, instruction);
-    } else if (type == LOOP) {
-        result = loop(cpu, instruction);
-    } else {
-        result = 0;
-    }
-
-    return result;  
-}*/
 
 void control_unit(cpu* cpu, pipe* p) {
     p->result = 0;
@@ -66,7 +47,13 @@ void control_unit(cpu* cpu, pipe* p) {
         if_i(cpu,p);
         p->num_instruction++;
     } else if(p->type == I_END) {
-        if_end(cpu,p);
+        if_end(p);
+        p->num_instruction++;
+    } else if(p->type == ELSE) {
+        else_i(cpu,p);
+        p->num_instruction++;
+    } else if(p->type == ELS_END) {
+        else_end(p);
         p->num_instruction++;
     }
     else {
@@ -392,13 +379,13 @@ void if_i(cpu* cpu, pipe* p) {
     } else {
         printf("(True IF)\n");
         p->valid_if = true;
-        p->running_if = false;
+        p->running_if = true;
     }
 
     free(instruction_copy);
 }
 
-void if_end(cpu* cpu, pipe* p) {
+void if_end(pipe* p) {
     char *instruction_copy, *token;
 
     instruction_copy = strdup(p->instruction);
@@ -411,6 +398,62 @@ void if_end(cpu* cpu, pipe* p) {
     }
 
     p->running_if = false;
+}
+
+void else_i(cpu* cpu, pipe* p) {
+    char *instruction_copy = strdup(p->instruction);
+    char *token = strtok(instruction_copy, " ");
+
+    if (strcmp(token, "ELSE") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
+    if (p->has_if && !p->valid_if) {
+        p->has_if = false;
+    }
+    else if (p->running_if) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+    else if (!p->has_if) {
+        printf("Error: Invalid instruction. No IF after ELSE.\n");
+        exit(1);
+    }
+    else if (p->has_if && p->valid_if) {
+        printf("(True IF, No need ELSE) Skipping instruction: %d\n", cpu->core[0].PC);
+        while (1) {
+            p->num_instruction++;
+            p->instruction = instruc_fetch(cpu, p->mem_ram);
+
+            printf("Instruction %d: %s\n", p->num_instruction, p->instruction);
+
+            p->type = instruc_decode(p->instruction, p->num_instruction);
+
+            printf("Type of instruction: %d\n", p->type);
+            instruction_copy = strdup(p->instruction);
+            token = strtok(instruction_copy, " "); 
+
+            if (strcmp(token, "ELS_END") == 0)
+                break;
+
+            free(token);
+            printf("Skipping instruction: %s\n", p->instruction);
+            free(instruction_copy);
+        }
+    }
+}
+
+void else_end(pipe* p) {
+    char *instruction_copy = strdup(p->instruction);
+    char *token = strtok(instruction_copy, " ");
+
+    if (strcmp(token, "ELS_END") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
+    p->has_if = false;
 }
 
 void loop(cpu* cpu, pipe* p) {

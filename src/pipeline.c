@@ -17,10 +17,6 @@ type_of_instruction instruction_decode(char* instruction, unsigned short int num
     }
 }
 
-/*unsigned short int execute(cpu* cpu, type_of_instruction type, char* instruction) {
-    return control_unit(cpu, type, instruction);
-}*/
-
 void execute(cpu* cpu, pipe *p) {
     control_unit(cpu, p);
 }
@@ -48,7 +44,7 @@ void write_back(cpu* cpu, type_of_instruction type, char* instruction, unsigned 
 
         printf("WB: Register %s: %d\n", register_name, result);
 
-    } else if (type == LOAD || type == STORE || type == LOOP || type == L_END||type == IF||type == I_END) {
+    } else if (type == LOAD || type == STORE || type == LOOP || type == L_END||type == IF||type == I_END || type == ELSE || type == ELS_END) {
         // do nothing
     } else {
         printf("Error: Unrecognized instruction\n");
