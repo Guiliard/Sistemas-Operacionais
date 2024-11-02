@@ -166,14 +166,25 @@ A tabela abaixo fornece uma visão detalhada de cada instrução utilizada no ex
 
 Cada instrução é responsável por realizar uma operação específica sobre os registradores e/ou posições de memória, permitindo a manipulação de dados conforme a lógica do programa. Abaixo estão os detalhes das instruções
 
-| Instrução       | Descrição                                                                                      |
-|-----------------|------------------------------------------------------------------------------------------------|
-| `LOAD A0 10`    | Carrega o valor `10` no registrador `A0`.                                                      |
-| `LOAD B0 5`     | Carrega o valor `5` no registrador `B0`.                                                       |
-| `LOAD C0 6`     | Carrega o valor `6` no registrador `C0`.                                                       |
-| `ADD A0 B0`     | Soma o valor de `A0` com o valor de `B0` e armazena o resultado em `A0`.                       |
-| `ADD C0 A0`     | Soma o valor de `C0` com o valor atualizado de `A0` e armazena o resultado em `C0`.            |
-| `STORE C0 A72`  | Armazena o valor de `C0` na posição de memória `A72`.                                          |
+| Instrução       | Descrição                                                                                       |
+|-----------------|-------------------------------------------------------------------------------------------------|
+| `LOAD A0 10`    | Carrega o valor `10` no registrador `A0`.                                                       |
+| `LOAD B0 5`     | Carrega o valor `5` no registrador `B0`.                                                        |
+| `LOAD C0 6`     | Carrega o valor `6` no registrador `C0`.                                                        |
+| `LOAD D0 1`     | Carrega o valor `1` no registrador `D0`.                                                        |
+| `ADD A0 B0`     | Soma o valor de `A0` com o valor de `B0` e armazena o resultado em `A0`.                        |
+| `ADD C0 A0`     | Soma o valor de `C0` com o valor atualizado de `A0` e armazena o resultado em `C0`.             |
+| `STORE C0 A189` | Armazena o valor de `C0` na posição de memória `A189`.                                          |
+| `LOOP A0`       | Inicia um laço que executa as instruções internas enquanto `A0` for diferente de zero.         |
+| `ADD C0 10`     | Adiciona o valor `10` ao registrador `C0`.                                                      |
+| `L_END`         | Marca o final do bloco de loop.                                                                 |
+| `IF D0 == 1`    | Executa o bloco `IF` se o valor de `D0` for igual a `1`.                                       |
+| `ADD D0 3`      | Adiciona `3` ao valor do registrador `D0`.                                                      |
+| `SUB A0 1`      | Subtrai `1` do valor do registrador `A0`.                                                       |
+| `I_END`         | Marca o final do bloco `IF`.                                                                    |
+| `ELSE`          | Executa um bloco alternativo se a condição `IF` não for satisfeita.                             |
+| `ELS_END`       | Marca o final do bloco `ELSE`.                                                                  |
+                                        
 
 Para um melhor entendimento será apresentado uma breve descrição do funcionamento do Programa
 
@@ -199,24 +210,57 @@ O programa entra em um loop de execução:
    *  Acessa a memória, se necessário.
    *  Escreve os resultados de volta.
 
-## Testes e Análises dos Resultados
 
-testeeeeeeeeeeeeee
-A solução aqui proposta é capaz de fazer...
+### Saída do Programa
 
-| Registrador | Valor |
-|-------------|-------|
-| A0          | 0     |
-| B0          | 0     |
-| C0          | 0     |
+A saída mostra, para cada instrução, o tipo, o resultado, e os valores dos registradores e memória envolvidos. Esse detalhamento permite a análise passo a passo do fluxo de execução.
 
-| Posição de Memória | Valor |
-|--------------------|-------|
-| A72               | 0     |
+- **Number of Instructions**: Mostra a quantidade total de instruções executadas.
+- **Instruction**: Lista as instruções sequenciais e suas operações.
+- **Type of Instruction**: Indica o tipo da operação executada (e.g., LOAD, ADD, LOOP, IF, etc.).
+- **Result**: Exibe o resultado da operação, seja no registrador, na memória, ou uma verificação de condição.
+- **Register/Memory Update**: Exibe os valores atualizados após a execução de operações como `ADD`, `SUB`, `STORE`, etc.
 
+#### Exemplo de Saída:
 
-## Conclusão
-O trabalho proposto...
+```plaintext
+Number of instructions: 18
+Instruction 0: LOAD A0 10
+Type of instruction: 0
+Result: 0
+Register A0: 10
+Instruction 1: LOAD B0 5
+Type of instruction: 0
+Result: 0
+Register B0: 5
+Instruction 2: LOAD C0 6
+Type of instruction: 0
+Result: 0
+Register C0: 6
+Instruction 3: LOAD D0 1
+Type of instruction: 0
+Result: 0
+Register D0: 1
+Instruction 4: ADD A0 B0
+Type of instruction: 2
+Result: 15
+WB: Register A0: 15
+Instruction 5: ADD C0 A0
+Type of instruction: 2
+Result: 21
+WB: Register C0: 21
+Instruction 6: STORE C0 A189
+Type of instruction: 1
+Result: 0
+Memory address 189: 21
+Instruction 7: LOOP A0
+Type of instruction: 8
+Result: 0
+...
+Instruction 17: ELS_END
+Type of instruction: 11
+Result: 0
+```
 
 ## Compilação e Execução
 
