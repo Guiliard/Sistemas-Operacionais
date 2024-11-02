@@ -394,7 +394,7 @@ unsigned short int if_i(cpu* cpu, pipe* pipe) {
 
 
 void loop(cpu* cpu, pipe* p) {
-    char *instruction_copy, *token;
+    char *instruction_copy, *token, *register_name;
     unsigned short int value;
 
     instruction_copy = strdup(p->instruction);
@@ -407,12 +407,40 @@ void loop(cpu* cpu, pipe* p) {
     }
 
     if (!p->loop) {
+        token = strtok(NULL, " ");
+        if (isdigit(token[0]))
+            value = atoi(token);
+        else {
+            register_name = token;
+            value = cpu->core[0].registers[get_register_index(register_name)];
+            if (value == 0) {
+                printf("Error: Loop value can't be 0.\n");
+                exit(1);
+            }
+
+        }
+        p->loop_value = value;
+        p->loop_start = p->num_instruction;
+        p->loop = true;
+    }
+
+    /*if (!p->loop) {
         p->loop_start = p->num_instruction;
         token = strtok(NULL, " ");
         value = atoi(token);
         p->loop_value = value;
         p->loop = true;
-    }
+    }*/
+
+    /*if (isdigit(token[0])) {
+        value = atoi(token);
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, ADD);
+    } else {
+        register_name2 = token;
+        result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
+                     cpu->core[0].registers[get_register_index(register_name2)], 
+                     ADD);
+    }*/
 }
 
 void loop_end(cpu* cpu, pipe* p) {
