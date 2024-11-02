@@ -364,7 +364,7 @@ unsigned short int if_i(cpu* cpu, pipe* pipe) {
 
     if (!result) {
         printf("Skipping instruction: %d\n", cpu->core[0].PC);
-        while (strcmp(token, "I_END") == 0) {
+        while (strcmp(token, "I_END") != 0) {
             // pipe->num_instruction++;
             cpu->core[0].PC++;
             // pipe->instruction++;
