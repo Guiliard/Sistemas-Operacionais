@@ -34,32 +34,36 @@ void check_instructions_on_ram(ram* memory_ram) {
 }
 
 void init_pipeline(cpu* cpu, ram* memory_ram) {
-    char* instruction;
-    unsigned short int num_instruction = 0, num_lines = 0, result;
-    type_of_instruction type;
+    pipe p;
+    unsigned short int num_lines = 0;
+    p.num_instruction = 0;
+    p.mem_ram = memory_ram;
+    //char* instruction;
+    //unsigned short int num_instruction = 0, num_lines = 0, result, loop;
+    //type_of_instruction type;
 
     num_lines = count_lines(memory_ram->vector);
 
     printf("Number of instructions: %d\n", num_lines);
 
-    while (num_instruction < num_lines) {
+    while (p.num_instruction < num_lines) {
 
-        instruction = instruction_fetch(cpu, memory_ram);
+        p.instruction = instruction_fetch(cpu, memory_ram);
 
-        printf("Instruction %d: %s\n", num_instruction, instruction);
+        printf("Instruction %d: %s\n", p.num_instruction, p.instruction);
 
-        type = instruction_decode(instruction, num_instruction);
+        p.type = instruction_decode(p.instruction, p.num_instruction);
 
-        printf("Type of instruction: %d\n", type);
+        printf("Type of instruction: %d\n", p.type);
 
-        result = execute(cpu, type, instruction);
+        //result = execute(cpu, type, instruction);
+        execute(cpu, &p);
 
-        printf("Result: %d\n", result);
+        printf("Result: %d\n", p.result);
 
-        memory_access(cpu, memory_ram, type, instruction);
+        memory_access(cpu, memory_ram, p.type, p.instruction);
 
-        write_back(cpu, type, instruction, result);
+        write_back(cpu, p.type, p.instruction, p.result);
 
-        num_instruction++;
     }
 }

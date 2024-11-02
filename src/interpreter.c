@@ -57,6 +57,24 @@ type_of_instruction verify_instruction(char *line, unsigned short int line_numbe
             return INVALID;
         } else 
             return LOOP;
+    } else if (strstr(line, "L_END") != NULL) {
+        if (!check_loop_end_format(line)) {
+            printf("Error: Invalid END_LOOP instruction on line %d\n", line_number + 1);
+            return INVALID;
+        } else 
+            return L_END;
+    } else if (strstr(line, "I_END") != NULL) {
+        if (!check_if_end_format(line)) {
+            printf("Error: Invalid I_END instruction on line %d\n", line_number + 1);
+            return INVALID;
+        } else
+            return I_END;
+    } else if (strstr(line, "ELS_END") != NULL) {
+        if (!check_else_end_format(line)) {
+            printf("Error: Invalid ELS_END instruction on line %d\n", line_number + 1);
+            return INVALID;
+        } else
+            return ELS_END;
     } else {
         printf("Error: Unrecognized instruction on line %d\n", line_number);
         return INVALID;
@@ -209,6 +227,42 @@ bool check_loop_format(char *line) {  // LOOP <value> ou LOOP <register>
         return true;
     } 
     else {
+        return false;
+    }
+}
+
+bool check_loop_end_format(char *line) {  // END LOOP
+    int num_tokens = sscanf(line, "L_END");
+
+    unsigned short int num_total_tokens = count_tokens_in_line(line);
+
+    if (num_tokens == 0 && num_total_tokens == 1) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool check_if_end_format(char *line) {  // END IF
+    int num_tokens = sscanf(line, "I_END");
+
+    unsigned short int num_total_tokens = count_tokens_in_line(line);
+
+    if (num_tokens == 0 && num_total_tokens == 1) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool check_else_end_format(char *line) {  // END ELSE
+    int num_tokens = sscanf(line, "ELS_END");
+
+    unsigned short int num_total_tokens = count_tokens_in_line(line);
+
+    if (num_tokens == 0 && num_total_tokens == 1) {
+        return true;
+    } else {
         return false;
     }
 }

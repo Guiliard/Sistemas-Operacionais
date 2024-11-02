@@ -1,5 +1,7 @@
 #include "cpu.h"
 
+#include "pipeline.h"
+
 void init_cpu(cpu* cpu) {
     cpu->core = malloc(NUM_CORES * sizeof(core));
     if (cpu->core == NULL) {
@@ -20,22 +22,43 @@ void init_cpu(cpu* cpu) {
     }
 }
 
-unsigned short int control_unit(cpu* cpu, type_of_instruction type, char* instruction) {
-    unsigned short int result = 0;
 
-    if (type == ADD) {
-        result = add(cpu, instruction);
-    } else if (type == SUB) {
-        result = sub(cpu, instruction);
-    } else if (type == MUL) {
-        result = mul(cpu, instruction);
-    } else if (type == DIV) {
-        result = div_c(cpu, instruction);
-    } else {
-        result = 0;
+void control_unit(cpu* cpu, pipe* p) {
+    p->result = 0;
+
+    if (p->type == ADD) {
+        p->result = add(cpu, p->instruction);
+        p->num_instruction++;
+    } else if (p->type == SUB) {
+        p->result = sub(cpu, p->instruction);
+        p->num_instruction++;
+    } else if (p->type == MUL) {
+        p->result = mul(cpu, p->instruction);
+        p->num_instruction++;
+    } else if (p->type == DIV) {
+        p->result = div_c(cpu, p->instruction);
+        p->num_instruction++;
+    } else if (p->type == LOOP) {
+        loop(cpu, p);
+        p->num_instruction++;
+    } else if (p->type == L_END) {
+        loop_end(cpu, p);
+    } else if(p->type == IF) {
+        if_i(cpu,p);
+        p->num_instruction++;
+    } else if(p->type == I_END) {
+        if_end(p);
+        p->num_instruction++;
+    } else if(p->type == ELSE) {
+        else_i(cpu,p);
+        p->num_instruction++;
+    } else if(p->type == ELS_END) {
+        else_end(p);
+        p->num_instruction++;
     }
-
-    return result;  
+    else {
+        p->num_instruction++;
+    }
 }
 
 
@@ -289,4 +312,226 @@ unsigned short int div_c(cpu* cpu, char* instruction) {
     return result;  
 }
 
+void if_i(cpu* cpu, pipe* p) {
+    char *instruction_copy = strdup(p->instruction);
+    char *token = strtok(instruction_copy, " ");
+    p->has_if = true;
 
+    if (strcmp(token, "IF") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
+    token = strtok(NULL, " ");
+    unsigned short int register1_value = get_register_index(token);
+    register1_value = cpu->core[0].registers[register1_value];
+
+    token = strtok(NULL, " ");
+    const char *operator = token;
+
+    token = strtok(NULL, " ");
+    unsigned short int operand_value;
+    if (isdigit(token[0])) {
+        operand_value = atoi(token);
+    } else {
+        operand_value = get_register_index(token);
+    }
+
+    int result = 0;
+    if (strcmp(operator, "==") == 0) {
+        result = register1_value == operand_value;
+    } else if (strcmp(operator, "!=") == 0) {
+        result = register1_value != operand_value;
+    } else if (strcmp(operator, "<=") == 0) {
+        result = register1_value <= operand_value;
+    } else if (strcmp(operator, ">=") == 0) {
+        result = register1_value >= operand_value;
+    } else if (strcmp(operator, ">") == 0) {
+        result = register1_value > operand_value;
+    } else if (strcmp(operator, "<") == 0) {
+        result = register1_value < operand_value;
+    } else {
+        printf("Error: Invalid operator\n");
+    }
+
+    if (result == 0) {
+        p->valid_if = false;
+        printf("(False IF) Skipping instruction: %d\n", cpu->core[0].PC);
+        while (1) {
+            p->num_instruction++;
+            p->instruction = instruc_fetch(cpu, p->mem_ram);
+
+            printf("Instruction %d: %s\n", p->num_instruction, p->instruction);
+
+            p->type = instruc_decode(p->instruction, p->num_instruction);
+
+            printf("Type of instruction: %d\n", p->type);
+            instruction_copy = strdup(p->instruction);
+            token = strtok(instruction_copy, " "); 
+
+            if (strcmp(token, "I_END") == 0)
+                break;
+
+            free(token);
+            printf("Skipping instruction: %s\n", p->instruction);
+            free(instruction_copy);
+        }
+    } else {
+        printf("(True IF)\n");
+        p->valid_if = true;
+        p->running_if = true;
+    }
+
+    free(instruction_copy);
+}
+
+void if_end(pipe* p) {
+    char *instruction_copy, *token;
+
+    instruction_copy = strdup(p->instruction);
+
+    token = strtok(instruction_copy, " "); 
+
+    if (strcmp(token, "I_END") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
+    p->running_if = false;
+}
+
+void else_i(cpu* cpu, pipe* p) {
+    char *instruction_copy = strdup(p->instruction);
+    char *token = strtok(instruction_copy, " ");
+
+    if (strcmp(token, "ELSE") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
+    if (p->has_if && !p->valid_if) {
+        p->has_if = false;
+    }
+    else if (p->running_if) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+    else if (!p->has_if) {
+        printf("Error: Invalid instruction. No IF after ELSE.\n");
+        exit(1);
+    }
+    else if (p->has_if && p->valid_if) {
+        printf("(True IF, No need ELSE) Skipping instruction: %d\n", cpu->core[0].PC);
+        while (1) {
+            p->num_instruction++;
+            p->instruction = instruc_fetch(cpu, p->mem_ram);
+
+            printf("Instruction %d: %s\n", p->num_instruction, p->instruction);
+
+            p->type = instruc_decode(p->instruction, p->num_instruction);
+
+            printf("Type of instruction: %d\n", p->type);
+            instruction_copy = strdup(p->instruction);
+            token = strtok(instruction_copy, " "); 
+
+            if (strcmp(token, "ELS_END") == 0)
+                break;
+
+            free(token);
+            printf("Skipping instruction: %s\n", p->instruction);
+            free(instruction_copy);
+        }
+    }
+}
+
+void else_end(pipe* p) {
+    char *instruction_copy = strdup(p->instruction);
+    char *token = strtok(instruction_copy, " ");
+
+    if (strcmp(token, "ELS_END") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
+    p->has_if = false;
+}
+
+void loop(cpu* cpu, pipe* p) {
+    char *instruction_copy, *token, *register_name;
+    unsigned short int value;
+
+    instruction_copy = strdup(p->instruction);
+
+    token = strtok(instruction_copy, " "); 
+
+    if (strcmp(token, "LOOP") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
+    if (!p->loop) {
+        token = strtok(NULL, " ");
+        if (isdigit(token[0]))
+            value = atoi(token);
+        else {
+            register_name = token;
+            value = cpu->core[0].registers[get_register_index(register_name)];
+            if (value == 0) {
+                printf("Error: Loop value can't be 0.\n");
+                exit(1);
+            }
+
+        }
+        p->loop_value = value;
+        p->loop_start = p->num_instruction;
+        p->loop = true;
+    }
+}
+
+void loop_end(cpu* cpu, pipe* p) {
+    char *instruction_copy, *token;
+
+    instruction_copy = strdup(p->instruction);
+
+    token = strtok(instruction_copy, " "); 
+
+    if (strcmp(token, "L_END") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
+    int decrease = p->num_instruction - p->loop_start + 1;
+    p->loop_value--;
+    if (p->loop_value == 0) {
+        p->loop = false;
+        p->loop_start = 0;
+        p->num_instruction++;
+    }
+    else {
+        for (int i=0; i<decrease; i++) {
+            decrease_pc(cpu);
+        }
+        p->num_instruction = p->loop_start;
+    }
+}
+
+void decrease_pc(cpu* cpu) {
+    cpu->core[0].PC--;
+}
+
+char* instruc_fetch(cpu* cpu, ram* memory) {
+    char* instruction = get_line_of_program(memory->vector, cpu->core[0].PC);
+    cpu->core[0].PC++;
+
+    return instruction;
+}
+
+type_of_instruction instruc_decode(char* instruction, unsigned short int num_instruction) {
+    type_of_instruction type = verify_instruction(instruction, num_instruction);
+
+    if (type == INVALID) {
+        exit(1);    
+    } else {
+        return type;
+    }
+}
