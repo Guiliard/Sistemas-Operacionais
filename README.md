@@ -14,7 +14,6 @@
     <a href="#estrutura do projeto">Estrutura do Projeto</a> -
     <a href="#arquivos">Arquivos</a> -
     <a href="#Detalhemento do Código">Detalhemento do Código</a> -
-    <a href="#Objetivos">Objetivos</a> -
     <a href="Testes e Análises dos Resultados">Testes e Análises dos Resultados</a> -
     <a href="#Conclusão">Conclusão</a> -
     <a href="#Compilação e Execução">Compilação e Execução</a> -
@@ -75,7 +74,6 @@ O pipeline simulado deve possuir quatro estágios:
 * Execução: a execução realiza a operação e o resultado é mantido temporariamente dentro do próprio pipeline por enquanto.
 * Escrita de resultado: a última etapa escreve o resultado da etapa de execução de volta no registrador de destino, seja uma operação aritmética ou um salto, ou na memória, se for um store. Com exceção da etapa de execução, todas as outras etapas demoram um ciclo de clock para completar suas tarefas.
 
-Instruções O programa precisa simular apenas um subconjunto do conjunto de instruções MIPS, sendo elas:
 
 ## Estrutura do Projeto
 
@@ -111,9 +109,9 @@ Instruções O programa precisa simular apenas um subconjunto do conjunto de ins
   
   <div align="justify">
   
-  Para a solução proposta os seguintes diretórios/arquivos foram utilizados: 
+  Para a solução proposta os seguintes diretórios/funções foram utilizados: 
   
-  - `dataset/program.txt` arquivo em que se encontra as instruções de _entrada_; em txt.
+  - `dataset/program.txt` Arquivo em que se encontra as instruções de _entrada_; em txt.
   - `src/architecture.c`  Arquivo que inicializa componentes como CPU, RAM, disco e periféricos; carrega um programa na RAM, verificando se o tamanho é compatível com a capacidade da memória. Em seguida, verifica as instruções na RAM e realiza um pipeline de execução, onde cada instrução é buscada, decodificada, executada e, em seguida, os resultados são escritos de volta. 
   - `src/architecture.h`Funções principais para inicializar componentes (CPU, RAM, disco e periféricos)
   - `src/cache.c` Operações de gerenciamento de cache usando uma tabela hash. Ele permite adicionar `(add_cache)` e buscar `(search_cache)` entradas de cache com base no endereço, removê-las (remove_cache), exibir todo o conteúdo do cache `(print_cache)` e esvaziar a cache completamente `(empty_cache)`.
@@ -125,16 +123,16 @@ Instruções O programa precisa simular apenas um subconjunto do conjunto de ins
   - `src/interpreter.c`  Uma implementação de um interpretador simples para um conjunto de instruções em uma "simulação" de um processador.
   - `src/interpreter.h`  Fornece as definições e declarações necessárias para validar e interpretar as instruções.
   - `src/libs.h`
-  - `src/main.c`
-  - `src/peripherals.c`
-  - `src/peripherals.h`
-  - `src/pipeline.c`
-  - `src/pipeline.h`  
-  - `src/ram.c`
-  - `src/ram.h`
-  - `src/reader.c`
-  - `src/reader.h`
-  - `src/uthash.h`  
+  - `src/main.c` Função principal que inicializa a arquitetura do sistema, incluindo a CPU, RAM, disco e periféricos. Ele carrega um programa em RAM a partir de um arquivo de entrada (dataset/program.txt), verifica as instruções carregadas, e inicia o pipeline de execução do programa. Após a execução, a função exibe o conteúdo da RAM e libera a memória alocada.
+  - `src/peripherals.c` Inicializa os periféricos do sistema, configurando valores iniciais, como o valor de entrada, que é definido como zero.
+  - `src/peripherals.h`Define a estrutura básica dos periféricos do sistema, incluindo o valor de entrada.
+  - `src/pipeline.c` Implementa as etapas do pipeline de execução de instruções, incluindo busca (instruction_fetch), decodificação (instruction_decode), execução (execute), acesso à memória (memory_access) e escrita dos resultados (write_back). Cada etapa interage com a CPU e a RAM para processar instruções, gerenciar operações de carga e armazenamento, e atualizar registradores com os resultados das operações aritméticas.
+  - `src/pipeline.h`  Declara as funções principais para o pipeline de execução de instruções, incluindo busca, decodificação, execução, acesso à memória e escrita de resultados.
+  - `src/ram.c` Gerencia a inicialização e exibição do conteúdo da RAM. A função init_ram aloca memória para a RAM e inicializa cada posição com um caractere nulo ('\0'). A função print_ram exibe o conteúdo atual da RAM.
+  - `src/ram.h` Define a estrutura e funções para o gerenciamento da memória RAM, incluindo a alocação e exibição de conteúdo. Especifica um tamanho máximo para a RAM (NUM_MEMORY) e declara as funções init_ram e print_ram.
+  - `src/reader.c` Implementa funções para ler e manipular um programa a partir de um arquivo.
+  - `src/reader.h`  Declara funções para a leitura e manipulação de um programa, incluindo a leitura do conteúdo de um arquivo (read_program), a extração de uma linha específica (get_line_of_program), a contagem do número total de linhas (count_lines), e a contagem do número de tokens em uma linha (count_tokens_in_line).
+  - `src/uthash.h`  Implementação de tabelas hash em C.
 
 ## Detalhemento do Código e Lógica Utilizada
 
@@ -177,11 +175,29 @@ Cada instrução é responsável por realizar uma operação específica sobre o
 | `ADD C0 A0`     | Soma o valor de `C0` com o valor atualizado de `A0` e armazena o resultado em `C0`.            |
 | `STORE C0 A72`  | Armazena o valor de `C0` na posição de memória `A72`.                                          |
 
+Para um melhor entendimento será apresentado uma breve descrição do funcionamento do Programa
 
+* 1- Inicialização:
+   *  A função principal em (src/main.c) é o ponto de entrada do programa. Ela inicializa todos os componentes da arquitetura do sistema, incluindo a CPU, RAM, disco e periféricos.
+   *  O programa lê um arquivo de entrada (dataset/program.txt) que contém as instruções a serem executadas.
 
+* 2- Leitura do Programa:
+O arquivo é processado por funções implementadas em src/reader.c, onde:
+   *  read_program lê o conteúdo do arquivo e o armazena.
+   *  count_lines conta o número total de linhas no programa.
+   *  get_line_of_program extrai linhas específicas do programa para execução.
 
-## Objetivos
-O objetivo deste trabalho envolve a realização de uma...
+*  3- Carregamento na RAM:
+   *  O programa é carregado na RAM usando a estrutura definida em src/ram.c.
+   *  O conteúdo da RAM é inicializado.
+
+*  4- Pipeline de Execução:   
+O programa entra em um loop de execução:
+   *  Busca a instrução na RAM.
+   *  Decodifica a instrução.
+   *  Executa a operação.
+   *  Acessa a memória, se necessário.
+   *  Escreve os resultados de volta.
 
 ## Testes e Análises dos Resultados
 
