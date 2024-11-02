@@ -1,5 +1,7 @@
 #include "cpu.h"
 
+#include "pipeline.h"
+
 void init_cpu(cpu* cpu) {
     cpu->core = malloc(NUM_CORES * sizeof(core));
     if (cpu->core == NULL) {
@@ -60,7 +62,11 @@ void control_unit(cpu* cpu, pipe* p) {
         p->num_instruction++;
     } else if (p->type == L_END) {
         loop_end(cpu, p);
-    } else {
+    }else if(p->type == IF) {
+        if_i(cpu,p);
+        p->num_instruction++;
+    }
+    else {
         p->num_instruction++;
     }
 }
@@ -317,12 +323,8 @@ unsigned short int div_c(cpu* cpu, char* instruction) {
 }
 
 unsigned short int if_i(cpu* cpu, pipe* pipe) {
-    char *instruction_copy, *token,*register_name1, *register_name2, *operator;
-    unsigned short int value, register_value1, register_value2;
-
-    instruction_copy = strdup(pipe->instruction);
-
-    token = strtok(instruction_copy, " ");
+    char *instruction_copy = strdup(pipe->instruction);
+    char *token = strtok(instruction_copy, " ");
 
     if (strcmp(token, "IF") != 0) {
         printf("Error: Invalid instruction\n");
@@ -330,52 +332,51 @@ unsigned short int if_i(cpu* cpu, pipe* pipe) {
     }
 
     token = strtok(NULL, " ");
-    register_name1 = token;
-    register_value1 =get_register_index(register_name1);
+    int register1_value = get_register_index(token);
 
     token = strtok(NULL, " ");
-    operator = token;
-    unsigned short int result;
+    const char *operator = token;
 
     token = strtok(NULL, " ");
-
+    int operand_value;
     if (isdigit(token[0])) {
-        value = atoi(token);
-        if (strcmp(operator, "==") == 0) {
-            result = register_value1 == value;
-        } else if (strcmp(operator, ">") == 0) {
-            result = register_value1 > value;
-        } else if (strcmp(operator, "<") == 0) {
-            result = register_value1 < value;
-        } else if (strcmp(operator, ">=") == 0) {
-            result = register_value1 >= value;
-        } else if (strcmp(operator, "<=") == 0) {
-            result = register_value1 <= value;
-        } else if (strcmp(operator, "!=") == 0) {
-            result = register_value1 != value;
-        } else {
-            printf("Error: Invalid operator\n");
-        }
+        operand_value = atoi(token);
     } else {
-        register_name2 = token;
-        register_value2 = get_register_index(register_name2);
-        if (strcmp(operator, "==") == 0) {
-            result = register_value1 == register_value2;
-        } else if (strcmp(operator, ">") == 0) {
-            result = register_value1 > register_value2;
-        } else if (strcmp(operator, "<") == 0) {
-            result = register_value1 < register_value2;
-        } else if (strcmp(operator, ">=") == 0) {
-            result = register_value1 >= register_value2;
-        } else if (strcmp(operator, "<=") == 0) {
-            result = register_value1 <= register_value2;
-        } else if (strcmp(operator, "!=") == 0) {
-            result = register_value1 != register_value2;
-        } else {
-            printf("Error: Invalid operator\n");
+        operand_value = get_register_index(token);
+    }
+
+    int result = 0;
+    if (strcmp(operator, "==") == 0) {
+        result = register1_value == operand_value;
+    } else if (strcmp(operator, "!=") == 0) {
+        result = register1_value != operand_value;
+    } else if (strcmp(operator, "<=") == 0) {
+        result = register1_value <= operand_value;
+    } else if (strcmp(operator, ">=") == 0) {
+        result = register1_value >= operand_value;
+    } else if (strcmp(operator, ">") == 0) {
+        result = register1_value > operand_value;
+    } else if (strcmp(operator, "<") == 0) {
+        result = register1_value < operand_value;
+    } else {
+        printf("Error: Invalid operator\n");
+    }
+
+    if (!result) {
+        printf("Skipping instruction: %d\n", cpu->core[0].PC);
+        while (strcmp(token, "I_END") == 0) {
+            // pipe->num_instruction++;
+            cpu->core[0].PC++;
+            // pipe->instruction++;
+            instruction_copy = strdup(pipe->instruction);
+
+            // token = strtok(instruction_copy, " ");
+            printf("Skipping instruction: %s\n", pipe->instruction);
+            free(instruction_copy); // Free the memory
         }
     }
 
+    free(instruction_copy);
     return result;
 }
 

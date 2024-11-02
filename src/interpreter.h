@@ -15,6 +15,7 @@ typedef enum type_of_instruction {
     ELSE,
     LOOP,
     L_END,
+    I_END,
     INVALID,
 } type_of_instruction;
 
@@ -29,5 +30,7 @@ bool check_if_format(char *line);
 bool check_else_format(char *line);
 bool check_loop_format(char *line);
 bool check_loop_end_format(char *line);
+bool check_if_end_format(char *line);
+
 
 #endif

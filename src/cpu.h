@@ -43,7 +43,7 @@ unsigned short int add(cpu* cpu, char* instruction);
 unsigned short int sub(cpu* cpu, char* instruction);
 unsigned short int mul(cpu* cpu, char* instruction);
 unsigned short int div_c(cpu* cpu, char* instruction);
-unsigned short int if_i(cpu* cpu, char* instruction);
+unsigned short int if_i(cpu* cpu, pipe* pipe);
 void loop(cpu* cpu, pipe* p);
 void loop_end(cpu* cpu, pipe *p);
 void decrease_pc(cpu* cpu);
