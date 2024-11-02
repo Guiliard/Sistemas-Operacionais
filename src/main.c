@@ -8,7 +8,7 @@ int main() {
 
     init_architecture(cpu, memory_ram, memory_disc, peripherals);
 
-    char *program = read_program("../dataset/program.txt");
+    char *program = read_program("dataset/program.txt");
 
     load_program_on_ram(memory_ram, program);
 
