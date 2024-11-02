@@ -316,6 +316,83 @@ unsigned short int div_c(cpu* cpu, char* instruction) {
     return result;  
 }
 
+unsigned short int if_i(cpu* cpu, pipe* pipe) {
+    char *instruction_copy, *token,*register_name1, *register_name2, *operator;
+    unsigned short int value, register_value1, register_value2;
+
+    instruction_copy = strdup(pipe->instruction);
+
+    token = strtok(instruction_copy, " ");
+
+    if (strcmp(token, "IF") != 0) {
+        printf("Error: Invalid instruction\n");
+        exit(1);
+    }
+
+    token = strtok(NULL, " ");
+    register_name1 = token;
+    register_value1 =get_register_index(register_name1);
+
+    token = strtok(NULL, " ");
+    operator = token;
+    unsigned short int result;
+
+    token = strtok(NULL, " ");
+
+    if (isdigit(token[0])) {
+        value = atoi(token);
+        if (strcmp(operator, "==") == 0) {
+            result = register_value1 == value;
+        } else if (strcmp(operator, ">") == 0) {
+            result = register_value1 > value;
+        } else if (strcmp(operator, "<") == 0) {
+            result = register_value1 < value;
+        } else if (strcmp(operator, ">=") == 0) {
+            result = register_value1 >= value;
+        } else if (strcmp(operator, "<=") == 0) {
+            result = register_value1 <= value;
+        } else if (strcmp(operator, "!=") == 0) {
+            result = register_value1 != value;
+        } else {
+            printf("Error: Invalid operator\n");
+        }
+    } else {
+        register_name2 = token;
+        register_value2 = get_register_index(register_name2);
+        if (strcmp(operator, "==") == 0) {
+            result = register_value1 == register_value2;
+        } else if (strcmp(operator, ">") == 0) {
+            result = register_value1 > register_value2;
+        } else if (strcmp(operator, "<") == 0) {
+            result = register_value1 < register_value2;
+        } else if (strcmp(operator, ">=") == 0) {
+            result = register_value1 >= register_value2;
+        } else if (strcmp(operator, "<=") == 0) {
+            result = register_value1 <= register_value2;
+        } else if (strcmp(operator, "!=") == 0) {
+            result = register_value1 != register_value2;
+        } else {
+            printf("Error: Invalid operator\n");
+        }
+    }
+
+    return result;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void loop(cpu* cpu, pipe* p) {
     char *instruction_copy, *token;
     unsigned short int value;
