@@ -122,7 +122,7 @@ O pipeline simulado deve possuir quatro estágios:
   - `src/disc.h` Define uma estrutura e uma função para gerenciar uma simulação de disco de memória.
   - `src/interpreter.c`  Uma implementação de um interpretador simples para um conjunto de instruções em uma "simulação" de um processador.
   - `src/interpreter.h`  Fornece as definições e declarações necessárias para validar e interpretar as instruções.
-  - `src/libs.h`
+  - `src/libs.h` Arquivo de inclusão das bibliotecas utilizadas nos arquivos do sistema.
   - `src/main.c` Função principal que inicializa a arquitetura do sistema, incluindo a CPU, RAM, disco e periféricos. Ele carrega um programa em RAM a partir de um arquivo de entrada (dataset/program.txt), verifica as instruções carregadas, e inicia o pipeline de execução do programa. Após a execução, a função exibe o conteúdo da RAM e libera a memória alocada.
   - `src/peripherals.c` Inicializa os periféricos do sistema, configurando valores iniciais, como o valor de entrada, que é definido como zero.
   - `src/peripherals.h`Define a estrutura básica dos periféricos do sistema, incluindo o valor de entrada.
