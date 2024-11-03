@@ -15,6 +15,10 @@ void init_ram(ram* memory_ram) {
 
 void print_ram(ram* memory_ram) {
     for (unsigned short int i = 0; i < NUM_MEMORY; i++) {
-        printf("%c", memory_ram->vector[i]);
+        if(memory_ram->vector[i] == '\0') {
+            printf("_");
+        } else {
+            printf("%c", memory_ram->vector[i]);
+        }
     }
 }
