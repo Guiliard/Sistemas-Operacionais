@@ -38,9 +38,6 @@ void init_pipeline(cpu* cpu, ram* memory_ram) {
     unsigned short int num_lines = 0;
     p.num_instruction = 0;
     p.mem_ram = memory_ram;
-    //char* instruction;
-    //unsigned short int num_instruction = 0, num_lines = 0, result, loop;
-    //type_of_instruction type;
 
     num_lines = count_lines(memory_ram->vector);
 
@@ -50,16 +47,9 @@ void init_pipeline(cpu* cpu, ram* memory_ram) {
 
         p.instruction = instruction_fetch(cpu, memory_ram);
 
-        printf("Instruction %d: %s\n", p.num_instruction, p.instruction);
-
         p.type = instruction_decode(p.instruction, p.num_instruction);
 
-        printf("Type of instruction: %d\n", p.type);
-
-        //result = execute(cpu, type, instruction);
         execute(cpu, &p);
-
-        printf("Result: %d\n", p.result);
 
         memory_access(cpu, memory_ram, p.type, p.instruction);
 

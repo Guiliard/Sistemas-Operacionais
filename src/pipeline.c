@@ -42,8 +42,6 @@ void write_back(cpu* cpu, type_of_instruction type, char* instruction, unsigned 
 
         cpu->core[0].registers[get_register_index(register_name)] = result;
 
-        printf("WB: Register %s: %d\n", register_name, result);
-
     } else if (type == LOAD || type == STORE || type == LOOP || type == L_END||type == IF||type == I_END || type == ELSE || type == ELS_END) {
         // do nothing
     } else {

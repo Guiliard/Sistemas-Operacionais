@@ -146,8 +146,6 @@ void load (cpu* cpu, char* instruction) {
     value = atoi(token);
 
     cpu->core[0].registers[get_register_index(register_name)] = value;
-
-    printf("Register %s: %d\n", register_name, value);
 }
 
 void store (cpu* cpu, ram* memory_ram, char* instruction) {
@@ -180,8 +178,6 @@ void store (cpu* cpu, ram* memory_ram, char* instruction) {
     address = verify_address(memory_ram, memory_address, num_positions);
 
     strcpy(&memory_ram->vector[address], buffer);
-
-    printf("Memory address %d: %s\n", address, buffer);
 }
 
 unsigned short int add(cpu* cpu, char* instruction) {
@@ -351,33 +347,24 @@ void if_i(cpu* cpu, pipe* p) {
     } else if (strcmp(operator, "<") == 0) {
         result = register1_value < operand_value;
     } else {
-        printf("Error: Invalid operator\n");
+        printf("Error: Invalid operator. Line %hd.\n",p->num_instruction + 1);
     }
 
     if (result == 0) {
         p->valid_if = false;
-        printf("(False IF) Skipping instruction: %d\n", cpu->core[0].PC);
         while (1) {
             p->num_instruction++;
             p->instruction = instruc_fetch(cpu, p->mem_ram);
 
-            printf("Instruction %d: %s\n", p->num_instruction, p->instruction);
-
             p->type = instruc_decode(p->instruction, p->num_instruction);
 
-            printf("Type of instruction: %d\n", p->type);
             instruction_copy = strdup(p->instruction);
             token = strtok(instruction_copy, " "); 
 
             if (strcmp(token, "I_END") == 0)
                 break;
-
-            free(token);
-            printf("Skipping instruction: %s\n", p->instruction);
-            free(instruction_copy);
         }
     } else {
-        printf("(True IF)\n");
         p->valid_if = true;
         p->running_if = true;
     }
@@ -417,31 +404,23 @@ void else_i(cpu* cpu, pipe* p) {
         exit(1);
     }
     else if (!p->has_if) {
-        printf("Error: Invalid instruction. No IF after ELSE.\n");
+        printf("Error: Invalid instruction. No IF before ELSE. Line %hd.\n",p->num_instruction + 1);
         exit(1);
     }
     else if (p->has_if && p->valid_if) {
-        printf("(True IF, No need ELSE) Skipping instruction: %d\n", cpu->core[0].PC);
         while (1) {
             p->num_instruction++;
             p->instruction = instruc_fetch(cpu, p->mem_ram);
 
-            printf("Instruction %d: %s\n", p->num_instruction, p->instruction);
-
             p->type = instruc_decode(p->instruction, p->num_instruction);
-
-            printf("Type of instruction: %d\n", p->type);
             instruction_copy = strdup(p->instruction);
             token = strtok(instruction_copy, " "); 
 
             if (strcmp(token, "ELS_END") == 0)
                 break;
-
-            free(token);
-            printf("Skipping instruction: %s\n", p->instruction);
-            free(instruction_copy);
         }
     }
+    free(instruction_copy);
 }
 
 void else_end(pipe* p) {
@@ -471,13 +450,17 @@ void loop(cpu* cpu, pipe* p) {
 
     if (!p->loop) {
         token = strtok(NULL, " ");
-        if (isdigit(token[0]))
+        if (isdigit(token[0])) {
             value = atoi(token);
-        else {
+            if (value == 0) {
+                printf("Error: Loop value can't be 0. Line %hd.\n",p->num_instruction + 1);
+                exit(1);
+            }
+        } else {
             register_name = token;
             value = cpu->core[0].registers[get_register_index(register_name)];
             if (value == 0) {
-                printf("Error: Loop value can't be 0.\n");
+                printf("Error: Loop value can't be 0. Line %hd.\n",p->num_instruction + 1);
                 exit(1);
             }
 
@@ -496,7 +479,7 @@ void loop_end(cpu* cpu, pipe* p) {
     token = strtok(instruction_copy, " "); 
 
     if (strcmp(token, "L_END") != 0) {
-        printf("Error: Invalid instruction\n");
+        printf("Error: Invalid instruction.\n");
         exit(1);
     }
 
