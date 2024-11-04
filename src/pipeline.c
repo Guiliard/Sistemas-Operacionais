@@ -35,7 +35,7 @@ void write_back(cpu* cpu, type_of_instruction type, char* instruction, unsigned 
 
     char* instruction_copy = strdup(instruction);
 
-    if ((type == ADD || type == SUB || type == MUL || type == DIV) && result != 0) {
+    if (type == ADD || type == SUB || type == MUL || type == DIV) {
 
         strtok(instruction_copy, " "); 
         char* register_name = strtok(NULL, " "); 
