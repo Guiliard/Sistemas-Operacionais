@@ -19,5 +19,6 @@ int main() {
     print_ram(memory_ram);
     
     free(program);  
+    
     return 0;
 }

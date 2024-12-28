@@ -81,7 +81,6 @@ type_of_instruction verify_instruction(char *line, unsigned short int line_numbe
     } 
 }
 
-
 bool check_load_format(char *line) {  // "LOAD <register> <value>
 
     char register_name[10];
@@ -266,8 +265,3 @@ bool check_else_end_format(char *line) {  // END ELSE
         return false;
     }
 }
-
-
-
-
-

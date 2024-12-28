@@ -53,35 +53,3 @@ void empty_cache(cache **cache_table) {
         free(item);
     }
 }
-
-// // Função principal para demonstrar as operações da cache
-// int main() {
-//     cache *cache_table = NULL;
-
-//     // Adicionando itens na cache
-//     adicionar_cache(&cache_table, 0x1A, 1234);
-//     adicionar_cache(&cache_table, 0x2B, 5678);
-//     adicionar_cache(&cache_table, 0x3C, 9012);
-
-//     // Imprimindo a cache
-//     printf("Itens na cache:\n");
-//     imprimir_cache(cache_table);
-
-//     // Buscando um item
-//     cache *item = buscar_cache(cache_table, 0x2B);
-//     if (item != NULL) {
-//         printf("Item encontrado: Endereço = %hu, Dado = %hu\n", item->address, item->data);
-//     } else {
-//         printf("Item não encontrado\n");
-//     }
-
-//     // Removendo um item
-//     remover_cache(&cache_table, 0x2B);
-//     printf("Após remover o endereço 0x2B:\n");
-//     imprimir_cache(cache_table);
-
-//     // Limpando a cache
-//     limpar_cache(&cache_table);
-
-//     return 0;
-// }

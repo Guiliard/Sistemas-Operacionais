@@ -33,7 +33,6 @@ typedef struct pipe {
 
 void init_cpu(cpu* cpu);
 
-//unsigned short int control_unit(cpu* cpu, type_of_instruction type, char* instruction);
 void control_unit(cpu* cpu, pipe* p);
 unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation);
 

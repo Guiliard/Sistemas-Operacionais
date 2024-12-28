@@ -22,7 +22,6 @@ void init_cpu(cpu* cpu) {
     }
 }
 
-
 void control_unit(cpu* cpu, pipe* p) {
     p->result = 0;
 
@@ -60,7 +59,6 @@ void control_unit(cpu* cpu, pipe* p) {
         p->num_instruction++;
     }
 }
-
 
 unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation) {
     switch(operation) {
