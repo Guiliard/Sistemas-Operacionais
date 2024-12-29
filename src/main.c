@@ -23,12 +23,12 @@ void* thread_function(void* arg) {
 }
 
 int main() {
-    const int NUM_PROGRAMS = 4;
+    //const int NUM_PROGRAMS = 4;
     cpu* cpu = malloc(sizeof(cpu));
     ram* memory_ram = malloc(sizeof(ram));
     disc* memory_disc = malloc(sizeof(disc));
-    pthread_t threads[NUM_PROGRAMS]; 
-    thread_data data[NUM_PROGRAMS]; 
+    //pthread_t threads[NUM_PROGRAMS]; 
+    //thread_data data[NUM_PROGRAMS]; 
     peripherals* peripherals = malloc(sizeof(peripherals));
     char filename[50];
     int pos;
@@ -40,13 +40,13 @@ int main() {
         char *program = read_program(filename);
         pos = load_program_on_ram(memory_ram, program);
         check_instructions_on_ram(cpu, memory_ram, pos, i);
-        data[i - 1].id = i;
-        data[i - 1].cpu = cpu;
-        data[i - 1].memory_ram = memory_ram;
+        //data[i - 1].id = i;
+        //data[i - 1].cpu = cpu;
+        //data[i - 1].memory_ram = memory_ram;
         free(program); 
     }
 
-    for (int i = 0; i < NUM_PROGRAMS; i++) {
+    /*for (int i = 0; i < NUM_PROGRAMS; i++) {
         if (pthread_create(&threads[i], NULL, thread_function, &data[i]) != 0) {
             fprintf(stderr, "Erro ao criar thread %d\n", data[i].id);
             exit(EXIT_FAILURE);
@@ -56,6 +56,10 @@ int main() {
     // Esperar todas as threads terminarem
     for (int i = 0; i < NUM_PROGRAMS; i++) {
         pthread_join(threads[i], NULL);
+    }*/
+
+    for (int i=1; i<5; i++) {
+        init_pipeline(cpu, memory_ram, i);
     }
 
     print_ram(memory_ram);
