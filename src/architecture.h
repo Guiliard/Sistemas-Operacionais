@@ -7,6 +7,7 @@
 #include "pipeline.h"
 #include "libs.h"
 #include "cpu.h"
+#include "control_unit.h"
 
 void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals);
 int load_program_on_ram(ram* memory, char* program);

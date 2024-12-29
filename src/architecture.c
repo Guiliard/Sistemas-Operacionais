@@ -61,26 +61,24 @@ void check_instructions_on_ram(cpu* cpu, ram* memory_ram, int pos, unsigned shor
 }
 
 void init_pipeline(cpu* cpu, ram* memory_ram, unsigned short int nump) {
-    pipe p;
+    instruction_processor instr_processor;
     unsigned short int num_lines = 0;
-    p.num_instruction = 0;
-    p.mem_ram = memory_ram;
+    instr_processor.num_instruction = 0;
 
     num_lines = count_lines(memory_ram->vector,nump);
-    printf ("%hd",num_lines);
-    printf("Number of instructions: %hd\n", num_lines);
 
-    while (p.num_instruction < num_lines) {
+    printf("Number of instructions: %d\n", num_lines);
 
-        p.instruction = instruction_fetch(cpu, memory_ram, nump);
+    while (instr_processor.num_instruction < num_lines) {
 
-        p.type = instruction_decode(p.instruction, p.num_instruction);
+        instr_processor.instruction = instruction_fetch(cpu, memory_ram, nump);
 
-        execute(cpu, &p);
+        instr_processor.type = instruction_decode(instr_processor.instruction, instr_processor.num_instruction);
 
-        memory_access(cpu, memory_ram, p.type, p.instruction);
+        execute(cpu, memory_ram, &instr_processor, nump);
 
-        write_back(cpu, p.type, p.instruction, p.result, nump);
+        memory_access(cpu, memory_ram, instr_processor.type, instr_processor.instruction);
 
+        write_back(cpu, instr_processor.type, instr_processor.instruction, instr_processor.result, nump);
     }
 }
