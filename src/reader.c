@@ -45,14 +45,20 @@ char* get_line_of_program(char *program, int line_number) {
     return line_copy;  
 }
 
-unsigned short int count_lines(char *program) {
-    unsigned short int count = 0;
+unsigned short int count_lines(char *program,unsigned short int nump) {
+    unsigned short int count = 0, cnte = 1;
 
     char* program_copy = strdup(program);
 
     char *line = strtok(program_copy, "\n"); 
 
-    while (line != NULL) {
+    while (line != NULL || (line[0] == '&' && cnte == nump)) {
+        if (line[0] == '&') {
+            count = 1;
+            cnte++;
+        } else {
+            count++;
+        }
         count++; 
         line = strtok(NULL, "\n"); 
     }

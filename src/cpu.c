@@ -22,6 +22,10 @@ void init_cpu(cpu* cpu) {
     }
 }
 
+void change_pc_core(cpu *cpu, unsigned short int nump, int pos) {
+    cpu->core[nump-1].PC = pos;  
+}
+
 void control_unit(cpu* cpu, pipe* p) {
     p->result = 0;
 

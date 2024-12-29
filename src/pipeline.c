@@ -1,8 +1,8 @@
 #include "pipeline.h"
 
-char* instruction_fetch(cpu* cpu, ram* memory) {
-    char* instruction = get_line_of_program(memory->vector, cpu->core[0].PC);
-    cpu->core[0].PC++;
+char* instruction_fetch(cpu* cpu, ram* memory, unsigned short int nump) {
+    char* instruction = get_line_of_program(memory->vector, cpu->core[nump-1].PC);
+    cpu->core[nump-1].PC++;
 
     return instruction;
 }
@@ -31,7 +31,7 @@ void memory_access(cpu* cpu, ram* memory_ram, type_of_instruction type, char* in
     }
 }
 
-void write_back(cpu* cpu, type_of_instruction type, char* instruction, unsigned short int result) {
+void write_back(cpu* cpu, type_of_instruction type, char* instruction, unsigned short int result, unsigned short int nump) {
 
     char* instruction_copy = strdup(instruction);
 
@@ -40,7 +40,7 @@ void write_back(cpu* cpu, type_of_instruction type, char* instruction, unsigned 
         strtok(instruction_copy, " "); 
         char* register_name = strtok(NULL, " "); 
 
-        cpu->core[0].registers[get_register_index(register_name)] = result;
+        cpu->core[nump-1].registers[get_register_index(register_name)] = result;
 
     } else if (type == LOAD || type == STORE || type == LOOP || type == L_END||type == IF||type == I_END || type == ELSE || type == ELS_END) {
         // do nothing

@@ -10,7 +10,7 @@
 
 typedef struct core {
     unsigned short int *registers;
-    unsigned short int PC;
+    int PC;
 } core;
 
 typedef struct cpu {
@@ -32,6 +32,7 @@ typedef struct pipe {
 } pipe;
 
 void init_cpu(cpu* cpu);
+void change_pc_core(cpu *cpu, unsigned short int nump, int pos);
 
 void control_unit(cpu* cpu, pipe* p);
 unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation);

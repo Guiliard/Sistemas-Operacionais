@@ -1,18 +1,18 @@
-CXX      := -gcc
+CXX      := gcc
 CXXFLAGS := -Wall -Wextra -Werror
-LDFLAGS  := -lstdc++ -lm
+LDFLAGS  := -lstdc++ -lm -lpthread
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
-EXEC_DIR  := $(BUILD)/
+EXEC_DIR := $(BUILD)/
 TARGET   := executable
 INCLUDE  := -Iinclude/
-SRC      :=  $(wildcard src/*.c)
+SRC      := $(wildcard src/*.c)  # Corrigido para C, não C++
 
-OBJECTS := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
+OBJECTS := $(SRC:%.c=$(OBJ_DIR)/%.o)  # Corrigido para C, não C++
 
 all: build $(EXEC_DIR)/$(TARGET)
 
-$(OBJ_DIR)/%.o: %.cpp
+$(OBJ_DIR)/%.o: %.c  # Corrigido para C, não C++
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -o $@ -c $<
 
