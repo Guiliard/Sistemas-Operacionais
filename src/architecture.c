@@ -21,7 +21,7 @@ int load_program_on_ram(ram* memory_ram, char* program) {
     }
 
     // Verificar se há espaço suficiente para o novo programa mais o separador '&'
-    if (used_memory + num_caracters + 1 > NUM_MEMORY) { // +1 para o caractere '&'
+    if (used_memory + num_caracters + 3 > NUM_MEMORY) { // +1 para o caractere '&'
         printf("Error: Not enough space in RAM for the program.\n");
         exit(1);
     }
@@ -35,10 +35,10 @@ int load_program_on_ram(ram* memory_ram, char* program) {
     }
 
     // Adicionar o caractere '&' ao final do programa
-    memory_ram->vector[start_position + num_caracters] = '&';
-
-    // Certificar-se de terminar corretamente a memória com '\0'
-    memory_ram->vector[start_position + num_caracters + 1] = '\0';
+    memory_ram->vector[start_position + num_caracters] = '\n';
+    memory_ram->vector[start_position + num_caracters + 1] = '&';
+    memory_ram->vector[start_position + num_caracters + 2] = '\n';
+    memory_ram->vector[start_position + num_caracters + 3] = '\0';
 
     // Retornar a posição inicial onde o programa foi carregado
     return start_position;
@@ -46,10 +46,12 @@ int load_program_on_ram(ram* memory_ram, char* program) {
 
 void check_instructions_on_ram(cpu* cpu, ram* memory_ram, int pos, unsigned short int nump) {   
     char* line;
-    unsigned short int num_line = pos;
+    unsigned short int num_line = first_line(memory_ram->vector,nump);
     unsigned short int num = count_lines(memory_ram->vector,nump);
-    num += pos;
+    num += num_line;
     change_pc_core(cpu, nump, pos);
+
+    printf("\n%hd ate %hd\n\n",num_line,num);
 
     while (num_line < num) {
         line = get_line_of_program(memory_ram->vector, num_line);
@@ -65,8 +67,8 @@ void init_pipeline(cpu* cpu, ram* memory_ram, unsigned short int nump) {
     p.mem_ram = memory_ram;
 
     num_lines = count_lines(memory_ram->vector,nump);
-
-    printf("Number of instructions: %d\n", num_lines);
+    printf ("%hd",num_lines);
+    printf("Number of instructions: %hd\n", num_lines);
 
     while (p.num_instruction < num_lines) {
 

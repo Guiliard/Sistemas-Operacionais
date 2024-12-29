@@ -35,14 +35,16 @@ int main() {
 
     init_architecture(cpu, memory_ram, memory_disc, peripherals);
 
-    for (int i = 1; i <= 4; i++) {  
+    for (unsigned short int i = 1; i <= 4; i++) {  
         snprintf(filename, sizeof(filename), "dataset/program%d.txt", i);
         char *program = read_program(filename);
         pos = load_program_on_ram(memory_ram, program);
+        printf ("%d", pos);
         check_instructions_on_ram(cpu, memory_ram, pos, i);
         //data[i - 1].id = i;
         //data[i - 1].cpu = cpu;
         //data[i - 1].memory_ram = memory_ram;
+        //print_ram(memory_ram);
         free(program); 
     }
 
@@ -58,11 +60,12 @@ int main() {
         pthread_join(threads[i], NULL);
     }*/
 
-    for (int i=1; i<5; i++) {
+    /*for (int i=1; i<5; i++) {
         init_pipeline(cpu, memory_ram, i);
-    }
-
-    print_ram(memory_ram);
+    }*/
+    init_pipeline(cpu, memory_ram, 1);
+    //init_pipeline(cpu, memory_ram, 2);
+    //print_ram(memory_ram);
     
     return 0;
 }

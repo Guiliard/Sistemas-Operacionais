@@ -1,7 +1,7 @@
 #ifndef RAM_H
 #define RAM_H
 
-#define NUM_MEMORY 1024
+#define NUM_MEMORY 4096
 
 #include "libs.h"
 
