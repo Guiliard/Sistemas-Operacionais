@@ -7,7 +7,7 @@ void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals
     init_peripherals(peripherals);
 }
 
-int load_program_on_ram(ram* memory_ram, char* program) {
+void load_program_on_ram(ram* memory_ram, char* program) {
     unsigned short int num_caracters = strlen(program);
     int used_memory = 0;
 
@@ -40,20 +40,13 @@ int load_program_on_ram(ram* memory_ram, char* program) {
     memory_ram->vector[start_position + num_caracters + 2] = '\n';
     memory_ram->vector[start_position + num_caracters + 3] = '\0';
 
-    // Retornar a posição inicial onde o programa foi carregado
-    return start_position;
 }
 
-void check_instructions_on_ram(cpu* cpu, ram* memory_ram, int pos, unsigned short int nump) {   
+void check_instructions_on_ram(cpu* cpu, ram* memory_ram, unsigned short int nump) {   
     char* line;
     unsigned short int num_line = first_line(memory_ram->vector,nump);
     unsigned short int num = count_lines(memory_ram->vector,nump);
     num += num_line;
-    change_pc_core(cpu, nump, pos);
-
-    for (int i=0; i<4; i++)
-        printf("%d,",cpu->core[i].PC);
-    printf("\n");
 
     while (num_line < num) {
         line = get_line_of_program(memory_ram->vector, num_line);
@@ -65,25 +58,28 @@ void check_instructions_on_ram(cpu* cpu, ram* memory_ram, int pos, unsigned shor
 void init_pipeline(cpu* cpu, ram* memory_ram, unsigned short int nump) {
     instruction_processor instr_processor;
     unsigned short int num_lines = 0;
+    unsigned short int line_start = 0;
     instr_processor.num_instruction = 0;
-    for (int i=0; i<4; i++)
-        printf("%d,",cpu->core[nump-1].PC);
 
-    num_lines = count_lines(memory_ram->vector,nump);
-
-    printf("Number of instructions: %d\n", num_lines);
+    for (int i=0; i<nump; i++) {
+        num_lines += count_lines(memory_ram->vector,i);
+        printf("%hd",num_lines);
+        line_start = first_line(memory_ram->vector,i);
+    }
+    
+    printf("Number of instructions: %hd/%hd\n", num_lines, line_start);
 
     while (instr_processor.num_instruction < num_lines) {
 
         instr_processor.instruction = instruction_fetch(cpu, memory_ram, nump);
         printf("%s",instr_processor.instruction);
 
-        //instr_processor.type = instruction_decode(instr_processor.instruction, instr_processor.num_instruction);
+        instr_processor.type = instruction_decode(instr_processor.instruction, instr_processor.num_instruction);
 
-        //execute(cpu, memory_ram, &instr_processor, nump);
+        execute(cpu, memory_ram, &instr_processor, nump);
 
-        //memory_access(cpu, memory_ram, instr_processor.type, instr_processor.instruction, nump);
+        memory_access(cpu, memory_ram, instr_processor.type, instr_processor.instruction, nump);
 
-        //write_back(cpu, instr_processor.type, instr_processor.instruction, instr_processor.result, nump);
+        write_back(cpu, instr_processor.type, instr_processor.instruction, instr_processor.result, nump);
     }
 }

@@ -10,8 +10,8 @@
 #include "control_unit.h"
 
 void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals);
-int load_program_on_ram(ram* memory, char* program);
-void check_instructions_on_ram(cpu* cpu, ram* memory_ram, int pos, unsigned short int nump);
+void load_program_on_ram(ram* memory, char* program);
+void check_instructions_on_ram(cpu* cpu, ram* memory_ram, unsigned short int nump);
 void init_pipeline(cpu* cpu, ram* memory_ram, unsigned short int nump);
 
 #endif

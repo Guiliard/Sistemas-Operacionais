@@ -31,16 +31,14 @@ int main() {
     //thread_data data[NUM_PROGRAMS]; 
     peripherals* peripherals = malloc(sizeof(peripherals));
     char filename[50];
-    int pos;
 
     init_architecture(cpu, memory_ram, memory_disc, peripherals);
 
     for (unsigned short int i = 1; i <= 4; i++) {  
         snprintf(filename, sizeof(filename), "dataset/program%d.txt", i);
         char *program = read_program(filename);
-        pos = load_program_on_ram(memory_ram, program);
-        printf ("%d", pos);
-        check_instructions_on_ram(cpu, memory_ram, pos, i);
+        load_program_on_ram(memory_ram, program);
+        check_instructions_on_ram(cpu, memory_ram, i);
         //data[i - 1].id = i;
         //data[i - 1].cpu = cpu;
         //data[i - 1].memory_ram = memory_ram;
@@ -64,7 +62,7 @@ int main() {
         init_pipeline(cpu, memory_ram, i);
     }*/
     //init_pipeline(cpu, memory_ram, 1);
-    init_pipeline(cpu, memory_ram, 1);
+    init_pipeline(cpu, memory_ram, 2);
     //print_ram(memory_ram);
     
     return 0;

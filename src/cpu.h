@@ -16,6 +16,5 @@ typedef struct cpu {
 } cpu;
 
 void init_cpu(cpu* cpu);
-void change_pc_core(cpu *cpu, unsigned short int nump, int pos);
 
 #endif
