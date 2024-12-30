@@ -21,11 +21,11 @@ void execute(cpu* cpu, ram* memory_ram, instruction_processor * instr_processor,
     control_unit(cpu, memory_ram, instr_processor, nump);
 }
 
-void memory_access(cpu* cpu, ram* memory_ram, type_of_instruction type, char* instruction) {
+void memory_access(cpu* cpu, ram* memory_ram, type_of_instruction type, char* instruction, unsigned short int nump) {
     if (type == LOAD) {
-        load(cpu, instruction);
+        load(cpu, instruction, nump);
     } else if (type == STORE) {
-        store(cpu, memory_ram, instruction);
+        store(cpu, memory_ram, instruction, nump);
     } else {
         // do nothing
     }

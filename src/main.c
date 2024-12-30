@@ -63,8 +63,8 @@ int main() {
     /*for (int i=1; i<5; i++) {
         init_pipeline(cpu, memory_ram, i);
     }*/
+    //init_pipeline(cpu, memory_ram, 1);
     init_pipeline(cpu, memory_ram, 1);
-    init_pipeline(cpu, memory_ram, 2);
     //print_ram(memory_ram);
     
     return 0;

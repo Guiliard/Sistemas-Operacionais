@@ -5,22 +5,22 @@ void control_unit(cpu* cpu, ram* memory_ram, instruction_processor* instr_proces
     instr_processor->result = 0;
 
     if (instr_processor->type == ADD) {
-        instr_processor->result = add(cpu, instr_processor->instruction);
+        instr_processor->result = add(cpu, instr_processor->instruction, nump);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == SUB) {
-        instr_processor->result = sub(cpu, instr_processor->instruction);
+        instr_processor->result = sub(cpu, instr_processor->instruction, nump);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == MUL) {
-        instr_processor->result = mul(cpu, instr_processor->instruction);
+        instr_processor->result = mul(cpu, instr_processor->instruction, nump);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == DIV) {
-        instr_processor->result = div_c(cpu, instr_processor->instruction);
+        instr_processor->result = div_c(cpu, instr_processor->instruction, nump);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == LOOP) {
-        loop(cpu, instr_processor);
+        loop(cpu, instr_processor, nump);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == L_END) {
-        loop_end(cpu, instr_processor);
+        loop_end(cpu, instr_processor, nump);
     } else if(instr_processor->type == IF) {
         if_i(cpu, memory_ram, instr_processor, nump);
         instr_processor->num_instruction++;
@@ -101,7 +101,7 @@ unsigned short int verify_address(ram* memory_ram, char* address, unsigned short
     return address_without_a; 
 }
 
-void load (cpu* cpu, char* instruction) {
+void load (cpu* cpu, char* instruction, unsigned short int nump) {
 
     char *instruction_copy, *token, *register_name;
     unsigned short int value;
@@ -122,10 +122,10 @@ void load (cpu* cpu, char* instruction) {
     token = strtok(NULL, " ");
     value = atoi(token);
 
-    cpu->core[0].registers[get_register_index(register_name)] = value;
+    cpu->core[nump-1].registers[get_register_index(register_name)] = value;
 }
 
-void store (cpu* cpu, ram* memory_ram, char* instruction) {
+void store (cpu* cpu, ram* memory_ram, char* instruction, unsigned short int nump) {
     char *instruction_copy, *token, *register_name1, *memory_address;
     char buffer[10]; 
     unsigned short int address, num_positions;
@@ -146,7 +146,7 @@ void store (cpu* cpu, ram* memory_ram, char* instruction) {
    
     memory_address = token;
 
-    unsigned short int register_value = cpu->core[0].registers[get_register_index(register_name1)];
+    unsigned short int register_value = cpu->core[nump-1].registers[get_register_index(register_name1)];
 
     sprintf(buffer, "%d", register_value);  
 
@@ -157,7 +157,7 @@ void store (cpu* cpu, ram* memory_ram, char* instruction) {
     strcpy(&memory_ram->vector[address], buffer);
 }
 
-unsigned short int add(cpu* cpu, char* instruction) {
+unsigned short int add(cpu* cpu, char* instruction, unsigned short int nump) {
     char *instruction_copy, *token,*register_name1, *register_name2;
     unsigned short int value;
 
@@ -178,18 +178,18 @@ unsigned short int add(cpu* cpu, char* instruction) {
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, ADD);
+        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], value, ADD);
     } else {
         register_name2 = token;
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
-                     cpu->core[0].registers[get_register_index(register_name2)], 
+        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], 
+                     cpu->core[nump-1].registers[get_register_index(register_name2)], 
                      ADD);
     }
 
     return result; 
 }
 
-unsigned short int sub(cpu* cpu, char* instruction) {
+unsigned short int sub(cpu* cpu, char* instruction, unsigned short int nump) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value;
 
@@ -210,18 +210,18 @@ unsigned short int sub(cpu* cpu, char* instruction) {
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, SUB);
+        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], value, SUB);
     } else {
         register_name2 = token;
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
-                     cpu->core[0].registers[get_register_index(register_name2)], 
+        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], 
+                     cpu->core[nump-1].registers[get_register_index(register_name2)], 
                      SUB);
     }
 
     return result; 
 }
 
-unsigned short int mul(cpu* cpu, char* instruction) {
+unsigned short int mul(cpu* cpu, char* instruction, unsigned short int nump) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value;
 
@@ -242,18 +242,18 @@ unsigned short int mul(cpu* cpu, char* instruction) {
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, MUL);
+        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], value, MUL);
     } else {
         register_name2 = token;
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
-                     cpu->core[0].registers[get_register_index(register_name2)], 
+        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], 
+                     cpu->core[nump-1].registers[get_register_index(register_name2)], 
                      MUL);
     }
 
     return result; 
 }
 
-unsigned short int div_c(cpu* cpu, char* instruction) {
+unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int nump) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value;
 
@@ -274,11 +274,11 @@ unsigned short int div_c(cpu* cpu, char* instruction) {
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], value, DIV);
+        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], value, DIV);
     } else {
         register_name2 = token;
-        result = ula(cpu->core[0].registers[get_register_index(register_name1)], 
-                     cpu->core[0].registers[get_register_index(register_name2)], 
+        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], 
+                     cpu->core[nump-1].registers[get_register_index(register_name2)], 
                      DIV);
     }
 
@@ -297,7 +297,7 @@ void if_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, uns
 
     token = strtok(NULL, " ");
     unsigned short int register1_value = get_register_index(token);
-    register1_value = cpu->core[0].registers[register1_value];
+    register1_value = cpu->core[nump-1].registers[register1_value];
 
     token = strtok(NULL, " ");
     const char *operator = token;
@@ -413,7 +413,7 @@ void else_end(instruction_processor* instr_processor) {
     instr_processor->has_if = false;
 }
 
-void loop(cpu* cpu, instruction_processor* instr_processor) {
+void loop(cpu* cpu, instruction_processor* instr_processor, unsigned short int nump) {
     char *instruction_copy, *token, *register_name;
     unsigned short int value;
 
@@ -436,7 +436,7 @@ void loop(cpu* cpu, instruction_processor* instr_processor) {
             }
         } else {
             register_name = token;
-            value = cpu->core[0].registers[get_register_index(register_name)];
+            value = cpu->core[nump-1].registers[get_register_index(register_name)];
             if (value == 0) {
                 printf("Error: Loop value can't be 0. Line %hd.\n",instr_processor->num_instruction + 1);
                 exit(1);
@@ -449,7 +449,7 @@ void loop(cpu* cpu, instruction_processor* instr_processor) {
     }
 }
 
-void loop_end(cpu* cpu, instruction_processor* instr_processor) {
+void loop_end(cpu* cpu, instruction_processor* instr_processor, unsigned short int nump) {
     char *instruction_copy, *token;
 
     instruction_copy = strdup(instr_processor->instruction);
@@ -470,7 +470,7 @@ void loop_end(cpu* cpu, instruction_processor* instr_processor) {
     }
     else {
         for (int i=0; i<decrease; i++) {
-            cpu->core[0].PC--;
+            cpu->core[nump-1].PC--;
         }
         instr_processor->num_instruction = instr_processor->loop_start;
     }

@@ -25,19 +25,19 @@ unsigned short int ula(unsigned short int operating_a, unsigned short int operat
 unsigned short int get_register_index(char* reg_name);
 unsigned short int verify_address(ram* memory_ram, char* address, unsigned short int num_positions);
 
-void load(cpu* cpu, char* instruction);
-void store(cpu* cpu, ram* memory_ram, char* instruction);
+void load(cpu* cpu, char* instruction, unsigned short int nump);
+void store(cpu* cpu, ram* memory_ram, char* instruction, unsigned short int nump);
 
-unsigned short int add(cpu* cpu, char* instruction);
-unsigned short int sub(cpu* cpu, char* instruction);
-unsigned short int mul(cpu* cpu, char* instruction);
-unsigned short int div_c(cpu* cpu, char* instruction);
+unsigned short int add(cpu* cpu, char* instruction, unsigned short int nump);
+unsigned short int sub(cpu* cpu, char* instruction, unsigned short int nump);
+unsigned short int mul(cpu* cpu, char* instruction, unsigned short int nump);
+unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int nump);
 
 void if_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int nump);
 void if_end(instruction_processor* instr_processor);
 void else_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int nump);
 void else_end(instruction_processor* instr_processor);
-void loop(cpu* cpu, instruction_processor* instr_processor);
-void loop_end(cpu* cpu, instruction_processor* instr_processor);
+void loop(cpu* cpu, instruction_processor* instr_processor, unsigned short int nump);
+void loop_end(cpu* cpu, instruction_processor* instr_processor, unsigned short int nump);
 
 #endif
