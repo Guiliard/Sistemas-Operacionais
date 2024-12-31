@@ -3,14 +3,14 @@
 void init_cpu(cpu* cpu) {
     cpu->core = malloc(NUM_CORES * sizeof(core));
     if (cpu->core == NULL) {
-        printf("memory allocation failed in cpu\n");
+        printf("Error: memory allocation failed in cpu\n");
         exit(1);
     }
 
     for (unsigned short int i = 0; i < NUM_CORES; i++) {
         cpu->core[i].registers = malloc(NUM_REGISTERS * sizeof(unsigned short int));
         if (cpu->core[i].registers == NULL) {
-            printf("memory allocation failed in cpu->core[%d].registers\n", i);
+            printf("Error: memory allocation failed in cpu->core[%d].registers\n", i);
             exit(1);
         }
         cpu->core[i].PC = 0;  

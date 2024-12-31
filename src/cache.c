@@ -8,7 +8,7 @@ void add_cache(cache **cache_table, unsigned short int address, unsigned short i
     if (item == NULL) {
         item = (cache *)malloc(sizeof(cache));
         if (item == NULL) {
-            printf("memory allocation failed\n");
+            printf("Error: memory allocation failed in add to cache\n");
             exit(1);
         }
         item->address = address; 
@@ -33,7 +33,7 @@ void remove_cache(cache **cache_table, unsigned short int address) {
         HASH_DEL(*cache_table, item);
         free(item);
     } else {
-        printf("Item não encontrado\n");
+        printf("Error: address not found in cache\n");
     }
 }
 
@@ -41,7 +41,7 @@ void print_cache(cache *cache_table) {
     cache *item;
     
     for (item = cache_table; item != NULL; item = (cache*)(item->hh.next)) {
-        printf("address: %hu, data: %hu\n", item->address, item->data);
+        printf("Address: %hu, Data: %hu\n", item->address, item->data);
     }
 }
 

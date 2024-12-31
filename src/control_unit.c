@@ -1,34 +1,34 @@
 #include "control_unit.h"
 #include "pipeline.h"
 
-void control_unit(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int nump) {
+void control_unit(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int index_core) {
     instr_processor->result = 0;
 
     if (instr_processor->type == ADD) {
-        instr_processor->result = add(cpu, instr_processor->instruction, nump);
+        instr_processor->result = add(cpu, instr_processor->instruction, index_core);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == SUB) {
-        instr_processor->result = sub(cpu, instr_processor->instruction, nump);
+        instr_processor->result = sub(cpu, instr_processor->instruction, index_core);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == MUL) {
-        instr_processor->result = mul(cpu, instr_processor->instruction, nump);
+        instr_processor->result = mul(cpu, instr_processor->instruction, index_core);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == DIV) {
-        instr_processor->result = div_c(cpu, instr_processor->instruction, nump);
+        instr_processor->result = div_c(cpu, instr_processor->instruction, index_core);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == LOOP) {
-        loop(cpu, instr_processor, nump);
+        loop(cpu, instr_processor, index_core);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == L_END) {
-        loop_end(cpu, instr_processor, nump);
+        loop_end(cpu, instr_processor, index_core);
     } else if(instr_processor->type == IF) {
-        if_i(cpu, memory_ram, instr_processor, nump);
+        if_i(cpu, memory_ram, instr_processor, index_core);
         instr_processor->num_instruction++;
     } else if(instr_processor->type == I_END) {
         if_end(instr_processor);
         instr_processor->num_instruction++;
     } else if(instr_processor->type == ELSE) {
-        else_i(cpu, memory_ram, instr_processor, nump);
+        else_i(cpu, memory_ram, instr_processor, index_core);
         instr_processor->num_instruction++;
     } else if(instr_processor->type == ELS_END) {
         else_end(instr_processor);
@@ -101,7 +101,7 @@ unsigned short int verify_address(ram* memory_ram, char* address, unsigned short
     return address_without_a; 
 }
 
-void load (cpu* cpu, char* instruction, unsigned short int nump) {
+void load (cpu* cpu, char* instruction, unsigned short int index_core) {
 
     char *instruction_copy, *token, *register_name;
     unsigned short int value;
@@ -122,10 +122,10 @@ void load (cpu* cpu, char* instruction, unsigned short int nump) {
     token = strtok(NULL, " ");
     value = atoi(token);
 
-    cpu->core[nump-1].registers[get_register_index(register_name)] = value;
+    cpu->core[index_core].registers[get_register_index(register_name)] = value;
 }
 
-void store (cpu* cpu, ram* memory_ram, char* instruction, unsigned short int nump) {
+void store (cpu* cpu, ram* memory_ram, char* instruction, unsigned short int index_core) {
     char *instruction_copy, *token, *register_name1, *memory_address;
     char buffer[10]; 
     unsigned short int address, num_positions;
@@ -146,7 +146,7 @@ void store (cpu* cpu, ram* memory_ram, char* instruction, unsigned short int num
    
     memory_address = token;
 
-    unsigned short int register_value = cpu->core[nump-1].registers[get_register_index(register_name1)];
+    unsigned short int register_value = cpu->core[index_core].registers[get_register_index(register_name1)];
 
     sprintf(buffer, "%d", register_value);  
 
@@ -157,7 +157,7 @@ void store (cpu* cpu, ram* memory_ram, char* instruction, unsigned short int num
     strcpy(&memory_ram->vector[address], buffer);
 }
 
-unsigned short int add(cpu* cpu, char* instruction, unsigned short int nump) {
+unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core) {
     char *instruction_copy, *token,*register_name1, *register_name2;
     unsigned short int value;
 
@@ -178,18 +178,18 @@ unsigned short int add(cpu* cpu, char* instruction, unsigned short int nump) {
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], value, ADD);
+        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], value, ADD);
     } else {
         register_name2 = token;
-        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], 
-                     cpu->core[nump-1].registers[get_register_index(register_name2)], 
+        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], 
+                     cpu->core[index_core].registers[get_register_index(register_name2)], 
                      ADD);
     }
 
     return result; 
 }
 
-unsigned short int sub(cpu* cpu, char* instruction, unsigned short int nump) {
+unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_core) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value;
 
@@ -210,18 +210,18 @@ unsigned short int sub(cpu* cpu, char* instruction, unsigned short int nump) {
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], value, SUB);
+        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], value, SUB);
     } else {
         register_name2 = token;
-        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], 
-                     cpu->core[nump-1].registers[get_register_index(register_name2)], 
+        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], 
+                     cpu->core[index_core].registers[get_register_index(register_name2)], 
                      SUB);
     }
 
     return result; 
 }
 
-unsigned short int mul(cpu* cpu, char* instruction, unsigned short int nump) {
+unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_core) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value;
 
@@ -242,18 +242,18 @@ unsigned short int mul(cpu* cpu, char* instruction, unsigned short int nump) {
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], value, MUL);
+        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], value, MUL);
     } else {
         register_name2 = token;
-        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], 
-                     cpu->core[nump-1].registers[get_register_index(register_name2)], 
+        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], 
+                     cpu->core[index_core].registers[get_register_index(register_name2)], 
                      MUL);
     }
 
     return result; 
 }
 
-unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int nump) {
+unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_core) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value;
 
@@ -274,18 +274,18 @@ unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int nump) {
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], value, DIV);
+        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], value, DIV);
     } else {
         register_name2 = token;
-        result = ula(cpu->core[nump-1].registers[get_register_index(register_name1)], 
-                     cpu->core[nump-1].registers[get_register_index(register_name2)], 
+        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], 
+                     cpu->core[index_core].registers[get_register_index(register_name2)], 
                      DIV);
     }
 
     return result;  
 }
 
-void if_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int nump) {
+void if_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int index_core) {
     char *instruction_copy = strdup(instr_processor->instruction);
     char *token = strtok(instruction_copy, " ");
     instr_processor->has_if = true;
@@ -297,7 +297,7 @@ void if_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, uns
 
     token = strtok(NULL, " ");
     unsigned short int register1_value = get_register_index(token);
-    register1_value = cpu->core[nump-1].registers[register1_value];
+    register1_value = cpu->core[index_core].registers[register1_value];
 
     token = strtok(NULL, " ");
     const char *operator = token;
@@ -331,7 +331,7 @@ void if_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, uns
         instr_processor->valid_if = false;
         while (1) {
             instr_processor->num_instruction++;
-            instr_processor->instruction = instruction_fetch(cpu, memory_ram, nump);
+            instr_processor->instruction = instruction_fetch(cpu, memory_ram, index_core);
 
             instr_processor->type = instruction_decode(instr_processor->instruction, instr_processor->num_instruction);
 
@@ -364,7 +364,7 @@ void if_end(instruction_processor* instr_processor) {
     instr_processor->running_if = false;
 }
 
-void else_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int nump) {
+void else_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int index_core) {
     char *instruction_copy = strdup(instr_processor->instruction);
     char *token = strtok(instruction_copy, " ");
 
@@ -387,7 +387,7 @@ void else_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, u
     else if (instr_processor->has_if && instr_processor->valid_if) {
         while (1) {
             instr_processor->num_instruction++;
-            instr_processor->instruction = instruction_fetch(cpu, memory_ram, nump);
+            instr_processor->instruction = instruction_fetch(cpu, memory_ram, index_core);
 
             instr_processor->type = instruction_decode(instr_processor->instruction, instr_processor->num_instruction);
             instruction_copy = strdup(instr_processor->instruction);
@@ -413,7 +413,7 @@ void else_end(instruction_processor* instr_processor) {
     instr_processor->has_if = false;
 }
 
-void loop(cpu* cpu, instruction_processor* instr_processor, unsigned short int nump) {
+void loop(cpu* cpu, instruction_processor* instr_processor, unsigned short int index_core) {
     char *instruction_copy, *token, *register_name;
     unsigned short int value;
 
@@ -436,7 +436,7 @@ void loop(cpu* cpu, instruction_processor* instr_processor, unsigned short int n
             }
         } else {
             register_name = token;
-            value = cpu->core[nump-1].registers[get_register_index(register_name)];
+            value = cpu->core[index_core].registers[get_register_index(register_name)];
             if (value == 0) {
                 printf("Error: Loop value can't be 0. Line %hd.\n",instr_processor->num_instruction + 1);
                 exit(1);
@@ -449,7 +449,7 @@ void loop(cpu* cpu, instruction_processor* instr_processor, unsigned short int n
     }
 }
 
-void loop_end(cpu* cpu, instruction_processor* instr_processor, unsigned short int nump) {
+void loop_end(cpu* cpu, instruction_processor* instr_processor, unsigned short int index_core) {
     char *instruction_copy, *token;
 
     instruction_copy = strdup(instr_processor->instruction);
@@ -470,7 +470,7 @@ void loop_end(cpu* cpu, instruction_processor* instr_processor, unsigned short i
     }
     else {
         for (int i=0; i<decrease; i++) {
-            cpu->core[nump-1].PC--;
+            cpu->core[index_core].PC--;
         }
         instr_processor->num_instruction = instr_processor->loop_start;
     }

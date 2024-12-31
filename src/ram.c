@@ -4,7 +4,7 @@ void init_ram(ram* memory_ram) {
     memory_ram->vector = malloc(NUM_MEMORY * sizeof(char));
 
     if (memory_ram->vector == NULL) {
-            printf("memory allocation failed in ram\n");
+            printf("Error: memory allocation failed in ram\n");
             exit(1);
         }
     

@@ -1,69 +1,34 @@
 #include "architecture.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <string.h>
-
-typedef struct {
-    int id;                      // Número do programa
-    cpu* cpu;                    // Referência para a CPU
-    ram* memory_ram;             // Referência para a RAM
-} thread_data;
-
-void* thread_function(void* arg) {
-    thread_data* data = (thread_data*)arg;
-
-    printf("Thread %d iniciando execução do pipeline.\n", data->id);
-
-    // Chamar a função init_pipeline para o programa associado
-    init_pipeline(data->cpu, data->memory_ram, data->id);
-
-    printf("Thread %d finalizou execução do pipeline.\n", data->id);
-    return NULL;
-}
 
 int main() {
-    //const int NUM_PROGRAMS = 4;
     cpu* cpu = malloc(sizeof(cpu));
     ram* memory_ram = malloc(sizeof(ram));
     disc* memory_disc = malloc(sizeof(disc));
-    //pthread_t threads[NUM_PROGRAMS]; 
-    //thread_data data[NUM_PROGRAMS]; 
     peripherals* peripherals = malloc(sizeof(peripherals));
-    char filename[50];
+    queue_start* queue_start = malloc(sizeof(queue_start));
+    queue_end* queue_end = malloc(sizeof(queue_end));
+    queue_block* queue_block = malloc(sizeof(queue_block));
 
-    init_architecture(cpu, memory_ram, memory_disc, peripherals);
+    char filename[25];
 
-    for (unsigned short int i = 1; i <= 4; i++) {  
-        snprintf(filename, sizeof(filename), "dataset/program%d.txt", i);
+    init_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end, queue_block);
+
+    for (unsigned short int index_program = 0; index_program < NUM_PROGRAMS; index_program++) {  
+        sprintf(filename,"dataset/program%d.txt", index_program);
         char *program = read_program(filename);
         load_program_on_ram(memory_ram, program);
-        check_instructions_on_ram(cpu, memory_ram, i);
-        //data[i - 1].id = i;
-        //data[i - 1].cpu = cpu;
-        //data[i - 1].memory_ram = memory_ram;
-        //print_ram(memory_ram);
         free(program); 
     }
 
-    /*for (int i = 0; i < NUM_PROGRAMS; i++) {
-        if (pthread_create(&threads[i], NULL, thread_function, &data[i]) != 0) {
-            fprintf(stderr, "Erro ao criar thread %d\n", data[i].id);
-            exit(EXIT_FAILURE);
-        }
-    }
+    check_instructions_on_ram(memory_ram);
 
-    // Esperar todas as threads terminarem
-    for (int i = 0; i < NUM_PROGRAMS; i++) {
-        pthread_join(threads[i], NULL);
-    }*/
+    print_ram(memory_ram);
 
-    /*for (int i=1; i<5; i++) {
-        init_pipeline(cpu, memory_ram, i);
-    }*/
-    //init_pipeline(cpu, memory_ram, 1);
-    init_pipeline(cpu, memory_ram, 2);
-    //print_ram(memory_ram);
+    printf("\n");
+
+    populate_queue_start(queue_start, memory_ram);
+
+    print_queue_start(queue_start);
     
     return 0;
 }

@@ -3,7 +3,7 @@
 char* read_program(char *filename) {
     FILE *arq = fopen(filename, "r"); 
     if (arq == NULL) {
-        printf("error opening file\n");
+        printf("Error: opening file\n");
         exit(1);
     }
 
@@ -14,7 +14,7 @@ char* read_program(char *filename) {
     while ((ch = fgetc(arq)) != EOF) {
         program = (char*) realloc(program, length + 2);  
         if (program == NULL) {
-            printf("memory allocation failed\n");
+            printf("Error: memory allocation failed to read program\n");
             exit(1);
         }
         program[length] = ch;
@@ -26,13 +26,9 @@ char* read_program(char *filename) {
     return program;  
 }
 
-char* get_line_of_program(const char *program, int line_number) {
-    char *program_copy = malloc(strlen(program) + 1);
-    if (!program_copy) {
-        fprintf(stderr, "Erro ao alocar memória\n");
-        return 0;
-    }
-    strcpy(program_copy, program);
+char* get_line_of_program(char *program, int line_number) {
+
+    char* program_copy = strdup(program); 
 
     char *line = strtok(program_copy, "\n"); 
     for (int i = 0; i < line_number; i++) {
@@ -49,65 +45,19 @@ char* get_line_of_program(const char *program, int line_number) {
     return line_copy;  
 }
 
-unsigned short int count_lines(const char *program, unsigned short int nump) {
-    unsigned short int count = 0, pcount = 0, cnte = 0;
-    char *program_copy = malloc(strlen(program) + 1);
-    char *rest;
+unsigned short int count_lines(char *program) {
+    unsigned short int count = 0;
 
-    if (!program_copy) {
-        fprintf(stderr, "Erro ao alocar memória\n");
-        return 0;
-    }
+    char* program_copy = strdup(program);
 
-    strcpy(program_copy, program);
-    char *line = strtok_r(program_copy, "\n", &rest); 
-
-    while (line != NULL) {
-        if (line[0] == '&') {
-            cnte++;
-            if (cnte == nump) { // Se chegarmos ao arquivo desejado
-                break;
-            }
-            pcount = count;    // Salva o número de linhas do arquivo anterior
-            count = 0;         // Reinicia para contar o próximo arquivo
-        } else {
-            count++;            // Conta as linhas do arquivo atual
-        }
-        line = strtok_r(NULL, "\n", &rest);
-    }
-
-    free(program_copy);
-
-    // Se não chegamos ao arquivo desejado, pcount ainda guarda o valor correto
-    return (cnte == nump) ? count : pcount;
-}
-
-unsigned short int first_line(const char *program,unsigned short int nump) {
-    unsigned short int count = 0, pcount = 0, tcount = 0, cnte = 0;
-    char *program_copy = malloc(strlen(program) + 1);
-    if (!program_copy) {
-        fprintf(stderr, "Erro ao alocar memória\n");
-        return 0;
-    }
-    strcpy(program_copy, program);
     char *line = strtok(program_copy, "\n"); 
 
-    while (line != NULL || cnte < nump) {
-        if (line[0] == '&') {
-            cnte++;
-            pcount = tcount;
-            tcount += count;
-            count = 0;             
-        } else {
-            count++;
-        }
-        line = strtok(NULL, "\n");
+    while (line != NULL) {
+        count++; 
+        line = strtok(NULL, "\n"); 
     }
 
-    free(program_copy);
-    pcount += (nump - 1);
-
-    return pcount; 
+    return count; 
 }
 
 unsigned short int count_tokens_in_line(char *line) {
