@@ -29,6 +29,10 @@ int main() {
     populate_queue_start(queue_start, memory_ram);
 
     print_queue_start(queue_start);
+
+    for (unsigned short int index_core = 0; index_core < NUM_CORES; index_core++) {
+        init_pipeline(cpu, queue_start->initial_queue[index_core].program, index_core);
+    }
     
     return 0;
 }
