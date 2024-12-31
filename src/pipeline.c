@@ -1,7 +1,7 @@
 #include "pipeline.h"
 
-char* instruction_fetch(cpu* cpu, ram* memory, unsigned short int index_core) {
-    char* instruction = get_line_of_program(memory->vector, cpu->core[index_core].PC);
+char* instruction_fetch(cpu* cpu, char* program, unsigned short int index_core) {
+    char* instruction = get_line_of_program(program, cpu->core[index_core].PC);
     cpu->core[index_core].PC++;
 
     return instruction;
@@ -17,8 +17,8 @@ type_of_instruction instruction_decode(char* instruction, unsigned short int num
     }
 }
 
-void execute(cpu* cpu, ram* memory_ram, instruction_processor * instr_processor, unsigned short int index_core) {
-    control_unit(cpu, memory_ram, instr_processor, index_core);
+void execute(cpu* cpu, char* program, instruction_processor * instr_processor, unsigned short int index_core) {
+    control_unit(cpu, program, instr_processor, index_core);
 }
 
 void memory_access(cpu* cpu, ram* memory_ram, type_of_instruction type, char* instruction, unsigned short int index_core) {
@@ -34,13 +34,19 @@ void memory_access(cpu* cpu, ram* memory_ram, type_of_instruction type, char* in
 void write_back(cpu* cpu, type_of_instruction type, char* instruction, unsigned short int result, unsigned short int index_core) {
 
     char* instruction_copy = strdup(instruction);
+    unsigned short int register_index;
 
     if (type == ADD || type == SUB || type == MUL || type == DIV) {
 
         strtok(instruction_copy, " "); 
+
         char* register_name = strtok(NULL, " "); 
 
-        cpu->core[index_core].registers[get_register_index(register_name)] = result;
+        trim(register_name);
+
+        register_index = get_register_index(register_name);
+
+        cpu->core[index_core].registers[register_index] = result;
 
     } else if (type == LOAD || type == STORE || type == LOOP || type == L_END||type == IF||type == I_END || type == ELSE || type == ELS_END) {
         // do nothing

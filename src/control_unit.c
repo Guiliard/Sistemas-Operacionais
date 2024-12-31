@@ -1,7 +1,7 @@
 #include "control_unit.h"
 #include "pipeline.h"
 
-void control_unit(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int index_core) {
+void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core) {
     instr_processor->result = 0;
 
     if (instr_processor->type == ADD) {
@@ -22,13 +22,13 @@ void control_unit(cpu* cpu, ram* memory_ram, instruction_processor* instr_proces
     } else if (instr_processor->type == L_END) {
         loop_end(cpu, instr_processor, index_core);
     } else if(instr_processor->type == IF) {
-        if_i(cpu, memory_ram, instr_processor, index_core);
+        if_i(cpu, program, instr_processor, index_core);
         instr_processor->num_instruction++;
     } else if(instr_processor->type == I_END) {
         if_end(instr_processor);
         instr_processor->num_instruction++;
     } else if(instr_processor->type == ELSE) {
-        else_i(cpu, memory_ram, instr_processor, index_core);
+        else_i(cpu, program, instr_processor, index_core);
         instr_processor->num_instruction++;
     } else if(instr_processor->type == ELS_END) {
         else_end(instr_processor);
@@ -63,15 +63,30 @@ unsigned short int ula(unsigned short int operating_a, unsigned short int operat
     }
 }
 
+void trim(char* str) {
+    char* end;
+
+    while (isspace((unsigned char)*str)) str++;
+
+    if (*str == 0) return;
+
+    end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end)) end--;
+
+    *(end + 1) = '\0';
+}
+
+
 unsigned short int get_register_index(char* reg_name) {
+    
     char* register_names[] = {
         "A0", "B0", "C0", "D0", "E0", "F0", "G0", "H0",
         "I0", "J0", "K0", "L0", "M0", "N0", "O0", "P0",
         "A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1",
         "I1", "J1", "K1", "L1", "M1", "N1", "O1", "P1"
     };
-    
-    for (int i = 0; i < NUM_REGISTERS; i++) {
+
+    for (unsigned short int i = 0; i < NUM_REGISTERS; i++) {
         if (strcmp(reg_name, register_names[i]) == 0) {
             return i;
         }
@@ -104,49 +119,63 @@ unsigned short int verify_address(ram* memory_ram, char* address, unsigned short
 void load (cpu* cpu, char* instruction, unsigned short int index_core) {
 
     char *instruction_copy, *token, *register_name;
-    unsigned short int value;
+    unsigned short int value, register_index;
 
     instruction_copy = strdup(instruction);
 
     token = strtok(instruction_copy, " "); 
+    trim(token);
 
     if (strcmp(token, "LOAD") != 0) {
-        printf("Error: Invalid instruction\n");
+        printf("Error: Invalid instruction - LOAD\n");
         exit(1);
     }
 
     token = strtok(NULL, " ");
+    trim(token);
 
     register_name = token;
 
     token = strtok(NULL, " ");
+    trim(token);
+
     value = atoi(token);
 
-    cpu->core[index_core].registers[get_register_index(register_name)] = value;
+    trim(register_name);
+    register_index = get_register_index(register_name);
+
+    cpu->core[index_core].registers[register_index] = value;
 }
 
 void store (cpu* cpu, ram* memory_ram, char* instruction, unsigned short int index_core) {
-    char *instruction_copy, *token, *register_name1, *memory_address;
+    char *instruction_copy, *token, *register_name, *memory_address;
     char buffer[10]; 
-    unsigned short int address, num_positions;
+    unsigned short int address, num_positions, register_index, register_value;
 
     instruction_copy = strdup(instruction);
 
     token = strtok(instruction_copy, " "); 
+    trim(token);
 
     if (strcmp(token, "STORE") != 0) {
-        printf("Error: Invalid instruction\n");
+        printf("Error: Invalid instruction - STORE\n");
         exit(1);
     }
-    token = strtok(NULL, " ");
-
-    register_name1 = token;
 
     token = strtok(NULL, " ");
-   
+    trim(token);
+
+    register_name = token;
+
+    token = strtok(NULL, " ");
+    trim(token);
+
     memory_address = token;
 
-    unsigned short int register_value = cpu->core[index_core].registers[get_register_index(register_name1)];
+    trim(register_name);
+    register_index = get_register_index(register_name);
+
+    register_value = cpu->core[index_core].registers[register_index];
 
     sprintf(buffer, "%d", register_value);  
 
@@ -159,30 +188,43 @@ void store (cpu* cpu, ram* memory_ram, char* instruction, unsigned short int ind
 
 unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core) {
     char *instruction_copy, *token,*register_name1, *register_name2;
-    unsigned short int value;
+    unsigned short int value, register_index1, register_index2, result;
 
     instruction_copy = strdup(instruction);
 
     token = strtok(instruction_copy, " "); 
+    trim(token);
 
     if (strcmp(token, "ADD") != 0) {
-        printf("Error: Invalid instruction\n");
+        printf("Error: Invalid instruction - ADD\n");
         exit(1);
     }
 
     token = strtok(NULL, " ");
+    trim(token);
+
     register_name1 = token;
 
     token = strtok(NULL, " ");
-    unsigned short int result;
+    trim(token);
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], value, ADD);
+
+        trim(register_name1);
+        register_index1 = get_register_index(register_name1);
+
+        result = ula(cpu->core[index_core].registers[register_index1], value, ADD);
     } else {
         register_name2 = token;
-        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], 
-                     cpu->core[index_core].registers[get_register_index(register_name2)], 
+
+        trim(register_name1);
+        trim(register_name2);
+        register_index1 = get_register_index(register_name1);
+        register_index2 = get_register_index(register_name2);
+
+        result = ula(cpu->core[index_core].registers[register_index1], 
+                     cpu->core[index_core].registers[register_index2], 
                      ADD);
     }
 
@@ -191,30 +233,43 @@ unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_cor
 
 unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_core) {
     char *instruction_copy, *token, *register_name1, *register_name2;
-    unsigned short int value;
+    unsigned short int value, register_index1, register_index2, result;
 
     instruction_copy = strdup(instruction);
 
     token = strtok(instruction_copy, " "); 
+    trim(token);
 
     if (strcmp(token, "SUB") != 0) {
-        printf("Error: Invalid instruction\n");
+        printf("Error: Invalid instruction - SUB\n");
         exit(1);
     }
 
     token = strtok(NULL, " ");
+    trim(token);
+
     register_name1 = token;
 
     token = strtok(NULL, " ");
-    unsigned short int result;
+    trim(token);
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], value, SUB);
+
+        trim(register_name1);
+        register_index1 = get_register_index(register_name1);
+
+        result = ula(cpu->core[index_core].registers[register_index1], value, SUB);
     } else {
         register_name2 = token;
-        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], 
-                     cpu->core[index_core].registers[get_register_index(register_name2)], 
+
+        trim(register_name1);
+        trim(register_name2);
+        register_index1 = get_register_index(register_name1);
+        register_index2 = get_register_index(register_name2);
+
+        result = ula(cpu->core[index_core].registers[register_index1], 
+                     cpu->core[index_core].registers[register_index2], 
                      SUB);
     }
 
@@ -223,30 +278,43 @@ unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_cor
 
 unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_core) {
     char *instruction_copy, *token, *register_name1, *register_name2;
-    unsigned short int value;
+    unsigned short int value, register_index1, register_index2, result;
 
     instruction_copy = strdup(instruction);
 
-    token = strtok(instruction_copy, " "); 
+    token = strtok(instruction_copy, " ");
+    trim(token); 
 
     if (strcmp(token, "MUL") != 0) {
-        printf("Error: Invalid instruction\n");
+        printf("Error: Invalid instruction - MUL\n");
         exit(1);
     }
 
     token = strtok(NULL, " ");
+    trim(token);
+
     register_name1 = token;
 
     token = strtok(NULL, " ");
-    unsigned short int result;
+    trim(token);
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], value, MUL);
+
+        trim(register_name1);
+        register_index1 = get_register_index(register_name1);
+
+        result = ula(cpu->core[index_core].registers[register_index1], value, MUL);
     } else {
         register_name2 = token;
-        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], 
-                     cpu->core[index_core].registers[get_register_index(register_name2)], 
+
+        trim(register_name1);
+        trim(register_name2);
+        register_index1 = get_register_index(register_name1);
+        register_index2 = get_register_index(register_name2);
+
+        result = ula(cpu->core[index_core].registers[register_index1], 
+                     cpu->core[index_core].registers[register_index2], 
                      MUL);
     }
 
@@ -255,55 +323,80 @@ unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_cor
 
 unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_core) {
     char *instruction_copy, *token, *register_name1, *register_name2;
-    unsigned short int value;
+    unsigned short int value, register_index1, register_index2, result;
 
     instruction_copy = strdup(instruction);
 
     token = strtok(instruction_copy, " "); 
+    trim(token);
 
     if (strcmp(token, "DIV") != 0) {
-        printf("Error: Invalid instruction\n");
+        printf("Error: Invalid instruction - DIV\n");
         exit(1);
     }
 
     token = strtok(NULL, " ");
+    trim(token);
+
     register_name1 = token;
 
     token = strtok(NULL, " ");
-    unsigned short int result;
+    trim(token);
 
     if (isdigit(token[0])) {
         value = atoi(token);
-        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], value, DIV);
+
+        trim(register_name1);
+        register_index1 = get_register_index(register_name1);
+
+        result = ula(cpu->core[index_core].registers[register_index1], value, DIV);
     } else {
         register_name2 = token;
-        result = ula(cpu->core[index_core].registers[get_register_index(register_name1)], 
-                     cpu->core[index_core].registers[get_register_index(register_name2)], 
+
+        trim(register_name1);
+        trim(register_name2);
+        register_index1 = get_register_index(register_name1);
+        register_index2 = get_register_index(register_name2);
+
+        result = ula(cpu->core[index_core].registers[register_index1], 
+                     cpu->core[index_core].registers[register_index2], 
                      DIV);
     }
 
     return result;  
 }
 
-void if_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int index_core) {
-    char *instruction_copy = strdup(instr_processor->instruction);
-    char *token = strtok(instruction_copy, " ");
+void if_i(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core) {
+    char* instruction_copy, *token, *operator;
+    unsigned short int register_value, operand_value;
+    
+    instruction_copy = strdup(instr_processor->instruction);
+
+    token = strtok(instruction_copy, " ");
+    trim(token);
+
     instr_processor->has_if = true;
 
     if (strcmp(token, "IF") != 0) {
-        printf("Error: Invalid instruction\n");
+        printf("Error: Invalid instruction - IF\n");
         exit(1);
     }
 
     token = strtok(NULL, " ");
-    unsigned short int register1_value = get_register_index(token);
-    register1_value = cpu->core[index_core].registers[register1_value];
+    trim(token);
+
+    register_value = get_register_index(token);
+
+    register_value = cpu->core[index_core].registers[register_value];
 
     token = strtok(NULL, " ");
-    const char *operator = token;
+    trim(token);
+
+    operator = token;
 
     token = strtok(NULL, " ");
-    unsigned short int operand_value;
+    trim(token);
+
     if (isdigit(token[0])) {
         operand_value = atoi(token);
     } else {
@@ -312,17 +405,17 @@ void if_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, uns
 
     int result = 0;
     if (strcmp(operator, "==") == 0) {
-        result = register1_value == operand_value;
+        result = register_value == operand_value;
     } else if (strcmp(operator, "!=") == 0) {
-        result = register1_value != operand_value;
+        result = register_value != operand_value;
     } else if (strcmp(operator, "<=") == 0) {
-        result = register1_value <= operand_value;
+        result = register_value <= operand_value;
     } else if (strcmp(operator, ">=") == 0) {
-        result = register1_value >= operand_value;
+        result = register_value >= operand_value;
     } else if (strcmp(operator, ">") == 0) {
-        result = register1_value > operand_value;
+        result = register_value > operand_value;
     } else if (strcmp(operator, "<") == 0) {
-        result = register1_value < operand_value;
+        result = register_value < operand_value;
     } else {
         printf("Error: Invalid operator. Line %hd.\n",instr_processor->num_instruction + 1);
     }
@@ -331,12 +424,14 @@ void if_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, uns
         instr_processor->valid_if = false;
         while (1) {
             instr_processor->num_instruction++;
-            instr_processor->instruction = instruction_fetch(cpu, memory_ram, index_core);
+            instr_processor->instruction = instruction_fetch(cpu, program, index_core);
 
             instr_processor->type = instruction_decode(instr_processor->instruction, instr_processor->num_instruction);
 
             instruction_copy = strdup(instr_processor->instruction);
+
             token = strtok(instruction_copy, " "); 
+            trim(token);
 
             if (strcmp(token, "I_END") == 0)
                 break;
@@ -355,21 +450,26 @@ void if_end(instruction_processor* instr_processor) {
     instruction_copy = strdup(instr_processor->instruction);
 
     token = strtok(instruction_copy, " "); 
+    trim(token);
 
     if (strcmp(token, "I_END") != 0) {
-        printf("Error: Invalid instruction\n");
+        printf("Error: Invalid instruction - I_END\n");
         exit(1);
     }
 
     instr_processor->running_if = false;
 }
 
-void else_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int index_core) {
-    char *instruction_copy = strdup(instr_processor->instruction);
-    char *token = strtok(instruction_copy, " ");
+void else_i(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core) {
+    char* instruction_copy, *token;
+    
+    instruction_copy = strdup(instr_processor->instruction);
+
+    token = strtok(instruction_copy, " ");
+    trim(token);
 
     if (strcmp(token, "ELSE") != 0) {
-        printf("Error: Invalid instruction\n");
+        printf("Error: Invalid instruction - ELSE\n");
         exit(1);
     }
 
@@ -387,7 +487,7 @@ void else_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, u
     else if (instr_processor->has_if && instr_processor->valid_if) {
         while (1) {
             instr_processor->num_instruction++;
-            instr_processor->instruction = instruction_fetch(cpu, memory_ram, index_core);
+            instr_processor->instruction = instruction_fetch(cpu, program, index_core);
 
             instr_processor->type = instruction_decode(instr_processor->instruction, instr_processor->num_instruction);
             instruction_copy = strdup(instr_processor->instruction);
@@ -402,11 +502,14 @@ void else_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, u
 }
 
 void else_end(instruction_processor* instr_processor) {
-    char *instruction_copy = strdup(instr_processor->instruction);
-    char *token = strtok(instruction_copy, " ");
+    char* instruction_copy, *token;
+    
+    instruction_copy = strdup(instr_processor->instruction);
+    token = strtok(instruction_copy, " ");
+    trim(token);
 
     if (strcmp(token, "ELS_END") != 0) {
-        printf("Error: Invalid instruction\n");
+        printf("Error: Invalid instruction - ELS_END\n");
         exit(1);
     }
 
@@ -415,19 +518,21 @@ void else_end(instruction_processor* instr_processor) {
 
 void loop(cpu* cpu, instruction_processor* instr_processor, unsigned short int index_core) {
     char *instruction_copy, *token, *register_name;
-    unsigned short int value;
+    unsigned short int value, register_index;
 
     instruction_copy = strdup(instr_processor->instruction);
 
     token = strtok(instruction_copy, " "); 
+    trim(token);
 
     if (strcmp(token, "LOOP") != 0) {
-        printf("Error: Invalid instruction\n");
+        printf("Error: Invalid instruction - LOOP\n");
         exit(1);
     }
 
     if (!instr_processor->loop) {
         token = strtok(NULL, " ");
+        trim(token);
         if (isdigit(token[0])) {
             value = atoi(token);
             if (value == 0) {
@@ -436,12 +541,15 @@ void loop(cpu* cpu, instruction_processor* instr_processor, unsigned short int i
             }
         } else {
             register_name = token;
-            value = cpu->core[index_core].registers[get_register_index(register_name)];
+            
+            trim(register_name);
+            register_index = get_register_index(register_name);
+
+            value = cpu->core[index_core].registers[register_index];
             if (value == 0) {
                 printf("Error: Loop value can't be 0. Line %hd.\n",instr_processor->num_instruction + 1);
                 exit(1);
             }
-
         }
         instr_processor->loop_value = value;
         instr_processor->loop_start = instr_processor->num_instruction;
@@ -455,9 +563,10 @@ void loop_end(cpu* cpu, instruction_processor* instr_processor, unsigned short i
     instruction_copy = strdup(instr_processor->instruction);
 
     token = strtok(instruction_copy, " "); 
+    trim(token);
 
     if (strcmp(token, "L_END") != 0) {
-        printf("Error: Invalid instruction.\n");
+        printf("Error: Invalid instruction - L_END\n");
         exit(1);
     }
 

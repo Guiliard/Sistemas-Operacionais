@@ -13,6 +13,6 @@
 void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end, queue_block* queue_block);
 void load_program_on_ram(ram* memory, char* program);
 void check_instructions_on_ram(ram* memory_ram);
-void init_pipeline(cpu* cpu, ram* memory_ram, unsigned short int index_core);
+void init_pipeline(cpu* cpu, ram* memory_ram, char* program, unsigned short int index_core);
 
 #endif

@@ -3,10 +3,10 @@ CXXFLAGS := -Wall -Wextra -Werror
 LDFLAGS  := -lstdc++ -lm
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
-EXEC_DIR  := $(BUILD)/
+EXEC_DIR := $(BUILD)/
 TARGET   := executable
 INCLUDE  := -Iinclude/
-SRC      :=  $(wildcard src/*.c)
+SRC      := $(wildcard src/*.c)
 
 OBJECTS := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 

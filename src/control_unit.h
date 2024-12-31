@@ -19,8 +19,10 @@ typedef struct instruction_processor {
     bool running_if;
 } instruction_processor;
 
-void control_unit(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int index_core);
+void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core);
 unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation);
+
+void trim(char* str);
 
 unsigned short int get_register_index(char* reg_name);
 unsigned short int verify_address(ram* memory_ram, char* address, unsigned short int num_positions);
@@ -33,9 +35,9 @@ unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_cor
 unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_core);
 unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_core);
 
-void if_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int index_core);
+void if_i(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core);
 void if_end(instruction_processor* instr_processor);
-void else_i(cpu* cpu, ram* memory_ram, instruction_processor* instr_processor, unsigned short int index_core);
+void else_i(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core);
 void else_end(instruction_processor* instr_processor);
 void loop(cpu* cpu, instruction_processor* instr_processor, unsigned short int index_core);
 void loop_end(cpu* cpu, instruction_processor* instr_processor, unsigned short int index_core);

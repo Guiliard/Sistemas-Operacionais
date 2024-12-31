@@ -65,23 +65,23 @@ void check_instructions_on_ram(ram* memory_ram) {
     }
 }
 
-void init_pipeline(cpu* cpu, ram* memory_ram, unsigned short int index_core) {
+void init_pipeline(cpu* cpu, ram* memory_ram, char* program, unsigned short int index_core) {
     
     instruction_processor instr_processor;
     unsigned short int num_lines = 0;
     instr_processor.num_instruction = 0;
 
-    num_lines = count_lines(memory_ram->vector);
+    num_lines = count_lines(program);
 
-    printf("Number of instructions: %d\n", num_lines);
+    printf("Number of instructions: %d - Core used: %d\n", num_lines, index_core);
 
     while (instr_processor.num_instruction < num_lines) {
 
-        instr_processor.instruction = instruction_fetch(cpu, memory_ram, index_core);
+        instr_processor.instruction = instruction_fetch(cpu, program, index_core);
 
         instr_processor.type = instruction_decode(instr_processor.instruction, instr_processor.num_instruction);
 
-        execute(cpu, memory_ram, &instr_processor, index_core);
+        execute(cpu, program, &instr_processor, index_core);
 
         memory_access(cpu, memory_ram, instr_processor.type, instr_processor.instruction, index_core);
 
