@@ -88,3 +88,13 @@ void init_pipeline(cpu* cpu, ram* memory_ram, char* program, unsigned short int 
         write_back(cpu, instr_processor.type, instr_processor.instruction, instr_processor.result, index_core);
     }
 }
+
+void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end, queue_block* queue_block) {
+    free(cpu);
+    free(memory_ram);
+    free(memory_disc);
+    free(peripherals);
+    free(queue_start);
+    free(queue_end);
+    free(queue_block);
+}
