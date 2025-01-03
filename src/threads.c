@@ -4,10 +4,18 @@ pthread_mutex_t memory_mutex;
 pthread_mutex_t cpu_mutex;
 
 int compare_priority(const void* a, const void* b) {
-    const process_control_block* pcb1 = *(const process_control_block**)a;
-    const process_control_block* pcb2 = *(const process_control_block**)b;
-    return pcb1->priority - pcb2->priority;
+    const process_control_block* pcb1 = (const process_control_block*)a;
+    const process_control_block* pcb2 = (const process_control_block*)b;
+
+    if (pcb1->priority < pcb2->priority) {
+        return -1;
+    } else if (pcb1->priority > pcb2->priority) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
+
 
 void initialize_log_s_file() {
     FILE* file = fopen("output/start.txt", "w");  // Abre o arquivo em modo de escrita (cria ou sobrescreve)

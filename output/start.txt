@@ -1,14 +1,13 @@
 Queue of programs to be executed.
 
------PROGRAM 3-----
-LOAD A0 4
-LOOP A0
-SUB A0 1
-L_END
-STORE A0 A2010
+-----PROGRAM 0-----
+LOAD A0 10
+LOAD B0 20
+ADD A0 B0
+STORE A0 A1000
 
-PCB of process: 3/ State: RUNNING/ Priority: 3
-Quantum remaining: 50/ Base address: 204/ Memory limit: 250
+PCB of process: 0/ State: RUNNING/ Priority: 0
+Quantum remaining: 50/ Base address: 0/ Memory limit: 250
 
 -----PROGRAM 1-----
 LOAD A0 5
@@ -34,12 +33,13 @@ STORE A0 A2000
 PCB of process: 2/ State: RUNNING/ Priority: 2
 Quantum remaining: 50/ Base address: 136/ Memory limit: 250
 
------PROGRAM 0-----
-LOAD A0 10
-LOAD B0 20
-ADD A0 B0
-STORE A0 A1000
+-----PROGRAM 3-----
+LOAD A0 4
+LOOP A0
+SUB A0 1
+L_END
+STORE A0 A2010
 
-PCB of process: 0/ State: RUNNING/ Priority: 0
-Quantum remaining: 50/ Base address: 0/ Memory limit: 250
+PCB of process: 3/ State: RUNNING/ Priority: 3
+Quantum remaining: 50/ Base address: 204/ Memory limit: 250
 
