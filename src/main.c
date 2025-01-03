@@ -26,6 +26,8 @@ int main() {
 
     populate_queue_start(queue_start, memory_ram);
 
+    initialize_log_s_file();
+
     init_threads(cpu, memory_ram, queue_start, queue_end);
 
     printf ("\n-----FILA DE PROCESSOS ENCERRADOS------\n\n");
