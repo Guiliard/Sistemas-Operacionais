@@ -44,7 +44,7 @@ void log_start(process* proc) {
         return;
     }
 
-    fprintf(file, "-----PROGRAM %hd-----\n", proc->pcb->process_id);
+    fprintf(file, "------------------PROGRAM %hd------------------\n", proc->pcb->process_id);
     fprintf(file, "%s\n", proc->program);
     fprintf(file, "PCB of process: %hd/ State: %s/ Priority: %hd\n",
     proc->pcb->process_id,print_enum_state(proc->pcb->state_of_process),proc->pcb->priority);
@@ -61,7 +61,7 @@ void log_end(process* proc) {
         return;
     }
 
-    fprintf(file, "-----PROGRAM %hd-----\n", proc->pcb->process_id);
+    fprintf(file, "------------------PROGRAM %hd------------------\n", proc->pcb->process_id);
     fprintf(file, "%s\n", proc->program);
     fprintf(file, "PCB of process: %hd/ State: %s/ Priority: %hd\n",
     proc->pcb->process_id,print_enum_state(proc->pcb->state_of_process),proc->pcb->priority);

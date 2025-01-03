@@ -1,6 +1,6 @@
 Queue of programs to be executed.
 
------PROGRAM 0-----
+------------------PROGRAM 0------------------
 LOAD A0 10
 LOAD B0 20
 ADD A0 B0
@@ -9,7 +9,7 @@ STORE A0 A1000
 PCB of process: 0/ State: RUNNING/ Priority: 0
 Quantum remaining: 50/ Base address: 0/ Memory limit: 250
 
------PROGRAM 1-----
+------------------PROGRAM 1------------------
 LOAD A0 5
 LOAD B0 3
 LOAD C0 1
@@ -22,7 +22,7 @@ STORE C0 A1050
 PCB of process: 1/ State: RUNNING/ Priority: 1
 Quantum remaining: 50/ Base address: 49/ Memory limit: 250
 
------PROGRAM 2-----
+------------------PROGRAM 2------------------
 LOAD A0 8
 LOAD B0 6
 IF A0 > B0
@@ -33,7 +33,7 @@ STORE A0 A2000
 PCB of process: 2/ State: RUNNING/ Priority: 2
 Quantum remaining: 50/ Base address: 136/ Memory limit: 250
 
------PROGRAM 3-----
+------------------PROGRAM 3------------------
 LOAD A0 4
 LOOP A0
 SUB A0 1
