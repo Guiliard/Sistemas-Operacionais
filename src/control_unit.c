@@ -116,7 +116,7 @@ unsigned short int verify_address(ram* memory_ram, char* address, unsigned short
     return address_without_a; 
 }
 
-void load (cpu* cpu, char* instruction, unsigned short int index_core) {
+void load (cpu* cpu, char* instruction, process_control_block* pcb, unsigned short int index_core) {
 
     char *instruction_copy, *token, *register_name;
     unsigned short int value, register_index;
@@ -143,6 +143,8 @@ void load (cpu* cpu, char* instruction, unsigned short int index_core) {
 
     trim(register_name);
     register_index = get_register_index(register_name);
+
+    // AQUI PEGA OS REGISTRADORES USADOS
 
     cpu->core[index_core].registers[register_index] = value;
 }

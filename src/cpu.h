@@ -8,7 +8,7 @@
 
 typedef struct core {
     unsigned short int *registers;
-    int PC;
+    unsigned short int PC;
 } core;
 
 typedef struct cpu {

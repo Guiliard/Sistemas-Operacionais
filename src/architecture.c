@@ -65,7 +65,7 @@ void check_instructions_on_ram(ram* memory_ram) {
     }
 }
 
-void init_pipeline(cpu* cpu, ram* memory_ram, char* program, unsigned short int index_core) {
+void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_block* pcb, unsigned short int index_core) {
     
     instruction_processor instr_processor;
     unsigned short int num_lines = 0;
@@ -86,6 +86,8 @@ void init_pipeline(cpu* cpu, ram* memory_ram, char* program, unsigned short int 
         memory_access(cpu, memory_ram, instr_processor.type, instr_processor.instruction, index_core);
 
         write_back(cpu, instr_processor.type, instr_processor.instruction, instr_processor.result, index_core);
+
+        // QUANTUM REMAMING
     }
 }
 

@@ -22,6 +22,6 @@ typedef struct process_control_block {
 } process_control_block;
 
 process_control_block* init_pcb();
-void print_pcb(process_control_block pcb);
+void print_pcb(process_control_block* pcb);
 
 #endif
