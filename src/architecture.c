@@ -83,11 +83,11 @@ void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_blo
 
         execute(cpu, program, &instr_processor, index_core);
 
-        memory_access(cpu, memory_ram, instr_processor.type, instr_processor.instruction, index_core);
+        memory_access(cpu, memory_ram, pcb, instr_processor.type, instr_processor.instruction, index_core);
 
         write_back(cpu, instr_processor.type, instr_processor.instruction, instr_processor.result, index_core);
 
-        // QUANTUM REMAMING
+        pcb->quantum_remaining--;
     }
 }
 

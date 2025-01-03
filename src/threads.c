@@ -18,6 +18,8 @@ void* thread_function(void* args) {
 
     add_process_to_queue_end(t_args->queue_end, t_args->process);
 
+    free(t_args->process->pcb->bank_of_register_used);
+
     printf("Core %d: Execução finalizada.\n", t_args->core_id);
 
     pthread_exit(NULL);
@@ -33,6 +35,10 @@ void init_threads(cpu* cpu, ram* memory_ram, queue_start* queue_start, queue_end
     }
 
     for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
+        t_args[i].queue_end = queue_end;
+    }
+
+    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
         t_args[i].cpu = cpu;
         t_args[i].memory_ram = memory_ram;
         t_args[i].process = &queue_start->initial_queue[i];
@@ -42,6 +48,9 @@ void init_threads(cpu* cpu, ram* memory_ram, queue_start* queue_start, queue_end
             perror("Error: Fail on creating thread");
             exit(1);
         }
+
+        if (i<NUM_PROGRAMS-1)
+            t_args[i+1].queue_end = queue_end;
     }
 
     for (int i = 0; i < NUM_PROGRAMS; i++) {

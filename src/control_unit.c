@@ -144,8 +144,28 @@ void load (cpu* cpu, char* instruction, process_control_block* pcb, unsigned sho
     trim(register_name);
     register_index = get_register_index(register_name);
 
-    // AQUI PEGA OS REGISTRADORES USADOS
+    if (pcb->bank_of_register_used == NULL) {
+        // Inicializa a string se estiver vazia
+        pcb->bank_of_register_used = (char *)malloc(strlen(register_name) + 2); // +2 para vírgula e '\0'
+        if (pcb->bank_of_register_used == NULL) {
+            printf("Erro ao alocar memória\n");
+            return;
+        }
+        strcpy(pcb->bank_of_register_used, register_name);
+        strcat(pcb->bank_of_register_used, ",");
+    } else {
+        // Realoque memória para adicionar o novo registrador e vírgula
+        size_t new_length = strlen(pcb->bank_of_register_used) + strlen(register_name) + 2; // +2 para vírgula e '\0'
+        pcb->bank_of_register_used = (char *)realloc(pcb->bank_of_register_used, new_length);
+        if (pcb->bank_of_register_used == NULL) {
+            printf("Erro ao realocar memória\n");
+            return;
+        }
+        strcat(pcb->bank_of_register_used, register_name);
+        strcat(pcb->bank_of_register_used, ",");
+    }
 
+    trim(pcb->bank_of_register_used);
     cpu->core[index_core].registers[register_index] = value;
 }
 

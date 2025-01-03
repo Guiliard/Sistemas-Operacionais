@@ -30,6 +30,8 @@ int main() {
 
     init_threads(cpu, memory_ram, queue_start, queue_end);
 
+    printf ("\n-----FILA DE PROCESSOS ENCERRADOS------\n\n");
+    //print_queue_end(queue_end);
     free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end, queue_block);
 
     return 0;

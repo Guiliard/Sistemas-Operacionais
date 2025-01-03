@@ -5,7 +5,7 @@
 
 typedef enum state {
     RUNNING,
-    READY,
+    DONE_PROC,
     BLOCK
 } state;
 

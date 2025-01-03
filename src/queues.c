@@ -79,7 +79,7 @@ void populate_queue_start(queue_start* initial_queue, ram* memory_ram) {
 
 void add_process_to_queue_end(queue_end* final_queue, process* process) {
 
-    process->pcb->state_of_process = READY;
+    process->pcb->state_of_process = DONE_PROC;
 
     for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
         if (final_queue->final_queue[i].program == NULL) {

@@ -21,9 +21,9 @@ void execute(cpu* cpu, char* program, instruction_processor * instr_processor, u
     control_unit(cpu, program, instr_processor, index_core);
 }
 
-void memory_access(cpu* cpu, ram* memory_ram, type_of_instruction type, char* instruction, unsigned short int index_core) {
+void memory_access(cpu* cpu, ram* memory_ram, process_control_block* pcb, type_of_instruction type, char* instruction, unsigned short int index_core) {
     if (type == LOAD) {
-        load(cpu, instruction, index_core);
+        load(cpu, instruction, pcb, index_core);
     } else if (type == STORE) {
         store(cpu, memory_ram, instruction, index_core);
     } else {

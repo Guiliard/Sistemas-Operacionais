@@ -36,6 +36,6 @@ void add_process_to_queue_end(queue_end* final_queue, process* process);
 //void remove_process_from_queue_block(queue_block* block_queue, process* process);
 
 void print_queue_start(queue_start* initial_queue);
-void print_queue_end(queue_end* final_ueue);
+void print_queue_end(queue_end* final_queue);
 
 #endif
