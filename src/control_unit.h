@@ -43,4 +43,6 @@ void else_end(instruction_processor* instr_processor);
 void loop(cpu* cpu, instruction_processor* instr_processor, unsigned short int index_core);
 void loop_end(cpu* cpu, instruction_processor* instr_processor, unsigned short int index_core);
 
+void add_register_to_bank(process_control_block *pcb, char *register_name);
+
 #endif

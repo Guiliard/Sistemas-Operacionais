@@ -96,6 +96,42 @@ unsigned short int get_register_index(char* reg_name) {
     return 0;
 }
 
+void add_register_to_bank(process_control_block *pcb, char *register_name) {
+    if (pcb->bank_of_register_used == NULL) {
+        size_t length = strlen(register_name) + 3; 
+        pcb->bank_of_register_used = (char *)malloc(length);
+
+        if (pcb->bank_of_register_used == NULL) {
+            printf("Error: memory allocation failed in bank of register used\n");
+            return;
+        }
+
+        snprintf(pcb->bank_of_register_used, length, "%s, ", register_name);
+    } else {
+
+        size_t bank_length = strlen(pcb->bank_of_register_used);
+        char *pattern = (char *)malloc(strlen(register_name) + 3);
+        snprintf(pattern, strlen(register_name) + 3, "%s, ", register_name);
+
+        if (strstr(pcb->bank_of_register_used, pattern) == NULL) {
+            size_t new_length = bank_length + strlen(register_name) + 3; 
+            char *new_memory = (char *)realloc(pcb->bank_of_register_used, new_length);
+
+            if (new_memory == NULL) {
+                printf("Error: memory allocation failed in bank of register used\n");
+                free(pattern);
+                return;
+            }
+
+            pcb->bank_of_register_used = new_memory;
+            strcat(pcb->bank_of_register_used, register_name);
+            strcat(pcb->bank_of_register_used, ", ");
+        }
+
+        free(pattern);
+    }
+}
+
 unsigned short int verify_address(ram* memory_ram, char* address, unsigned short int num_positions) {
     unsigned short int address_without_a;
     
@@ -144,28 +180,8 @@ void load (cpu* cpu, char* instruction, process_control_block* pcb, unsigned sho
     trim(register_name);
     register_index = get_register_index(register_name);
 
-    if (pcb->bank_of_register_used == NULL) {
-        // Inicializa a string se estiver vazia
-        pcb->bank_of_register_used = (char *)malloc(strlen(register_name) + 2); // +2 para vírgula e '\0'
-        if (pcb->bank_of_register_used == NULL) {
-            printf("Erro ao alocar memória\n");
-            return;
-        }
-        strcpy(pcb->bank_of_register_used, register_name);
-        strcat(pcb->bank_of_register_used, ",");
-    } else {
-        // Realoque memória para adicionar o novo registrador e vírgula
-        size_t new_length = strlen(pcb->bank_of_register_used) + strlen(register_name) + 2; // +2 para vírgula e '\0'
-        pcb->bank_of_register_used = (char *)realloc(pcb->bank_of_register_used, new_length);
-        if (pcb->bank_of_register_used == NULL) {
-            printf("Erro ao realocar memória\n");
-            return;
-        }
-        strcat(pcb->bank_of_register_used, register_name);
-        strcat(pcb->bank_of_register_used, ",");
-    }
+    add_register_to_bank(pcb, register_name);
 
-    trim(pcb->bank_of_register_used);
     cpu->core[index_core].registers[register_index] = value;
 }
 

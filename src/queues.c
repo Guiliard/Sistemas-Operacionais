@@ -1,7 +1,5 @@
 #include "queues.h"
 
-unsigned short int queue__end_index = 0;
-
 void init_queue_start(queue_start* initial_queue) {
 
     initial_queue->initial_queue = malloc(NUM_PROGRAMS * sizeof(process));
@@ -79,16 +77,16 @@ void populate_queue_start(queue_start* initial_queue, ram* memory_ram) {
     free(programs_on_ram); 
 }
 
-void add_process_to_queue_end(queue_end** queue_end_ptr, process* new_process) {
-    queue_end* queue = *queue_end_ptr;  // Desreferencia o ponteiro duplo
-
-    // Adiciona o novo processo na posição livre
-    queue->final_queue[queue__end_index] = *new_process;
-
-    // Incrementa o índice da fila
-    queue__end_index++;
+void add_process_to_queue_end(queue_end* final_queue, process* process) {
+    process->pcb->state_of_process = READY;
+    
+    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
+        if (final_queue->final_queue[i].program == NULL) {
+            final_queue->final_queue[i] = *process;
+            break;
+        }
+    }
 }
-
 
 void print_queue_start(queue_start* initial_queue) {
     printf("Initial Queue:\n");

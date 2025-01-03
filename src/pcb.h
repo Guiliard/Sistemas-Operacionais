@@ -5,7 +5,7 @@
 
 typedef enum state {
     RUNNING,
-    DONE_PROC,
+    READY,
     BLOCK
 } state;
 
@@ -23,5 +23,6 @@ typedef struct process_control_block {
 
 process_control_block* init_pcb();
 void print_pcb(process_control_block* pcb);
+char* print_enum_state(state state);
 
 #endif
