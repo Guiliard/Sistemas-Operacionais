@@ -8,6 +8,8 @@
 #include "pcb.h"
 #include "reader.h"
 
+extern unsigned short int queue__end_index;
+
 typedef struct process {
     char *program;
     process_control_block *pcb;
@@ -31,7 +33,7 @@ void init_queue_block(queue_block* block_queue);
 
 void populate_queue_start(queue_start* initial_queue, ram* memory_ram);
 
-void add_process_to_queue_end(queue_end* final_queue, process* process);
+void add_process_to_queue_end(queue_end** final_queue, process* new_process);
 //void add_process_to_queue_block(queue_block* block_queue, process* process);
 //void remove_process_from_queue_block(queue_block* block_queue, process* process);
 

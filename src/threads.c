@@ -10,13 +10,14 @@ void* thread_function(void* args) {
 
     pthread_mutex_lock(&cpu_mutex);
     pthread_mutex_lock(&memory_mutex);
-    
+
     init_pipeline(t_args->cpu, t_args->memory_ram, t_args->process->program, t_args->process->pcb, t_args->core_id);
-    
+
     pthread_mutex_unlock(&memory_mutex);
     pthread_mutex_unlock(&cpu_mutex);
 
-    add_process_to_queue_end(t_args->queue_end, t_args->process);
+    // Adiciona o processo à fila compartilhada
+    add_process_to_queue_end(t_args->queue_end_ptr, t_args->process);
 
     free(t_args->process->pcb->bank_of_register_used);
 
@@ -25,7 +26,8 @@ void* thread_function(void* args) {
     pthread_exit(NULL);
 }
 
-void init_threads(cpu* cpu, ram* memory_ram, queue_start* queue_start, queue_end* queue_end) {
+
+void init_threads(cpu* cpu, ram* memory_ram, queue_start* queue_start, queue_end** queue_end_ptr) {
     pthread_t threads[NUM_PROGRAMS];
     thread_args t_args[NUM_PROGRAMS];
 
@@ -35,7 +37,7 @@ void init_threads(cpu* cpu, ram* memory_ram, queue_start* queue_start, queue_end
     }
 
     for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
-        t_args[i].queue_end = queue_end;
+        t_args[i].queue_end_ptr = queue_end_ptr;  // Passa o ponteiro para o ponteiro
     }
 
     for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
@@ -48,9 +50,6 @@ void init_threads(cpu* cpu, ram* memory_ram, queue_start* queue_start, queue_end
             perror("Error: Fail on creating thread");
             exit(1);
         }
-
-        if (i<NUM_PROGRAMS-1)
-            t_args[i+1].queue_end = queue_end;
     }
 
     for (int i = 0; i < NUM_PROGRAMS; i++) {
