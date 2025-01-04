@@ -37,4 +37,6 @@ bool check_if_end_format(char *line);
 bool check_else_end_format(char *line);
 bool check_delimiter_program_format(char *line);
 
+void trim(char* str);
+
 #endif

@@ -283,3 +283,16 @@ bool check_delimiter_program_format(char *line) {  // #
         return false;
     }
 }
+
+void trim(char* str) {
+    char* end;
+
+    while (isspace((unsigned char)*str)) str++;
+
+    if (*str == 0) return;
+
+    end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end)) end--;
+
+    *(end + 1) = '\0';
+}

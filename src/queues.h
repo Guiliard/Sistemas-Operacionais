@@ -7,6 +7,7 @@
 #include "ram.h"
 #include "pcb.h"
 #include "reader.h"
+#include "interpreter.h"
 
 typedef struct process {
     char *program;
@@ -30,6 +31,9 @@ void init_queue_end(queue_end* final_queue);
 void init_queue_block(queue_block* block_queue);
 
 void populate_queue_start(queue_start* initial_queue, ram* memory_ram);
+
+void check_resources_on_queue_start(queue_start* initial_queue);
+void add_resource_to_pcb(process_control_block *pcb, char *memory_adress);
 
 void add_process_to_queue_end(queue_end* final_queue, process* process);
 //void add_process_to_queue_block(queue_block* block_queue, process* process);

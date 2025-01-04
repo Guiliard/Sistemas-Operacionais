@@ -53,29 +53,15 @@ unsigned short int ula(unsigned short int operating_a, unsigned short int operat
         case DIV:
             if (operating_b == 0) {
                 printf("Error: Division by zero.\n");
-                return 0; 
+                exit(1); 
             }
             return operating_a / operating_b;
 
         default:
             printf("Error: Invalid operation.\n");
-            return 0;
+            exit(1);
     }
 }
-
-void trim(char* str) {
-    char* end;
-
-    while (isspace((unsigned char)*str)) str++;
-
-    if (*str == 0) return;
-
-    end = str + strlen(str) - 1;
-    while (end > str && isspace((unsigned char)*end)) end--;
-
-    *(end + 1) = '\0';
-}
-
 
 unsigned short int get_register_index(char* reg_name) {
     
@@ -93,7 +79,7 @@ unsigned short int get_register_index(char* reg_name) {
     }
     
     printf("Error: Invalid register name.\n");
-    return 0;
+    exit(1);
 }
 
 void add_register_to_bank(process_control_block *pcb, char *register_name) {
@@ -103,7 +89,7 @@ void add_register_to_bank(process_control_block *pcb, char *register_name) {
 
         if (pcb->bank_of_register_used == NULL) {
             printf("Error: memory allocation failed in bank of register used\n");
-            return;
+            exit(1);
         }
 
         snprintf(pcb->bank_of_register_used, length, "%s, ", register_name);
@@ -120,7 +106,7 @@ void add_register_to_bank(process_control_block *pcb, char *register_name) {
             if (new_memory == NULL) {
                 printf("Error: memory allocation failed in bank of register used\n");
                 free(pattern);
-                return;
+                exit(1);
             }
 
             pcb->bank_of_register_used = new_memory;
@@ -456,6 +442,7 @@ void if_i(cpu* cpu, char* program, instruction_processor* instr_processor, unsig
         result = register_value < operand_value;
     } else {
         printf("Error: Invalid operator. Line %hd.\n",instr_processor->num_instruction + 1);
+        exit(1);
     }
 
     if (result == 0) {

@@ -16,7 +16,6 @@ int compare_priority(const void* a, const void* b) {
     }
 }
 
-
 void initialize_log_s_file() {
     FILE* file = fopen("output/start.txt", "w");  // Abre o arquivo em modo de escrita (cria ou sobrescreve)
     if (file == NULL) {
@@ -48,8 +47,10 @@ void log_start(process* proc) {
     fprintf(file, "%s\n", proc->program);
     fprintf(file, "PCB of process: %hd/ State: %s/ Priority: %hd\n",
     proc->pcb->process_id,print_enum_state(proc->pcb->state_of_process),proc->pcb->priority);
-    fprintf(file, "Quantum remaining: %hd/ Base address: %hd/ Memory limit: %hd\n\n",
+    fprintf(file, "Quantum remaining: %hd/ Base address: %hd/ Memory limit: %hd\n",
     proc->pcb->quantum_remaining,proc->pcb->base_address,proc->pcb->limit_of_memory);
+    fprintf(file, "Used resources: %s\n\n",
+    proc->pcb->resource_name);
 
     fclose(file);  // Fecha o arquivo após a escrita
 }
@@ -113,6 +114,7 @@ void init_threads(cpu* cpu, ram* memory_ram, queue_start* queue_start, queue_end
         t_args[i].core_id = i % NUM_CORES;
         t_args[i].queue_end = queue_end;
         log_start(t_args[i].process);
+        printf("index_core: %d\n", t_args[i].core_id);
 
         if (pthread_create(&threads[i], NULL, thread_function, &t_args[i]) != 0) {
             perror("Error: Fail on creating thread");

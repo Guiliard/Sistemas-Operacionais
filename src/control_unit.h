@@ -23,8 +23,6 @@ typedef struct instruction_processor {
 void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core);
 unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation);
 
-void trim(char* str);
-
 unsigned short int get_register_index(char* reg_name);
 unsigned short int verify_address(ram* memory_ram, char* address, unsigned short int num_positions);
 

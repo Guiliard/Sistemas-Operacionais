@@ -25,14 +25,13 @@ int main() {
     printf("\n");
 
     populate_queue_start(queue_start, memory_ram);
+    check_resources_on_queue_start(queue_start);
 
     initialize_log_s_file();
     initialize_log_e_file();
 
     init_threads(cpu, memory_ram, queue_start, queue_end);
 
-    //printf ("\n-----FILA DE PROCESSOS ENCERRADOS------\n\n");
-    //print_queue_end(queue_end);
     free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end, queue_block);
 
     return 0;

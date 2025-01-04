@@ -34,6 +34,7 @@ void remove_cache(cache **cache_table, unsigned short int address) {
         free(item);
     } else {
         printf("Error: address not found in cache\n");
+        exit(1);
     }
 }
 

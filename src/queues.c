@@ -77,6 +77,73 @@ void populate_queue_start(queue_start* initial_queue, ram* memory_ram) {
     free(programs_on_ram); 
 }
 
+void add_resource_to_pcb(process_control_block *pcb, char *memory_adress) {
+    if (pcb->resource_name == NULL) {
+        size_t length = strlen(memory_adress) + 3; 
+        pcb->resource_name = (char *)malloc(length);
+
+        if (pcb->resource_name == NULL) {
+            printf("Error: memory allocation failed in bank of register used\n");
+            exit(1);
+        }
+
+        snprintf(pcb->resource_name, length, "%s, ", memory_adress);
+    } else {
+
+        size_t bank_length = strlen(pcb->resource_name);
+        char *pattern = (char *)malloc(strlen(memory_adress) + 3);
+        snprintf(pattern, strlen(memory_adress) + 3, "%s, ", memory_adress);
+
+        if (strstr(pcb->resource_name, pattern) == NULL) {
+            size_t new_length = bank_length + strlen(memory_adress) + 3; 
+            char *new_memory = (char *)realloc(pcb->resource_name, new_length);
+
+            if (new_memory == NULL) {
+                printf("Error: memory allocation failed in resource name\n");
+                free(pattern);
+                exit(1);
+            }
+
+            pcb->resource_name = new_memory;
+            strcat(pcb->resource_name, memory_adress);
+            strcat(pcb->resource_name, ", ");
+        }
+
+        free(pattern);
+    }
+}
+
+void check_resources_on_queue_start(queue_start* initial_queue) {
+    char* line;
+    unsigned short int num_line = 0;
+    unsigned short int num;
+    char register_name1[10];
+    char memory_address[10];
+    type_of_instruction type;
+
+    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
+
+        num = count_lines(initial_queue->initial_queue[i].program);
+
+        while (num_line < num) {
+            line = get_line_of_program(initial_queue->initial_queue[i].program, num_line);
+            type = verify_instruction(line, num_line);
+
+            if (type == STORE) {
+                sscanf(line, "STORE %9s %9s", register_name1, memory_address);
+
+                trim(memory_address);
+
+                add_resource_to_pcb(initial_queue->initial_queue[i].pcb, memory_address);
+            }
+
+            num_line++;
+        }   
+        num = 0;
+        num_line = 0;
+    }
+}
+
 void add_process_to_queue_end(queue_end* final_queue, process* process) {
     process->pcb->state_of_process = READY;
     
