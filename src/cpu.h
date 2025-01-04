@@ -1,7 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 
-#define NUM_CORES 1
+#define NUM_CORES 2
 #define NUM_REGISTERS 32
 
 #include "libs.h"
@@ -16,5 +16,6 @@ typedef struct cpu {
 } cpu;
 
 void init_cpu(cpu* cpu);
+void reset_cpu(cpu* cpu);
 
 #endif

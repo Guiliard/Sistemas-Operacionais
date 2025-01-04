@@ -76,6 +76,7 @@ void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_blo
     printf("Number of instructions: %d - Core used: %d\n", num_lines, index_core);
 
     while (instr_processor.num_instruction < num_lines) {
+        printf("Index_core: %d - Num_instruction: %d\n", index_core, instr_processor.num_instruction);
 
         instr_processor.instruction = instruction_fetch(cpu, program, index_core);
 
@@ -89,6 +90,8 @@ void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_blo
 
         pcb->quantum_remaining--;
     }
+
+    reset_cpu(cpu);
 }
 
 void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end, queue_block* queue_block) {
