@@ -192,6 +192,27 @@ void remove_process_from_queue_block(queue_block* block_queue, queue_start* init
     }
 }
 
+void remove_process_from_queue_start(queue_start* initial_queue, process* process) {
+
+    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
+        if (initial_queue->initial_queue[i].program != NULL && initial_queue->initial_queue[i].pcb->process_id == process->pcb->process_id) {
+            initial_queue->initial_queue[i] = NULL;
+            break;
+        }
+    }
+}
+
+void organize_process_of_queue_start(queue_start* initial_queue, unsigned short int process_id) {
+
+    for (unsigned short int i = process_id; i < NUM_PROGRAMS - 1; i++) {
+        initial_queue->initial_queue[i] = initial_queue->initial_queue[i + 1];
+    }
+    
+    if (initial_queue->initial_queue[NUM_PROGRAMS - 1].program != NULL) {
+        initial_queue->initial_queue[NUM_PROGRAMS - 1] = NULL;
+    }
+}
+
 void print_queue_start(queue_start* initial_queue) {
     printf("Initial Queue:\n");
 

@@ -39,8 +39,10 @@ void add_process_to_queue_start(queue_start* initial_queue, process* process);
 void add_process_to_queue_end(queue_end* final_queue, process* process);
 void add_process_to_queue_block(queue_block* block_queue, process* process);
 
-void remove_process_from_queue_start(queue_start* initial_queue, process* process, bool destiny_to_go); // destiny_to_go = true -> block_queue, false -> final_queue
+void remove_process_from_queue_start(queue_start* initial_queue, process* process); 
 void remove_process_from_queue_block(queue_block* block_queue, queue_start* initial_queue, process* process);
+
+void organize_process_of_queue_start(queue_start* initial_queue, unsigned short int process_id);
 
 void print_queue_start(queue_start* initial_queue);
 void print_queue_end(queue_end* final_queue);
