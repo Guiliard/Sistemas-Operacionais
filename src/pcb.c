@@ -14,6 +14,7 @@ process_control_block* init_pcb() {
     pcb->base_address = 0;
     pcb->limit_of_memory = 250;
     pcb->bank_of_register_used = NULL; 
+    pcb->result_of_process = NULL;
     pcb->waiting_resource = false;
     pcb->resource_name = NULL; 
     pcb->is_terminated = false;
@@ -29,8 +30,10 @@ void print_pcb(process_control_block* pcb) {
     printf("Base Address: %d\n", pcb->base_address);
     printf("Limit of Memory: %d\n", pcb->limit_of_memory);
     printf("Bank of Register Used: %s\n", pcb->bank_of_register_used);
+    printf("Result of Process: %s\n", pcb->result_of_process);
     printf("Waiting Resource: %d\n", pcb->waiting_resource);
     printf("Resource Name: %s\n", pcb->resource_name);
+    printf("Is Terminated: %d\n", pcb->is_terminated);
     printf("\n");
 }
 

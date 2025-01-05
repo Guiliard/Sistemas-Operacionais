@@ -182,11 +182,12 @@ void add_process_to_queue_block(queue_block* block_queue, process* process) {
 
 void remove_process_from_queue_block(queue_block* block_queue, queue_start* initial_queue, process* process) {
     
-    add_process_to_queue_start(&initial_queue, process);
+    add_process_to_queue_start(initial_queue, process);
     
     for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
         if (block_queue->block_queue[i].program != NULL && block_queue->block_queue[i].pcb->process_id == process->pcb->process_id) {
-            block_queue->block_queue[i] = NULL;
+            block_queue->block_queue[i].program = NULL;
+            block_queue->block_queue[i].pcb = NULL;
             break;
         }
     }
@@ -196,7 +197,8 @@ void remove_process_from_queue_start(queue_start* initial_queue, process* proces
 
     for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
         if (initial_queue->initial_queue[i].program != NULL && initial_queue->initial_queue[i].pcb->process_id == process->pcb->process_id) {
-            initial_queue->initial_queue[i] = NULL;
+            initial_queue->initial_queue[i].program = NULL;
+            initial_queue->initial_queue[i].pcb = NULL;
             break;
         }
     }
@@ -209,7 +211,8 @@ void organize_process_of_queue_start(queue_start* initial_queue, unsigned short 
     }
     
     if (initial_queue->initial_queue[NUM_PROGRAMS - 1].program != NULL) {
-        initial_queue->initial_queue[NUM_PROGRAMS - 1] = NULL;
+        initial_queue->initial_queue[NUM_PROGRAMS - 1].program = NULL;
+        initial_queue->initial_queue[NUM_PROGRAMS - 1].pcb = NULL;
     }
 }
 

@@ -25,7 +25,7 @@ void memory_access(cpu* cpu, ram* memory_ram, process_control_block* pcb, type_o
     if (type == LOAD) {
         load(cpu, instruction, pcb, index_core);
     } else if (type == STORE) {
-        store(cpu, memory_ram, instruction, index_core);
+        store(cpu, memory_ram, pcb, instruction, index_core);
     } else {
         // do nothing
     }

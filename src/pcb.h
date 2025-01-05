@@ -16,7 +16,8 @@ typedef struct process_control_block {
     unsigned short int quantum_remaining;    
     unsigned short int base_address;         
     unsigned short int limit_of_memory;
-    char* bank_of_register_used;         
+    char* bank_of_register_used;     
+    char* result_of_process;    
     bool waiting_resource;    
     char* resource_name;   
     bool is_terminated;

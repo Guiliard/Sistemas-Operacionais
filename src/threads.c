@@ -70,8 +70,10 @@ void log_end(process* proc) {
     proc->pcb->process_id,print_enum_state(proc->pcb->state_of_process),proc->pcb->priority);
     fprintf(file, "Quantum remaining: %hd/ Base address: %hd/ Memory limit: %hd\n",
     proc->pcb->quantum_remaining,proc->pcb->base_address,proc->pcb->limit_of_memory);
-    fprintf(file, "Used registers: %s\n\n",
+    fprintf(file, "Used registers: %s\n",
     proc->pcb->bank_of_register_used);
+    fprintf(file, "Result of process: %s\n\n",
+    proc->pcb->result_of_process);
 
     fclose(file);  
 }

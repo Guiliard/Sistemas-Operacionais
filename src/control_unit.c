@@ -118,7 +118,43 @@ void add_register_to_bank(process_control_block *pcb, char *register_name) {
     }
 }
 
-unsigned short int verify_address(ram* memory_ram, char* address, unsigned short int num_positions) {
+void add_result_of_process_to_pcb(process_control_block *pcb, char *buffer) {
+    if (pcb->result_of_process == NULL) {
+        size_t length = strlen(buffer) + 3; 
+        pcb->result_of_process = (char *)malloc(length);
+
+        if (pcb->result_of_process == NULL) {
+            printf("Error: memory allocation failed in bank of register used\n");
+            exit(1);
+        }
+
+        snprintf(pcb->result_of_process, length, "%s, ", buffer);
+    } else {
+
+        size_t bank_length = strlen(pcb->result_of_process);
+        char *pattern = (char *)malloc(strlen(buffer) + 3);
+        snprintf(pattern, strlen(buffer) + 3, "%s, ", buffer);
+
+        if (strstr(pcb->result_of_process, pattern) == NULL) {
+            size_t new_length = bank_length + strlen(buffer) + 3; 
+            char *new_memory = (char *)realloc(pcb->result_of_process, new_length);
+
+            if (new_memory == NULL) {
+                printf("Error: memory allocation failed in bank of register used\n");
+                free(pattern);
+                exit(1);
+            }
+
+            pcb->result_of_process = new_memory;
+            strcat(pcb->result_of_process, buffer);
+            strcat(pcb->result_of_process, ", ");
+        }
+
+        free(pattern);
+    }
+}
+
+unsigned short int verify_address(char* address, unsigned short int num_positions) {
     unsigned short int address_without_a;
     
     address_without_a = atoi(address + 1);  
@@ -126,13 +162,6 @@ unsigned short int verify_address(ram* memory_ram, char* address, unsigned short
     if (address_without_a + num_positions > NUM_MEMORY) {
         printf("Error: Invalid memory address - out of bounds.\n");
         exit(1);
-    }
-
-    for (unsigned short int i = 0; i < num_positions; i++) {
-        if (memory_ram->vector[address_without_a + i] != '\0') {
-            printf("Error: Invalid memory address - position %d is already occupied.\n", address_without_a + i);
-            exit(1);
-        }
     }
 
     return address_without_a; 
@@ -171,7 +200,7 @@ void load (cpu* cpu, char* instruction, process_control_block* pcb, unsigned sho
     cpu->core[index_core].registers[register_index] = value;
 }
 
-void store (cpu* cpu, ram* memory_ram, char* instruction, unsigned short int index_core) {
+void store (cpu* cpu, ram* memory_ram, process_control_block* pcb, char* instruction, unsigned short int index_core) {
     char *instruction_copy, *token, *register_name, *memory_address;
     char buffer[10]; 
     unsigned short int address, num_positions, register_index, register_value;
@@ -205,9 +234,11 @@ void store (cpu* cpu, ram* memory_ram, char* instruction, unsigned short int ind
 
     num_positions = strlen(buffer); 
 
-    address = verify_address(memory_ram, memory_address, num_positions);
+    address = verify_address(memory_address, num_positions);
 
-    strcpy(&memory_ram->vector[address], buffer);
+    write_ram(memory_ram, address, buffer);
+
+    add_result_of_process_to_pcb(pcb, buffer);
 }
 
 unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core) {

@@ -24,10 +24,10 @@ void control_unit(cpu* cpu, char* program, instruction_processor* instr_processo
 unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation);
 
 unsigned short int get_register_index(char* reg_name);
-unsigned short int verify_address(ram* memory_ram, char* address, unsigned short int num_positions);
+unsigned short int verify_address(char* address, unsigned short int num_positions);
 
 void load(cpu* cpu, char* instruction, process_control_block* pcb, unsigned short int index_core);
-void store(cpu* cpu, ram* memory_ram, char* instruction, unsigned short int index_core);
+void store(cpu* cpu, ram* memory_ram, process_control_block* pcb, char* instruction, unsigned short int index_core);
 
 unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core);
 unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_core);
@@ -42,5 +42,6 @@ void loop(cpu* cpu, instruction_processor* instr_processor, unsigned short int i
 void loop_end(cpu* cpu, instruction_processor* instr_processor, unsigned short int index_core);
 
 void add_register_to_bank(process_control_block *pcb, char *register_name);
+void add_result_of_process_to_pcb(process_control_block *pcb, char *buffer);
 
 #endif
