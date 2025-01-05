@@ -16,6 +16,7 @@ process_control_block* init_pcb() {
     pcb->bank_of_register_used = NULL; 
     pcb->waiting_resource = false;
     pcb->resource_name = NULL; 
+    pcb->is_terminated = false;
 
     return pcb;
 }

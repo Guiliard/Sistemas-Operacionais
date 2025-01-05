@@ -16,6 +16,6 @@ typedef struct cpu {
 } cpu;
 
 void init_cpu(cpu* cpu);
-void reset_cpu(cpu* cpu);
+void reset_cpu(cpu* cpu, unsigned short int core_id);
 
 #endif

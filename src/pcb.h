@@ -19,6 +19,7 @@ typedef struct process_control_block {
     char* bank_of_register_used;         
     bool waiting_resource;    
     char* resource_name;   
+    bool is_terminated;
 } process_control_block;
 
 process_control_block* init_pcb();

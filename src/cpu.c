@@ -20,11 +20,9 @@ void init_cpu(cpu* cpu) {
     }
 }
 
-void reset_cpu(cpu* cpu) {
-    for (unsigned short int i = 0; i < NUM_CORES; i++) {
-        cpu->core[i].PC = 0;
-        for (unsigned short int j = 0; j < NUM_REGISTERS; j++) {
-            cpu->core[i].registers[j] = 0;
-        }
+void reset_cpu(cpu* cpu, unsigned short int core_id) {
+    cpu->core[core_id].PC = 0;
+    for (unsigned short int i = 0; i < NUM_REGISTERS; i++) {
+        cpu->core[core_id].registers[i] = 0;
     }
 }

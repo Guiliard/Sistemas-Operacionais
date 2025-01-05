@@ -144,12 +144,49 @@ void check_resources_on_queue_start(queue_start* initial_queue) {
     }
 }
 
+void add_process_to_queue_start(queue_start* initial_queue, process* process) {
+    process->pcb->state_of_process = RUNNING;
+    process->pcb->waiting_resource = false;
+
+    for (unsigned short int i = NUM_PROGRAMS; i > 0; i--) {
+        if (initial_queue->initial_queue[i].program == NULL) {
+            initial_queue->initial_queue[i] = *process;
+            break;
+        }
+    }
+}
+
 void add_process_to_queue_end(queue_end* final_queue, process* process) {
     process->pcb->state_of_process = READY;
+    process->pcb->is_terminated = true;
     
     for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
         if (final_queue->final_queue[i].program == NULL) {
             final_queue->final_queue[i] = *process;
+            break;
+        }
+    }
+}
+
+void add_process_to_queue_block(queue_block* block_queue, process* process) {
+    process->pcb->state_of_process = BLOCK;
+    process->pcb->waiting_resource = true;
+
+    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
+        if (block_queue->block_queue[i].program == NULL) {
+            block_queue->block_queue[i] = *process;
+            break;
+        }
+    }
+}
+
+void remove_process_from_queue_block(queue_block* block_queue, queue_start* initial_queue, process* process) {
+    
+    add_process_to_queue_start(&initial_queue, process);
+    
+    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
+        if (block_queue->block_queue[i].program != NULL && block_queue->block_queue[i].pcb->process_id == process->pcb->process_id) {
+            block_queue->block_queue[i] = NULL;
             break;
         }
     }

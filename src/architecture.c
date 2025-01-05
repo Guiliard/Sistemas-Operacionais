@@ -91,7 +91,7 @@ void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_blo
         pcb->quantum_remaining--;
     }
 
-    reset_cpu(cpu);
+    reset_cpu(cpu, index_core);
 }
 
 void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end, queue_block* queue_block) {
