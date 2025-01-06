@@ -21,22 +21,24 @@ int main() {
     }
 
     check_instructions_on_ram(memory_ram);
-    print_ram(memory_ram);
-    printf("\n");
 
     populate_queue_start(queue_start, memory_ram);
+    
     check_resources_on_queue_start(queue_start);
-
-    reset_ram(memory_ram);
 
     initialize_log_s_file();
     initialize_log_e_file();
+    initialize_log_b_file();
 
-    init_threads(cpu, memory_ram, queue_start, queue_end);
+    printf("\nStarting execution of programs...\n");
 
-    print_ram(memory_ram);
+    init_threads(cpu, memory_ram, queue_start, queue_end, queue_block);
+
+    reset_ram(memory_ram);
 
     free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end, queue_block);
+
+    printf("Please, check the output files in the 'output' folder.\n");
 
     return 0;
 }

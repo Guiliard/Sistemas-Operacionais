@@ -73,10 +73,7 @@ void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_blo
 
     num_lines = count_lines(program);
 
-    printf("Number of instructions: %d - Core used: %d\n", num_lines, index_core);
-
     while (instr_processor.num_instruction < num_lines) {
-        printf("Index_core: %d - Num_instruction: %d\n", index_core, instr_processor.num_instruction);
 
         instr_processor.instruction = instruction_fetch(cpu, program, index_core);
 

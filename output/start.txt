@@ -11,18 +11,18 @@ Quantum remaining: 50/ Base address: 0/ Memory limit: 250
 Used resources: A1000, 
 
 ------------------PROGRAM 1------------------
-LOAD A0 50
-LOAD B0 20
-LOAD C0 70
+LOAD A0 5
+LOAD B0 3
+LOAD C0 1
 LOOP B0
 ADD C0 A0
 SUB B0 1
 L_END
-STORE C0 A1000
+STORE C0 A1050
 
 PCB of process: 1/ State: RUNNING/ Priority: 1
 Quantum remaining: 50/ Base address: 49/ Memory limit: 250
-Used resources: A1000, 
+Used resources: A1050, 
 
 ------------------PROGRAM 2------------------
 LOAD A0 8
@@ -33,7 +33,7 @@ I_END
 STORE A0 A2000
 
 PCB of process: 2/ State: RUNNING/ Priority: 2
-Quantum remaining: 50/ Base address: 139/ Memory limit: 250
+Quantum remaining: 50/ Base address: 136/ Memory limit: 250
 Used resources: A2000, 
 
 ------------------PROGRAM 3------------------
@@ -44,6 +44,6 @@ L_END
 STORE A0 A2010
 
 PCB of process: 3/ State: RUNNING/ Priority: 3
-Quantum remaining: 50/ Base address: 207/ Memory limit: 250
+Quantum remaining: 50/ Base address: 204/ Memory limit: 250
 Used resources: A2010, 
 

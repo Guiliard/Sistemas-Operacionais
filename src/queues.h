@@ -35,14 +35,8 @@ void populate_queue_start(queue_start* initial_queue, ram* memory_ram);
 void check_resources_on_queue_start(queue_start* initial_queue);
 void add_resource_to_pcb(process_control_block *pcb, char *memory_adress);
 
-void add_process_to_queue_start(queue_start* initial_queue, process* process);
 void add_process_to_queue_end(queue_end* final_queue, process* process);
 void add_process_to_queue_block(queue_block* block_queue, process* process);
-
-void remove_process_from_queue_start(queue_start* initial_queue, process* process); 
-void remove_process_from_queue_block(queue_block* block_queue, queue_start* initial_queue, process* process);
-
-void organize_process_of_queue_start(queue_start* initial_queue, unsigned short int process_id);
 
 void print_queue_start(queue_start* initial_queue);
 void print_queue_end(queue_end* final_queue);
