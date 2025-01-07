@@ -1,8 +1,8 @@
 #include "pipeline.h"
 
-char* instruction_fetch(cpu* cpu, ram* memory) {
-    char* instruction = get_line_of_program(memory->vector, cpu->core[0].PC);
-    cpu->core[0].PC++;
+char* instruction_fetch(cpu* cpu, char* program, unsigned short int index_core) {
+    char* instruction = get_line_of_program(program, cpu->core[index_core].PC);
+    cpu->core[index_core].PC++;
 
     return instruction;
 }
@@ -17,30 +17,36 @@ type_of_instruction instruction_decode(char* instruction, unsigned short int num
     }
 }
 
-void execute(cpu* cpu, pipe *p) {
-    control_unit(cpu, p);
+void execute(cpu* cpu, char* program, instruction_processor * instr_processor, unsigned short int index_core) {
+    control_unit(cpu, program, instr_processor, index_core);
 }
 
-void memory_access(cpu* cpu, ram* memory_ram, type_of_instruction type, char* instruction) {
+void memory_access(cpu* cpu, ram* memory_ram, process_control_block* pcb, type_of_instruction type, char* instruction, unsigned short int index_core) {
     if (type == LOAD) {
-        load(cpu, instruction);
+        load(cpu, instruction, pcb, index_core);
     } else if (type == STORE) {
-        store(cpu, memory_ram, instruction);
+        store(cpu, memory_ram, pcb, instruction, index_core);
     } else {
         // do nothing
     }
 }
 
-void write_back(cpu* cpu, type_of_instruction type, char* instruction, unsigned short int result) {
+void write_back(cpu* cpu, type_of_instruction type, char* instruction, unsigned short int result, unsigned short int index_core) {
 
     char* instruction_copy = strdup(instruction);
+    unsigned short int register_index;
 
     if (type == ADD || type == SUB || type == MUL || type == DIV) {
 
         strtok(instruction_copy, " "); 
+
         char* register_name = strtok(NULL, " "); 
 
-        cpu->core[0].registers[get_register_index(register_name)] = result;
+        trim(register_name);
+
+        register_index = get_register_index(register_name);
+
+        cpu->core[index_core].registers[register_index] = result;
 
     } else if (type == LOAD || type == STORE || type == LOOP || type == L_END||type == IF||type == I_END || type == ELSE || type == ELS_END) {
         // do nothing

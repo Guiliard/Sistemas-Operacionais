@@ -6,5 +6,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <pthread.h>
+#include <semaphore.h>
 
 #endif

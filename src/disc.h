@@ -1,7 +1,7 @@
 #ifndef DISC_H
 #define DISC_H
 
-#define NUM_MEMORY 1024
+#define NUM_DISC 4096
 
 #include "libs.h"
 

@@ -18,9 +18,11 @@ typedef enum type_of_instruction {
     I_END,
     ELS_END,
     INVALID,
+    DELIMITER
 } type_of_instruction;
 
 type_of_instruction verify_instruction(char *line, unsigned short int line_number);
+
 bool check_load_format(char *line);
 bool check_store_format(char *line);
 bool check_add_format(char *line);
@@ -33,6 +35,8 @@ bool check_loop_format(char *line);
 bool check_loop_end_format(char *line);
 bool check_if_end_format(char *line);
 bool check_else_end_format(char *line);
+bool check_delimiter_program_format(char *line);
 
+void trim(char* str);
 
 #endif

@@ -5,8 +5,8 @@
 #include "libs.h"
 
 typedef struct cache {
-    unsigned short int address;//chave
-    unsigned short int data;//valor
+    unsigned short int address; //chave
+    unsigned short int data; //valor
     UT_hash_handle hh;
 } cache;
 

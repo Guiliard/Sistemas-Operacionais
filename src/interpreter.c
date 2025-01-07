@@ -75,12 +75,17 @@ type_of_instruction verify_instruction(char *line, unsigned short int line_numbe
             return INVALID;
         } else
             return ELS_END;
+    } else if (strstr(line, "#") != NULL) {
+        if (!check_delimiter_program_format(line)) {
+            printf("Error: Invalid delimiter instruction on line %d\n", line_number + 1);
+            return INVALID;
+        } else
+            return DELIMITER;
     } else {
-        printf("Error: Unrecognized instruction on line %d\n", line_number);
+        printf("Error: Unrecognized instruction on line %d\n", line_number + 1);
         return INVALID;
     } 
 }
-
 
 bool check_load_format(char *line) {  // "LOAD <register> <value>
 
@@ -267,7 +272,27 @@ bool check_else_end_format(char *line) {  // END ELSE
     }
 }
 
+bool check_delimiter_program_format(char *line) {  // #
+    int num_tokens = sscanf(line, "#");
 
+    unsigned short int num_total_tokens = count_tokens_in_line(line);
 
+    if (num_tokens == 0 && num_total_tokens == 1) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
+void trim(char* str) {
+    char* end;
 
+    while (isspace((unsigned char)*str)) str++;
+
+    if (*str == 0) return;
+
+    end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end)) end--;
+
+    *(end + 1) = '\0';
+}
