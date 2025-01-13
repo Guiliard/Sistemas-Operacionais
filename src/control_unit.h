@@ -7,19 +7,6 @@
 #include "interpreter.h"
 #include "pcb.h"
 
-typedef struct instruction_processor {
-    char *instruction;
-    type_of_instruction type;
-    unsigned short int num_instruction;
-    unsigned short int result;
-    unsigned short int loop_start;
-    unsigned short int loop_value;
-    bool loop;
-    bool has_if;
-    bool valid_if;
-    bool running_if;
-} instruction_processor;
-
 void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core);
 unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation);
 

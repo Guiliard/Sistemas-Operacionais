@@ -3,6 +3,7 @@
 void init_queue_start(queue_start* initial_queue) {
 
     initial_queue->initial_queue = malloc(NUM_PROGRAMS * sizeof(process));
+    initial_queue->size = NUM_PROGRAMS;
 
     if (initial_queue->initial_queue == NULL) {
         printf("Error: memory allocation failed in queue_start\n");

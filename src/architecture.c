@@ -65,33 +65,33 @@ void check_instructions_on_ram(ram* memory_ram) {
     }
 }
 
-void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_block* pcb, unsigned short int index_core) {
-    
-    instruction_processor instr_processor;
+void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_block* pcb) {   
     unsigned short int num_lines = 0;
-    instr_processor.num_instruction = 0;
 
     num_lines = count_lines(program);
 
-    printf("Number of instructions: %d - Core used: %d\n", num_lines, index_core);
+    printf("Number of instructions: %d - Core used: %d\n", num_lines, pcb->core_number);
 
-    while (instr_processor.num_instruction < num_lines) {
-        printf("Index_core: %d - Num_instruction: %d\n", index_core, instr_processor.num_instruction);
+    if (pcb->in_p->num_instruction == num_lines) {
+        pcb->is_terminated = true;
+        reset_cpu(cpu, pcb->core_number);
+    }
+    else {
+        printf("Index_core: %d - Num_instruction: %d\n", pcb->core_number, pcb->in_p->num_instruction);
 
-        instr_processor.instruction = instruction_fetch(cpu, program, index_core);
+        pcb->in_p->instruction = instruction_fetch(cpu, program, pcb->core_number);
 
-        instr_processor.type = instruction_decode(instr_processor.instruction, instr_processor.num_instruction);
+        pcb->in_p->type = instruction_decode(pcb->in_p->instruction, pcb->in_p->num_instruction);
 
-        execute(cpu, program, &instr_processor, index_core);
+        execute(cpu, program, pcb->in_p, pcb->core_number);
 
-        memory_access(cpu, memory_ram, pcb, instr_processor.type, instr_processor.instruction, index_core);
+        memory_access(cpu, memory_ram, pcb, pcb->in_p->type, pcb->in_p->instruction, pcb->core_number);
 
-        write_back(cpu, instr_processor.type, instr_processor.instruction, instr_processor.result, index_core);
+        write_back(cpu, pcb->in_p->type, pcb->in_p->instruction, pcb->in_p->result, pcb->core_number);
 
         pcb->quantum_remaining--;
     }
 
-    reset_cpu(cpu, index_core);
 }
 
 void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end, queue_block* queue_block) {
