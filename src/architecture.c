@@ -65,29 +65,31 @@ void check_instructions_on_ram(ram* memory_ram) {
     }
 }
 
-void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_block* pcb) {   
+void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_block* pcb, unsigned short int core_number) {   
     unsigned short int num_lines = 0;
 
     num_lines = count_lines(program);
 
-    printf("Number of instructions: %d - Core used: %d\n", num_lines, pcb->core_number);
+    printf("Number of instructions: %d - Core used: %d\n", num_lines, core_number);
 
     if (pcb->in_p->num_instruction == num_lines) {
         pcb->is_terminated = true;
-        reset_cpu(cpu, pcb->core_number);
+        reset_cpu(cpu, core_number);
     }
     else {
-        printf("Index_core: %d - Num_instruction: %d\n", pcb->core_number, pcb->in_p->num_instruction);
+        printf("Index_core: %d - Num_instruction: %d\n", core_number, pcb->in_p->num_instruction);
 
-        pcb->in_p->instruction = instruction_fetch(cpu, program, pcb->core_number);
+        pcb->in_p->instruction = instruction_fetch(cpu, program, core_number);
 
         pcb->in_p->type = instruction_decode(pcb->in_p->instruction, pcb->in_p->num_instruction);
 
-        execute(cpu, program, pcb->in_p, pcb->core_number);
+        execute(cpu, program, pcb->in_p, core_number);
 
-        memory_access(cpu, memory_ram, pcb, pcb->in_p->type, pcb->in_p->instruction, pcb->core_number);
+        memory_access(cpu, memory_ram, pcb, pcb->in_p->type, pcb->in_p->instruction, core_number);
 
-        write_back(cpu, pcb->in_p->type, pcb->in_p->instruction, pcb->in_p->result, pcb->core_number);
+        write_back(cpu, pcb->in_p->type, pcb->in_p->instruction, pcb->in_p->result, core_number);
+
+        print_in_p(pcb->in_p);
 
         pcb->quantum_remaining--;
     }

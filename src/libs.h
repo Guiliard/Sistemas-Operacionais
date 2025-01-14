@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <pthread.h>
-#include <semaphore.h>
+#include <sched.h>
+#include <unistd.h>
 
 #endif

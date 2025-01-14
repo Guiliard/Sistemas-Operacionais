@@ -10,7 +10,6 @@ process_control_block* init_pcb() {
     pcb->process_id = 0;
     pcb->state_of_process = RUNNING;  
     pcb->priority = 0;
-    pcb->core_number = 0;
     pcb->quantum_remaining = 50;
     pcb->base_address = 0;
     pcb->limit_of_memory = 250;
@@ -19,6 +18,7 @@ process_control_block* init_pcb() {
     pcb->waiting_resource = false;
     pcb->resource_name = NULL; 
     pcb->is_terminated = false;
+    pcb->is_running = false;
     pcb->in_p = init_in_p();
 
     return pcb;
@@ -47,7 +47,6 @@ void print_pcb(process_control_block* pcb) {
     printf("Process ID: %hd\n", pcb->process_id);
     printf("State: %s\n", print_enum_state(pcb->state_of_process));
     printf("Priority: %hd\n", pcb->priority);
-    printf("Core Number: %hd\n", pcb->core_number);
     printf("Quantum Remaining: %hd\n", pcb->quantum_remaining);
     printf("Base Address: %hd\n", pcb->base_address);
     printf("Limit of Memory: %hd\n", pcb->limit_of_memory);
@@ -56,6 +55,20 @@ void print_pcb(process_control_block* pcb) {
     printf("Waiting Resource: %d\n", pcb->waiting_resource);
     printf("Resource Name: %s\n", pcb->resource_name);
     printf("Is Terminated: %d\n", pcb->is_terminated);
+    printf("Is Running: %d\n", pcb->is_running);
+    printf("\n");
+}
+
+void print_in_p(instruction_processor* in_p) {
+    printf("has if: %d\n", in_p->has_if);
+    printf("instruction: %s\n", in_p->instruction);
+    printf("loop number: %d\n", in_p->loop);
+    printf("where loop start: %hd\n", in_p->loop_start);
+    printf("loop limit: %hd\n", in_p->loop_value);
+    printf("num instruction: %hd\n", in_p->num_instruction);
+    printf("result: %hd\n", in_p->result);
+    printf("is if running: %d\n", in_p->running_if);
+    printf("valid_if %d\n", in_p->valid_if);
     printf("\n");
 }
 

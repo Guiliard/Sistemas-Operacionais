@@ -16,7 +16,6 @@ typedef struct process {
 
 typedef struct queue_start {
     process *initial_queue;
-    unsigned short int size;
 } queue_start;
 
 typedef struct queue_end {
