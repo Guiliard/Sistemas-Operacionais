@@ -113,10 +113,10 @@ void *core_function(void *args) {
             processos_pendentes--;
 
             // Tentar pegar um novo processo
-            t_args->assigned_process = get_process(t_args->queue_start);
-            if (t_args->assigned_process) {
+            //t_args->assigned_process = get_process(t_args->queue_start);
+            /*if (t_args->assigned_process) {
                 printf("Core %d recebeu novo processo %p\n", t_args->core_id, (void *)t_args->assigned_process);
-            }
+            }*/
         }
 
         // Atualiza o core atual
@@ -125,13 +125,8 @@ void *core_function(void *args) {
         pthread_mutex_unlock(&queue_mutex);
 
         // Verifica se o core deve encerrar
-        if (t_args->assigned_process == NULL && processos_pendentes <= 0) {
-            pthread_mutex_lock(&queue_mutex);
-            if (processos_pendentes <= 0) {
-                pthread_mutex_unlock(&queue_mutex);
-                break;  // Core termina se não houver mais processos
-            }
-            pthread_mutex_unlock(&queue_mutex);
+        if (processos_pendentes <= 0) {
+            break;  // Core termina se não houver mais processos
         }
     }
 

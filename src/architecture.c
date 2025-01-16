@@ -74,6 +74,7 @@ void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_blo
 
     if (pcb->in_p->num_instruction == num_lines) {
         pcb->is_terminated = true;
+        pcb->is_running = false;
         reset_cpu(cpu, core_number);
     }
     else {
