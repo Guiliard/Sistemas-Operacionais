@@ -4,7 +4,7 @@ pthread_mutex_t queue_mutex;
 pthread_cond_t cond_var;
 int current_core = 0;
 bool running_core[NUM_CORES];
-unsigned short int processos_pendentes[NUM_CORES];
+bool has_process[NUM_CORES];
 int end_thread = 0;
 
 int compare_priority(const void* a, const void* b) {
@@ -111,20 +111,18 @@ void *core_function(void *args) {
 
         if (proc && proc->pcb->is_terminated) {
             printf("Core %d terminou o processo %p\n", t_args->core_id, (void *)proc);
-            if (processos_pendentes[t_args->core_id] != 0)
-                processos_pendentes[t_args->core_id]--;
         }
         pthread_mutex_unlock(&queue_mutex);
 
-        if (processos_pendentes[t_args->core_id] == 0) {
+        do {
+        current_core = (current_core + 1) % NUM_CORES;
+        pthread_cond_broadcast(&cond_var);
+        } while (!running_core[current_core]);
+
+        if (!has_process[t_args->core_id]) {
             printf("Core %d finalizado.\n", t_args->core_id);
             break;
         }
-
-        do {
-            current_core = (current_core + 1) % NUM_CORES;
-        } while (!running_core[current_core]);
-        pthread_cond_broadcast(&cond_var);
     }
 
     running_core[t_args->core_id] = false;
@@ -150,7 +148,7 @@ void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end
         queue_end = queue_end;
         running_core[i] = true;
         t_args[i].assigned_process = get_process(queue_start);
-        processos_pendentes[i] = NUM_PROGRAMS;
+        has_process[i] = true;
 
         if (t_args[i].assigned_process == NULL) {
             printf("Nenhum processo disponível para o core %d\n", i);
@@ -162,7 +160,7 @@ void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end
     }
 
     // Escalonador de processos
-    while (processos_pendentes[0] > 0) {
+    while (end_thread < NUM_CORES) {
         for (int i = 0; i < cores_ativos; i++) {
             printf ("endthread %d",end_thread);
             if (t_args[i].assigned_process && t_args[i].assigned_process->pcb->is_terminated && running_core[i]) {
@@ -172,11 +170,8 @@ void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end
                     printf("Core %d recebeu novo processo %p\n", t_args[i].core_id, (void *)new_proc);
                 } else {
                     printf("%dNenhum novo processo disponível para o core %d\n",running_core[i],t_args[i].core_id);
-                    processos_pendentes[i] = 0;
+                    has_process[i] = false;
                 }
-            }
-            if (end_thread == NUM_CORES) {
-                break;
             }
         }
         pthread_cond_broadcast(&cond_var);

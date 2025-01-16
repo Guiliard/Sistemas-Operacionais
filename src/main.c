@@ -36,7 +36,7 @@ int main() {
 
     print_ram(memory_ram);
 
-    //free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end, queue_block);
+    free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end, queue_block);
 
     return 0;
 }
