@@ -7,6 +7,7 @@ typedef struct tread_args {
     ram *memory_ram;
     unsigned short int core_id;    // ID do núcleo associado
     queue_start* queue_start;
+    queue_end* queue_end;
     process* assigned_process;
 } thread_args;
 
