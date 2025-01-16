@@ -175,7 +175,6 @@ void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end
                     printf("Core %d recebeu novo processo %p\n", t_args[i].core_id, (void *)new_proc);
                 } else {
                     printf("Nenhum novo processo disponível para o core %d\n", t_args[i].core_id);
-                    running_core[i] = false;
                     more_process[i] = false;
                 }
             }
@@ -192,4 +191,3 @@ void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end
     free(t_args);
     printf("Execução finalizada.\n");
 }
-
