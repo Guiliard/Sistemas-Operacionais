@@ -3,7 +3,7 @@
 pthread_mutex_t queue_mutex;
 pthread_cond_t cond_var;
 int current_core = 0;
-unsigned short int processos_pendentes = NUM_PROGRAMS;
+unsigned short int processos_pendentes;
 
 int compare_priority(const void* a, const void* b) {
     const process_control_block* pcb1 = (const process_control_block*)a;
@@ -105,38 +105,40 @@ void *core_function(void *args) {
         if (proc && !proc->pcb->is_terminated) {
             printf("Core %d executando processo %p\n", t_args->core_id, (void *)proc);
             init_pipeline(t_args->cpu, t_args->memory_ram, proc->program, proc->pcb, t_args->core_id);
+        }
 
-            if (proc->pcb->is_terminated) {
-                printf("Core %d terminou o processo %p\n", t_args->core_id, (void *)proc);
-                processos_pendentes--;
-                t_args->assigned_process = NULL;
+        // Após a execução, verificar se o processo foi terminado
+        if (proc && proc->pcb->is_terminated) {
+            printf("Core %d terminou o processo %p\n", t_args->core_id, (void *)proc);
+            processos_pendentes--;
+
+            // Tentar pegar um novo processo
+            t_args->assigned_process = get_process(t_args->queue_start);
+            if (t_args->assigned_process) {
+                printf("Core %d recebeu novo processo %p\n", t_args->core_id, (void *)t_args->assigned_process);
             }
         }
 
-        // Verifica se há novos processos disponíveis na fila
-        if (!t_args->assigned_process) {
-            process *new_proc = get_process(t_args->queue_start);
-            if (new_proc) {
-                t_args->assigned_process = new_proc;
-                printf("Core %d recebeu novo processo %p\n", t_args->core_id, (void *)new_proc);
-            } else if (processos_pendentes == 0) {
-                printf("Core %d não tem mais processos para executar. Encerrando.\n", t_args->core_id);
-                pthread_mutex_unlock(&queue_mutex);
-                break;  // Sai do loop e finaliza a thread
-            }
-        }
-
+        // Atualiza o core atual
         current_core = (current_core + 1) % NUM_CORES;
         pthread_cond_broadcast(&cond_var);
         pthread_mutex_unlock(&queue_mutex);
+
+        // Verifica se o core deve encerrar
+        if (t_args->assigned_process == NULL && processos_pendentes <= 0) {
+            pthread_mutex_lock(&queue_mutex);
+            if (processos_pendentes <= 0) {
+                pthread_mutex_unlock(&queue_mutex);
+                break;  // Core termina se não houver mais processos
+            }
+            pthread_mutex_unlock(&queue_mutex);
+        }
     }
 
-    current_core = (current_core + 1) % NUM_CORES;
-    pthread_cond_broadcast(&cond_var);
-    pthread_mutex_unlock(&queue_mutex);
     printf("Core %d finalizou a execução.\n", t_args->core_id);
     pthread_exit(NULL);
 }
+
 
 
 void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end *queue_end) {
