@@ -107,34 +107,25 @@ void *core_function(void *args) {
             init_pipeline(t_args->cpu, t_args->memory_ram, proc->program, proc->pcb, t_args->core_id);
         }
 
-        // Após a execução, verificar se o processo foi terminado
+        if (processos_pendentes <= 0) {
+            printf("Core %d finalizado.\n", t_args->core_id, (void *)proc);
+            break;
+        }
+
         if (proc && proc->pcb->is_terminated) {
             printf("Core %d terminou o processo %p\n", t_args->core_id, (void *)proc);
             processos_pendentes--;
-
-            // Tentar pegar um novo processo
-            //t_args->assigned_process = get_process(t_args->queue_start);
-            /*if (t_args->assigned_process) {
-                printf("Core %d recebeu novo processo %p\n", t_args->core_id, (void *)t_args->assigned_process);
-            }*/
         }
 
-        // Atualiza o core atual
         current_core = (current_core + 1) % NUM_CORES;
         pthread_cond_broadcast(&cond_var);
         pthread_mutex_unlock(&queue_mutex);
 
-        // Verifica se o core deve encerrar
-        if (processos_pendentes <= 0) {
-            break;  // Core termina se não houver mais processos
-        }
     }
 
     printf("Core %d finalizou a execução.\n", t_args->core_id);
     pthread_exit(NULL);
 }
-
-
 
 void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end *queue_end) {
     int cores_ativos = NUM_PROGRAMS < NUM_CORES ? NUM_PROGRAMS : NUM_CORES;
@@ -145,6 +136,7 @@ void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end
     pthread_cond_init(&cond_var, NULL);
     processos_pendentes = NUM_PROGRAMS;
 
+    // Inicialização das threads dos cores
     for (int i = 0; i < cores_ativos; i++) {
         t_args[i].core_id = i;
         t_args[i].cpu = cpu;
@@ -162,6 +154,23 @@ void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end
         pthread_create(&threads[i], NULL, core_function, &t_args[i]);
     }
 
+    // Escalonador de processos
+    while (processos_pendentes > 0) {
+        pthread_mutex_lock(&queue_mutex);
+        for (int i = 0; i < cores_ativos; i++) {
+            if (t_args[i].assigned_process == NULL) {
+                process *new_proc = get_process(queue_start);
+                if (new_proc) {
+                    t_args[i].assigned_process = new_proc;
+                    printf("Core %d recebeu novo processo %p\n", t_args[i].core_id, (void *)new_proc);
+                }
+            }
+        }
+        pthread_cond_broadcast(&cond_var);
+        pthread_mutex_unlock(&queue_mutex);
+    }
+
+    // Esperar todas as threads terminarem
     for (int i = 0; i < cores_ativos; i++) {
         pthread_join(threads[i], NULL);
     }
