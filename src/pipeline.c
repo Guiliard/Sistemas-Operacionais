@@ -31,7 +31,7 @@ void memory_access(cpu* cpu, ram* memory_ram, process_control_block* pcb, type_o
     }
 }
 
-void write_back(cpu* cpu, type_of_instruction type, char* instruction, unsigned short int result, unsigned short int index_core) {
+void write_back(cpu* cpu, type_of_instruction type, process_control_block* pcb, char* instruction, unsigned short int result, unsigned short int index_core) {
 
     char* instruction_copy = strdup(instruction);
     unsigned short int register_index;
@@ -47,6 +47,8 @@ void write_back(cpu* cpu, type_of_instruction type, char* instruction, unsigned 
         register_index = get_register_index(register_name);
 
         cpu->core[index_core].registers[register_index] = result;
+
+        pcb->in_p->regs[register_index] = result;
 
     } else if (type == LOAD || type == STORE || type == LOOP || type == L_END||type == IF||type == I_END || type == ELSE || type == ELS_END) {
         // do nothing

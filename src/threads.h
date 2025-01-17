@@ -1,6 +1,7 @@
 #ifndef THREADS_H
 #define THREADS_H
 #include "architecture.h"
+#include "scheduler.h"
 
 typedef struct tread_args {
     cpu *cpu;
@@ -11,7 +12,6 @@ typedef struct tread_args {
     process* assigned_process;
 } thread_args;
 
-int compare_priority(const void* a, const void* b);
 void initialize_log_s_file();
 void log_start(process* proc);
 void initialize_log_e_file();

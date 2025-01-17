@@ -10,7 +10,8 @@ process_control_block* init_pcb() {
     pcb->process_id = 0;
     pcb->state_of_process = RUNNING;  
     pcb->priority = 0;
-    pcb->quantum_remaining = 50;
+    pcb->quantum_remaining = 10;
+    pcb->total_quantum = 10;
     pcb->base_address = 0;
     pcb->limit_of_memory = 250;
     pcb->bank_of_register_used = NULL; 
@@ -39,6 +40,9 @@ instruction_processor* init_in_p() {
     in_p->result = 0;
     in_p->running_if = false;
     in_p->valid_if = false;
+    for (int i = 0; i < NUM_REGISTERS; i++) {
+        in_p->regs[i] = 0;
+    }
     
     return in_p;
 }

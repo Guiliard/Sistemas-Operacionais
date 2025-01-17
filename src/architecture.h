@@ -15,6 +15,7 @@ void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals
 void load_program_on_ram(ram* memory, char* program);
 void check_instructions_on_ram(ram* memory_ram);
 void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_block* pcb, unsigned short int core_number);
+void update_regs(cpu* cpu, process_control_block* pcb, unsigned short int core_number);
 void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end, queue_block* queue_block);
 
 #endif

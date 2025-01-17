@@ -3,6 +3,7 @@
 
 #include "libs.h"
 #include "interpreter.h"
+#include "cpu.h"
 
 typedef enum state {
     RUNNING,
@@ -21,12 +22,14 @@ typedef struct instruction_processor {
     bool has_if;
     bool valid_if;
     bool running_if;
+    unsigned short int regs[NUM_REGISTERS];
 } instruction_processor;
 
 typedef struct process_control_block {
     unsigned short int process_id;           
     state state_of_process; // RUNNING, READY, BLOCK
-    unsigned short int priority;     
+    unsigned short int priority;
+    unsigned short int total_quantum;  
     unsigned short int quantum_remaining;    
     unsigned short int base_address;         
     unsigned short int limit_of_memory;

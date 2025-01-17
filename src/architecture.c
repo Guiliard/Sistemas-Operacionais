@@ -88,13 +88,19 @@ void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_blo
 
         memory_access(cpu, memory_ram, pcb, pcb->in_p->type, pcb->in_p->instruction, core_number);
 
-        write_back(cpu, pcb->in_p->type, pcb->in_p->instruction, pcb->in_p->result, core_number);
+        write_back(cpu, pcb->in_p->type, pcb, pcb->in_p->instruction, pcb->in_p->result, core_number);
 
-        print_in_p(pcb->in_p);
+        //print_in_p(pcb->in_p);
 
         pcb->quantum_remaining--;
     }
 
+}
+
+void update_regs(cpu* cpu, process_control_block* pcb, unsigned short int core_number) {
+    for (int i=0; i<NUM_REGISTERS; i++) {
+        cpu->core[core_number].registers[i] = pcb->in_p->regs[i];
+    }
 }
 
 void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end, queue_block* queue_block) {
