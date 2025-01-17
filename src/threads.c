@@ -1,23 +1,12 @@
 #include "threads.h"
 
-pthread_mutex_t memory_mutex;
-pthread_mutex_t cpu_mutex;
-pthread_mutex_t resource_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t resource_condition = PTHREAD_COND_INITIALIZER;
-sem_t core_semaphores[NUM_CORES]; 
-
-int compare_priority(const void* a, const void* b) {
-    const process_control_block* pcb1 = (const process_control_block*)a;
-    const process_control_block* pcb2 = (const process_control_block*)b;
-
-    if (pcb1->priority < pcb2->priority) {
-        return -1;
-    } else if (pcb1->priority > pcb2->priority) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
+pthread_mutex_t queue_mutex;
+pthread_cond_t cond_var;
+int current_core = 0;
+bool running_core[NUM_CORES];
+bool has_process[NUM_CORES];
+bool more_process[NUM_CORES];
+int end_thread = 0;
 
 void initialize_log_s_file() {
     FILE* file = fopen("output/start.txt", "w");  
@@ -26,26 +15,6 @@ void initialize_log_s_file() {
         exit(1);  
     }
     fprintf(file, "Queue of programs to be executed.\n\n");
-    fclose(file);
-}
-
-void initialize_log_b_file() {
-    FILE* file = fopen("output/block.txt", "w");  
-    if (file == NULL) {
-        perror("Error: Cannot create output/block.txt");
-        exit(1);  
-    }
-    fprintf(file, "Queue of blocked programs.\n\n");
-    fclose(file);
-}
-
-void initialize_log_e_file() {
-    FILE* file = fopen("output/end.txt", "w");  
-    if (file == NULL) {
-        perror("Error: Cannot create output/end.txt");
-        exit(1);  
-    }
-    fprintf(file, "Queue of done executed programs.\n\n");
     fclose(file);
 }
 
@@ -68,6 +37,16 @@ void log_start(process* proc) {
     fclose(file);  
 }
 
+void initialize_log_b_file() {
+    FILE* file = fopen("output/block.txt", "w");  
+    if (file == NULL) {
+        perror("Error: Cannot create output/block.txt");
+        exit(1);  
+    }
+    fprintf(file, "Queue of blocked programs.\n\n");
+    fclose(file);
+}
+
 void log_block(process* proc) {
     FILE* file = fopen("output/block.txt", "a");  
     if (file == NULL) {
@@ -85,160 +64,128 @@ void log_block(process* proc) {
     fclose(file);  
 }
 
-void log_end(process* proc) {
-    FILE* file = fopen("output/end.txt", "a");  
-    if (file == NULL) {
-        perror("Error: Cannot open output/end.txt");
-        return;
+process *get_process(queue_start *queue) {
+    pthread_mutex_lock(&queue_mutex);
+    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {      
+        if (!queue->initial_queue[i].pcb->is_running && !queue->initial_queue[i].pcb->is_terminated) {
+            queue->initial_queue[i].pcb->is_running = true;
+            pthread_mutex_unlock(&queue_mutex);
+            return &queue->initial_queue[i];
+        }
     }
-
-    fprintf(file, "------------------PROGRAM %hd------------------\n", proc->pcb->process_id);
-    fprintf(file, "%s\n", proc->program);
-    fprintf(file, "PCB of process: %hd/ State: %s/ Priority: %hd\n",
-    proc->pcb->process_id,print_enum_state(proc->pcb->state_of_process),proc->pcb->priority);
-    fprintf(file, "Quantum remaining: %hd/ Base address: %hd/ Memory limit: %hd\n",
-    proc->pcb->quantum_remaining,proc->pcb->base_address,proc->pcb->limit_of_memory);
-    fprintf(file, "Used registers: %s\n",
-    proc->pcb->bank_of_register_used);
-    fprintf(file, "Result of process: %s\n\n",
-    proc->pcb->result_of_process);
-
-    fclose(file);  
+    pthread_mutex_unlock(&queue_mutex);
+    return NULL;
 }
 
-void* thread_function(void* args) {
-    thread_args* t_args = (thread_args*)args;
+void *core_function(void *args) {
+    thread_args *t_args = (thread_args *)args;
 
-    if (t_args->process == NULL || t_args->process->program == NULL) {
-        fprintf(stderr, "Error: Invalid process or program in core %d\n", t_args->core_id);
-        pthread_exit(NULL);
+    while (1) {
+        pthread_mutex_lock(&queue_mutex);
+        while (t_args->core_id != current_core && running_core[t_args->core_id]) {
+            pthread_cond_wait(&cond_var, &queue_mutex);
+        }
+        pthread_mutex_unlock(&queue_mutex);
+
+        process *proc = t_args->assigned_process;
+        if (proc && !proc->pcb->is_terminated && !quantum_over(t_args->assigned_process)) {
+            init_pipeline(t_args->cpu, t_args->memory_ram, proc, t_args->core_id, t_args->queue_end);
+        }
+
+        pthread_mutex_lock(&queue_mutex);
+        if (quantum_over(t_args->assigned_process)) {
+            printf("Core %d bloqueou o processo id: %hd, quantum zerado\n", t_args->core_id, t_args->assigned_process->pcb->process_id);
+            has_process[t_args->core_id] = false;
+            log_block(t_args->assigned_process);
+            t_args->assigned_process->pcb->is_running = false;
+            t_args->assigned_process->pcb->is_terminated = false;
+        }
+        pthread_mutex_unlock(&queue_mutex);
+
+        pthread_mutex_lock(&queue_mutex);
+        if (proc && proc->pcb->is_terminated) {
+            has_process[t_args->core_id] = false;
+        }
+        pthread_mutex_unlock(&queue_mutex);
+
+        pthread_mutex_lock(&queue_mutex);
+        if (NUM_CORES > 1) {
+            do {
+                current_core = (current_core + 1) % NUM_CORES;
+            } while (!running_core[current_core]);
+            pthread_cond_broadcast(&cond_var);
+        }
+        pthread_mutex_unlock(&queue_mutex);
+
+        if (!more_process[t_args->core_id]) {
+            printf("Core %d finalizado.\n", t_args->core_id);
+            break;
+        }
     }
 
-    pthread_mutex_lock(&resource_mutex);
-    while (t_args->process->pcb->waiting_resource) {
-        pthread_cond_wait(&resource_condition, &resource_mutex);
-    }
-    pthread_mutex_unlock(&resource_mutex);
-
-    sem_wait(&core_semaphores[t_args->core_id]);
-
-    pthread_mutex_lock(&cpu_mutex);
-    pthread_mutex_lock(&memory_mutex);
-
-    init_pipeline(t_args->cpu, t_args->memory_ram, t_args->process->program, t_args->process->pcb, t_args->core_id);
-
-    pthread_mutex_unlock(&memory_mutex);
-    pthread_mutex_unlock(&cpu_mutex);
-
-    pthread_mutex_lock(&resource_mutex);
-    t_args->process->pcb->waiting_resource = false;
-    pthread_cond_broadcast(&resource_condition); // Notifica todas as threads bloqueadas
-    pthread_mutex_unlock(&resource_mutex);
-
-    add_process_to_queue_end(t_args->queue_end, t_args->process);
-    release_resources_and_notify(t_args->queue_start, t_args->process); // Libera recursos para outros processos
-    log_end(t_args->process);
-
-    printf("[core %d]: execution finalized for process '%d'.\n", t_args->core_id, t_args->process->pcb->process_id);
-
-    sem_post(&core_semaphores[t_args->core_id]);
-
+    running_core[t_args->core_id] = false;
+    end_thread++;
     pthread_exit(NULL);
 }
 
-void init_threads(cpu* cpu, ram* memory_ram, queue_start* queue_start, queue_end* queue_end, queue_block* queue_block) {
-    pthread_t threads[NUM_PROGRAMS];
-    thread_args t_args[NUM_PROGRAMS];
+void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end *queue_end) {
+    int cores_ativos;
+    if (NUM_PROGRAMS < NUM_CORES)
+        cores_ativos = NUM_PROGRAMS;
+    else
+        cores_ativos = NUM_CORES;
+    pthread_t threads[cores_ativos];
+    thread_args *t_args = malloc(sizeof(thread_args) * cores_ativos);
 
-    qsort(queue_start->initial_queue, NUM_PROGRAMS, sizeof(process), compare_priority);
+    pthread_mutex_init(&queue_mutex, NULL);
+    pthread_cond_init(&cond_var, NULL);
 
-    if (pthread_mutex_init(&memory_mutex, NULL) != 0 || pthread_mutex_init(&cpu_mutex, NULL) != 0) {
-        perror("Error: Fail on initializing mutex");
-        exit(1);
-    }
-
-    for (unsigned short int i = 0; i < NUM_CORES; i++) {
-        if (sem_init(&core_semaphores[i], 0, 1) != 0) {
-            perror("Error: Fail on initializing semaphore");
-            exit(1);
-        }
-    }
-
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
+    for (int i = 0; i < cores_ativos; i++) {
+        t_args[i].core_id = i;
         t_args[i].cpu = cpu;
         t_args[i].memory_ram = memory_ram;
-        t_args[i].process = &queue_start->initial_queue[i];
-        t_args[i].core_id = i % NUM_CORES; 
         t_args[i].queue_start = queue_start;
         t_args[i].queue_end = queue_end;
+        running_core[i] = true;
+        more_process[i] = true;
+        t_args[i].assigned_process = get_process(queue_start);
+        has_process[i] = t_args[i].assigned_process != NULL;
 
-        compare_resource_of_process_in_queue_start(queue_start, queue_block, i);
-
-        log_start(t_args[i].process);
-
-        if (pthread_create(&threads[i], NULL, thread_function, &t_args[i]) != 0) {
-            perror("Error: Fail on creating thread");
-            exit(1);
+        if (!has_process[i]) {
+            printf("Nenhum processo disponível para o core %d\n", i);
+        } else {
+            printf("Core %d iniciou com processo id: %hd\n", i, t_args[i].assigned_process->pcb->process_id);
         }
+        log_start(t_args[i].assigned_process);
+
+        pthread_create(&threads[i], NULL, core_function, &t_args[i]);
     }
 
-    for (int i = 0; i < NUM_PROGRAMS; i++) {
+    while (end_thread < cores_ativos) {
+        for (int i = 0; i < cores_ativos; i++) {
+            if (!has_process[i] && running_core[i]) {
+                process* new_proc = get_process(queue_start);
+                if (new_proc) {
+                    update_regs(t_args->cpu, t_args[i].assigned_process->pcb, t_args->core_id);
+                    t_args[i].assigned_process = new_proc;
+                    log_start(t_args[i].assigned_process);
+                    has_process[i] = true;
+                    printf("Core %d recebeu novo processo id: %hd\n", i, t_args[i].assigned_process->pcb->process_id);
+                } else {
+                    //printf("Nenhum novo processo disponível para o core %d\n", t_args[i].core_id);
+                    more_process[i] = false;
+                }
+            }
+        }
+        pthread_cond_broadcast(&cond_var);
+    }
+
+    for (int i = 0; i < cores_ativos; i++) {
         pthread_join(threads[i], NULL);
     }
 
-    pthread_mutex_destroy(&memory_mutex);
-    pthread_mutex_destroy(&cpu_mutex);
-
-    for (unsigned short int i = 0; i < NUM_CORES; i++) {
-        sem_destroy(&core_semaphores[i]);
-    }
-}
-
-void compare_resource_of_process_in_queue_start(queue_start* initial_queue, queue_block* block_queue, short int index) {
-
-    for (unsigned short int index_1 = index; index_1 < NUM_PROGRAMS - 1; index_1++) {
-        for (unsigned short int index_2 = index_1 + 1; index_2 < NUM_PROGRAMS; index_2++) {
-            if (has_shared_resource(initial_queue->initial_queue[index_1].pcb->resource_name, 
-                                    initial_queue->initial_queue[index_2].pcb->resource_name)) {
-                initial_queue->initial_queue[index_2].pcb->waiting_resource = true;
-
-                add_process_to_queue_block(block_queue, &initial_queue->initial_queue[index_2]);
-                printf("Process %s added to block queue due to shared resources.\n", 
-                       initial_queue->initial_queue[index_2].pcb->resource_name);
-                log_block(&initial_queue->initial_queue[index_2]);
-            }
-        }
-    }
-}
-
-bool has_shared_resource(char *process_1, char *process_2) {
-    char* process_1_copy = strdup(process_1);  
-    char* process_2_copy = strdup(process_2); 
-    char *token1 = strtok(process_1_copy, ", ");  
-    while (token1 != NULL) {
-        char *token2 = strtok(process_2_copy, ", "); 
-        while (token2 != NULL) {
-            if (strcmp(token1, token2) == 0) {  
-                return true;  
-            }
-            token2 = strtok(NULL, ", "); 
-        }
-        token1 = strtok(NULL, ", ");  
-    }
-    return false;  
-}
-
-void release_resources_and_notify(queue_start* queue_start, process* finished_process) {
-    pthread_mutex_lock(&resource_mutex);
-
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
-        process* p = &queue_start->initial_queue[i];
-        if (p->pcb->waiting_resource && has_shared_resource(finished_process->pcb->resource_name, p->pcb->resource_name)) {
-            p->pcb->waiting_resource = false;
-            printf("Resource released: Process %s can now run.\n", p->pcb->resource_name);
-        }
-    }
-
-    pthread_cond_broadcast(&resource_condition); // Notifica todas as threads aguardando recursos
-    pthread_mutex_unlock(&resource_mutex);
+    pthread_mutex_destroy(&queue_mutex);
+    pthread_cond_destroy(&cond_var);
+    free(t_args);
+    printf("Execução finalizada.\n");
 }

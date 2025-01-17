@@ -7,10 +7,12 @@ ADD A0 B0
 STORE A0 A1000
 
 PCB of process: 0/ State: READY/ Priority: 0
-Quantum remaining: 46/ Base address: 0/ Memory limit: 250
+Quantum remaining: 6/ Base address: 0/ Memory limit: 250
 Used registers: A0, B0, 
 Result of process: 30, 
 
+<<<<<<< HEAD
+=======
 ------------------PROGRAM 1------------------
 LOAD A0 5
 LOAD B0 3
@@ -26,6 +28,7 @@ Quantum remaining: 34/ Base address: 49/ Memory limit: 250
 Used registers: A0, B0, C0, 
 Result of process: 16, 
 
+>>>>>>> main
 ------------------PROGRAM 2------------------
 LOAD A0 8
 LOAD B0 6
@@ -35,9 +38,27 @@ I_END
 STORE A0 A2000
 
 PCB of process: 2/ State: READY/ Priority: 2
+<<<<<<< HEAD
+Quantum remaining: 4/ Base address: 125/ Memory limit: 250
+=======
 Quantum remaining: 44/ Base address: 136/ Memory limit: 250
+>>>>>>> main
 Used registers: A0, B0, 
 Result of process: 9, 
+
+------------------PROGRAM 1------------------
+LOAD A0 5
+LOAD B0 3
+LOAD C0 1
+LOOP B0
+SUB B0 1
+L_END
+STORE C0 A1050
+
+PCB of process: 1/ State: READY/ Priority: 1
+Quantum remaining: 7/ Base address: 49/ Memory limit: 250
+Used registers: A0, B0, C0, 
+Result of process: 1, 
 
 ------------------PROGRAM 3------------------
 LOAD A0 4
@@ -47,7 +68,11 @@ L_END
 STORE A0 A2010
 
 PCB of process: 3/ State: READY/ Priority: 3
+<<<<<<< HEAD
+Quantum remaining: 6/ Base address: 193/ Memory limit: 250
+=======
 Quantum remaining: 36/ Base address: 204/ Memory limit: 250
+>>>>>>> main
 Used registers: A0, 
 Result of process: 0, 
 

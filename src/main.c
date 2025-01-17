@@ -1,17 +1,22 @@
 #include "threads.h"
+#include <time.h>
 
 int main() {
+    clock_t start_time, end_time;
+    double time_taken;
+
+    start_time = clock();
+
     cpu* cpu = malloc(sizeof(cpu));
     ram* memory_ram = malloc(sizeof(ram));
     disc* memory_disc = malloc(sizeof(disc));
     peripherals* peripherals = malloc(sizeof(peripherals));
     queue_start* queue_start = malloc(sizeof(queue_start));
     queue_end* queue_end = malloc(sizeof(queue_end));
-    queue_block* queue_block = malloc(sizeof(queue_block));
 
     char filename[25];
 
-    init_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end, queue_block);
+    init_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end);
 
     for (unsigned short int index_program = 0; index_program < NUM_PROGRAMS; index_program++) {
         sprintf(filename, "dataset/program%d.txt", index_program);
@@ -32,11 +37,15 @@ int main() {
 
     printf("\nStarting execution of programs...\n");
 
-    init_threads(cpu, memory_ram, queue_start, queue_end, queue_block);
+    init_threads(cpu, memory_ram, queue_start, queue_end);
 
     reset_ram(memory_ram);
 
-    free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end, queue_block);
+    free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end);
+
+    end_time = clock();
+    time_taken = ((double) (end_time - start_time)) / CLOCKS_PER_SEC;
+    printf("\nExecution time: %.4f seconds\n", time_taken);
 
     printf("Please, check the output files in the 'output' folder.\n");
 

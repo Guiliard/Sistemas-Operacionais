@@ -1,13 +1,12 @@
 #include "architecture.h"
 
-void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end, queue_block* queue_block) {
+void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end) {
     init_cpu(cpu);
     init_ram(memory_ram);
     init_disc(memory_disc);
     init_peripherals(peripherals);
     init_queue_start(queue_start);
     init_queue_end(queue_end);
-    init_queue_block(queue_block);
 }
 
 void load_program_on_ram(ram* memory_ram, char* program) {
@@ -65,38 +64,46 @@ void check_instructions_on_ram(ram* memory_ram) {
     }
 }
 
-void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_block* pcb, unsigned short int index_core) {
-    
-    instruction_processor instr_processor;
+void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short int core_number, queue_end* queue_end) {   
     unsigned short int num_lines = 0;
-    instr_processor.num_instruction = 0;
 
-    num_lines = count_lines(program);
+    num_lines = count_lines(process->program);
 
-    while (instr_processor.num_instruction < num_lines) {
+    if (process->pcb->in_p->num_instruction == num_lines) {
+        printf("Core %hd finalizou o processo id: %hd\n", core_number, process->pcb->process_id);
+        add_process_to_queue_end(queue_end,process);
+        log_end(process);
+        process->pcb->is_terminated = true;
+        process->pcb->is_running = false;
+        reset_cpu(cpu, core_number);
+    }
+    else {
+        process->pcb->in_p->instruction = instruction_fetch(cpu, process->program, core_number);
 
-        instr_processor.instruction = instruction_fetch(cpu, program, index_core);
+        process->pcb->in_p->type = instruction_decode(process->pcb->in_p->instruction, process->pcb->in_p->num_instruction);
 
-        instr_processor.type = instruction_decode(instr_processor.instruction, instr_processor.num_instruction);
+        execute(cpu, process->program, process->pcb->in_p, core_number);
 
-        execute(cpu, program, &instr_processor, index_core);
+        memory_access(cpu, memory_ram, process->pcb, process->pcb->in_p->type, process->pcb->in_p->instruction, core_number);
 
-        memory_access(cpu, memory_ram, pcb, instr_processor.type, instr_processor.instruction, index_core);
+        write_back(cpu, process->pcb->in_p->type, process->pcb, process->pcb->in_p->instruction, process->pcb->in_p->result, core_number);
 
-        write_back(cpu, instr_processor.type, instr_processor.instruction, instr_processor.result, index_core);
-
-        pcb->quantum_remaining--;
+        process->pcb->quantum_remaining--;
     }
 
-    reset_cpu(cpu, index_core);
 }
 
-void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end, queue_block* queue_block) {
+void update_regs(cpu* cpu, process_control_block* pcb, unsigned short int core_number) {
+    for (int i=0; i<NUM_REGISTERS; i++) {
+        cpu->core[core_number].registers[i] = pcb->in_p->regs[i];
+    }
+}
+
+void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end) {
     free(cpu);
     free(memory_ram);
     free(memory_disc);
     free(peripherals);
     free(queue_start);
     free(queue_end);
-    free(queue_block);
 }
