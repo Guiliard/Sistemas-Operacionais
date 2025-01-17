@@ -37,7 +37,7 @@ int main() {
 
     printf("\nStarting execution of programs...\n");
 
-    init_threads(cpu, memory_ram, queue_start, queue_end, queue_block);
+    init_threads(cpu, memory_ram, queue_start, queue_end);
 
     reset_ram(memory_ram);
 
