@@ -20,7 +20,11 @@ L_END
 STORE C0 A1050
 
 PCB of process: 1/ State: RUNNING/ Priority: 1
+<<<<<<< HEAD
 Quantum remaining: 10/ Base address: 49/ Memory limit: 250
+=======
+Quantum remaining: 50/ Base address: 49/ Memory limit: 250
+>>>>>>> main
 Used resources: A1050, 
 
 ------------------PROGRAM 2------------------
@@ -32,7 +36,11 @@ I_END
 STORE A0 A2000
 
 PCB of process: 2/ State: RUNNING/ Priority: 2
+<<<<<<< HEAD
 Quantum remaining: 10/ Base address: 125/ Memory limit: 250
+=======
+Quantum remaining: 50/ Base address: 136/ Memory limit: 250
+>>>>>>> main
 Used resources: A2000, 
 
 ------------------PROGRAM 3------------------
@@ -43,6 +51,7 @@ L_END
 STORE A0 A2010
 
 PCB of process: 3/ State: RUNNING/ Priority: 3
+<<<<<<< HEAD
 Quantum remaining: 10/ Base address: 193/ Memory limit: 250
 Used resources: A2010, 
 
@@ -68,5 +77,8 @@ STORE A0 A2010
 
 PCB of process: 3/ State: RUNNING/ Priority: 3
 Quantum remaining: 10/ Base address: 193/ Memory limit: 250
+=======
+Quantum remaining: 50/ Base address: 204/ Memory limit: 250
+>>>>>>> main
 Used resources: A2010, 
 

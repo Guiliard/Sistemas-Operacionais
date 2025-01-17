@@ -1,5 +1,7 @@
 #include "queues.h"
 
+pthread_mutex_t queue_mutex;
+
 void init_queue_start(queue_start* initial_queue) {
 
     initial_queue->initial_queue = malloc(NUM_PROGRAMS * sizeof(process));
@@ -164,9 +166,10 @@ void check_resources_on_queue_start(queue_start* initial_queue) {
 }
 
 void add_process_to_queue_end(queue_end* final_queue, process* process) {
+
     process->pcb->state_of_process = READY;
     process->pcb->is_terminated = true;
-    
+
     for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
         if (final_queue->final_queue[i].program == NULL) {
             final_queue->final_queue[i] = *process;

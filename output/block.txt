@@ -1,5 +1,6 @@
 Queue of blocked programs.
 
+<<<<<<< HEAD
 ------------------PROGRAM 1------------------
 LOAD A0 5
 LOAD B0 3
@@ -24,3 +25,5 @@ PCB of process: 3/ State: RUNNING/ Priority: 3
 Quantum remaining: 10/ Base address: 193/ Memory limit: 250
 Used resources: A2010, 
 
+=======
+>>>>>>> main
