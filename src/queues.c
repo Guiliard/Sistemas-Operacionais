@@ -1,7 +1,5 @@
 #include "queues.h"
 
-pthread_mutex_t queue_mutex;
-
 void init_queue_start(queue_start* initial_queue) {
 
     initial_queue->initial_queue = malloc(NUM_PROGRAMS * sizeof(process));
