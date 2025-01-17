@@ -67,6 +67,6 @@ L_END
 STORE A0 A2010
 
 PCB of process: 3/ State: RUNNING/ Priority: 3
-Quantum remaining: 7/ Base address: 193/ Memory limit: 250
+Quantum remaining: 10/ Base address: 193/ Memory limit: 250
 Used resources: A2010, 
 
