@@ -15,28 +15,35 @@ void init_queue_start(queue_start* initial_queue) {
     }
 }
 
-void init_queue_end(queue_end* final_queue) {
-    final_queue->final_queue = malloc(NUM_PROGRAMS * sizeof(process*));
-    if (final_queue->final_queue == NULL) {
-        printf("Error: memory allocation failed in queue_end\n");
-        exit(1);
+void initialize_log_e_file() {
+    FILE* file = fopen("output/end.txt", "w");  
+    if (file == NULL) {
+        perror("Error: Cannot create output/end.txt");
+        exit(1);  
     }
-
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
-        final_queue->final_queue[i].program = NULL;
-    }
+    fprintf(file, "Queue of done executed programs.\n\n");
+    fclose(file);
 }
 
-void init_queue_block(queue_block* block_queue) {
-    block_queue->block_queue = malloc(NUM_PROGRAMS * sizeof(process*));
-    if (block_queue->block_queue == NULL) {
-        printf("Error: memory allocation failed in queue_block\n");
-        exit(1);
+void log_end(char* program, process_control_block* pcb) {
+    FILE* file = fopen("output/end.txt", "a");  
+    if (file == NULL) {
+        perror("Error: Cannot open output/end.txt");
+        return;
     }
 
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
-        block_queue->block_queue[i].program = NULL;
-    }
+    fprintf(file, "------------------PROGRAM %hd------------------\n", pcb->process_id);
+    fprintf(file, "%s\n", program);
+    fprintf(file, "PCB of process: %hd/ State: %s/ Priority: %hd\n",
+    pcb->process_id,print_enum_state(pcb->state_of_process),pcb->priority);
+    fprintf(file, "Quantum remaining: %hd/ Base address: %hd/ Memory limit: %hd\n",
+    pcb->quantum_remaining,pcb->base_address,pcb->limit_of_memory);
+    fprintf(file, "Used registers: %s\n",
+    pcb->bank_of_register_used);
+    fprintf(file, "Result of process: %s\n\n",
+    pcb->result_of_process);
+
+    fclose(file);  
 }
 
 void populate_queue_start(queue_start* initial_queue, ram* memory_ram) {
@@ -144,66 +151,6 @@ void check_resources_on_queue_start(queue_start* initial_queue) {
     }
 }
 
-void add_process_to_queue_start(queue_start* initial_queue, process* process) {
-    process->pcb->state_of_process = RUNNING;
-    process->pcb->waiting_resource = false;
-
-    for (unsigned short int i = NUM_PROGRAMS; i > 0; i--) {
-        if (initial_queue->initial_queue[i].program == NULL) {
-            initial_queue->initial_queue[i] = *process;
-            break;
-        }
-    }
-}
-
-void add_process_to_queue_end(queue_end* final_queue, process* process) {
-    process->pcb->state_of_process = READY;
-    process->pcb->is_terminated = true;
-    
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
-        if (final_queue->final_queue[i].program == NULL) {
-            final_queue->final_queue[i] = *process;
-            break;
-        }
-    }
-}
-
-void add_process_to_queue_block(queue_block* block_queue, process* process) {
-    process->pcb->state_of_process = BLOCK;
-    process->pcb->waiting_resource = true;
-
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
-        if (block_queue->block_queue[i].program == NULL) {
-            block_queue->block_queue[i] = *process;
-            break;
-        }
-    }
-}
-
-void remove_process_from_queue_block(queue_block* block_queue, queue_start* initial_queue, process* process) {
-    
-    add_process_to_queue_start(initial_queue, process);
-    
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
-        if (block_queue->block_queue[i].program != NULL && block_queue->block_queue[i].pcb->process_id == process->pcb->process_id) {
-            block_queue->block_queue[i].program = NULL;
-            block_queue->block_queue[i].pcb = NULL;
-            break;
-        }
-    }
-}
-
-void remove_process_from_queue_start(queue_start* initial_queue, process* process) {
-
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
-        if (initial_queue->initial_queue[i].program != NULL && initial_queue->initial_queue[i].pcb->process_id == process->pcb->process_id) {
-            initial_queue->initial_queue[i].program = NULL;
-            initial_queue->initial_queue[i].pcb = NULL;
-            break;
-        }
-    }
-}
-
 void organize_process_of_queue_start(queue_start* initial_queue, unsigned short int process_id) {
 
     for (unsigned short int i = process_id; i < NUM_PROGRAMS - 1; i++) {
@@ -213,27 +160,5 @@ void organize_process_of_queue_start(queue_start* initial_queue, unsigned short 
     if (initial_queue->initial_queue[NUM_PROGRAMS - 1].program != NULL) {
         initial_queue->initial_queue[NUM_PROGRAMS - 1].program = NULL;
         initial_queue->initial_queue[NUM_PROGRAMS - 1].pcb = NULL;
-    }
-}
-
-void print_queue_start(queue_start* initial_queue) {
-    printf("Initial Queue:\n");
-
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
-        if (initial_queue->initial_queue[i].program != NULL) {
-            printf("Program %d:\n%s\n", i, initial_queue->initial_queue[i].program);
-            print_pcb(initial_queue->initial_queue[i].pcb);
-        }
-    }
-}
-
-void print_queue_end(queue_end* final_queue) {
-    printf("Final Queue:\n");
-
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
-        if (final_queue->final_queue[i].program != NULL) {
-            printf("Program %d:\n%s\n", i, final_queue->final_queue[i].program);
-            print_pcb(final_queue->final_queue[i].pcb);
-        }
     }
 }

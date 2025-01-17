@@ -1,13 +1,11 @@
 #include "architecture.h"
 
-void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end, queue_block* queue_block) {
+void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start) {
     init_cpu(cpu);
     init_ram(memory_ram);
     init_disc(memory_disc);
     init_peripherals(peripherals);
     init_queue_start(queue_start);
-    init_queue_end(queue_end);
-    init_queue_block(queue_block);
 }
 
 void load_program_on_ram(ram* memory_ram, char* program) {
@@ -70,16 +68,14 @@ void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_blo
 
     num_lines = count_lines(program);
 
-    printf("Number of instructions: %d - Core used: %d\n", num_lines, core_number);
-
     if (pcb->in_p->num_instruction == num_lines) {
         pcb->is_terminated = true;
         pcb->is_running = false;
+        printf("Core %d finalizou o processo id: %hd\n", core_number, pcb->process_id);
+        log_end(program, pcb);
         reset_cpu(cpu, core_number);
     }
     else {
-        printf("Index_core: %d - Num_instruction: %d\n", core_number, pcb->in_p->num_instruction);
-
         pcb->in_p->instruction = instruction_fetch(cpu, program, core_number);
 
         pcb->in_p->type = instruction_decode(pcb->in_p->instruction, pcb->in_p->num_instruction);
@@ -90,19 +86,15 @@ void init_pipeline(cpu* cpu, ram* memory_ram, char* program, process_control_blo
 
         write_back(cpu, pcb->in_p->type, pcb->in_p->instruction, pcb->in_p->result, core_number);
 
-        print_in_p(pcb->in_p);
-
         pcb->quantum_remaining--;
     }
 
 }
 
-void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end, queue_block* queue_block) {
+void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start) {
     free(cpu);
     free(memory_ram);
     free(memory_disc);
     free(peripherals);
     free(queue_start);
-    free(queue_end);
-    free(queue_block);
 }

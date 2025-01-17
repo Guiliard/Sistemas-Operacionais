@@ -28,6 +28,7 @@ typedef struct process_control_block {
     state state_of_process; // RUNNING, READY, BLOCK
     unsigned short int priority;     
     unsigned short int quantum_remaining;    
+    unsigned short int total_quantum;  
     unsigned short int base_address;         
     unsigned short int limit_of_memory;
     char* bank_of_register_used;     
@@ -36,6 +37,7 @@ typedef struct process_control_block {
     char* resource_name;   
     bool is_terminated;
     bool is_running;
+    bool blocked;
     instruction_processor* in_p;
 } process_control_block;
 

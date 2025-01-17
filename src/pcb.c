@@ -10,7 +10,8 @@ process_control_block* init_pcb() {
     pcb->process_id = 0;
     pcb->state_of_process = RUNNING;  
     pcb->priority = 0;
-    pcb->quantum_remaining = 50;
+    pcb->quantum_remaining = 10;
+    pcb->total_quantum = 10;
     pcb->base_address = 0;
     pcb->limit_of_memory = 250;
     pcb->bank_of_register_used = NULL; 
@@ -19,6 +20,7 @@ process_control_block* init_pcb() {
     pcb->resource_name = NULL; 
     pcb->is_terminated = false;
     pcb->is_running = false;
+    pcb->blocked = false;
     pcb->in_p = init_in_p();
 
     return pcb;
