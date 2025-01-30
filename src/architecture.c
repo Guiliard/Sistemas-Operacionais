@@ -76,7 +76,9 @@ void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short i
         process->pcb->is_terminated = true;
         process->pcb->is_running = false;
         reset_cpu(cpu, core_number);
+        process->pcb->in_p->num_instruction++;
     }
+    else if (process->pcb->in_p->num_instruction > num_lines) {}
     else {
         process->pcb->in_p->instruction = instruction_fetch(cpu, process->program, core_number);
 
@@ -97,6 +99,7 @@ void update_regs(cpu* cpu, process_control_block* pcb, unsigned short int core_n
     for (int i=0; i<NUM_REGISTERS; i++) {
         cpu->core[core_number].registers[i] = pcb->in_p->regs[i];
     }
+    cpu->core[core_number].PC = pcb->in_p->num_instruction;
 }
 
 void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end) {

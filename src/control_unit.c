@@ -198,6 +198,7 @@ void load (cpu* cpu, char* instruction, process_control_block* pcb, unsigned sho
     add_register_to_bank(pcb, register_name);
 
     cpu->core[index_core].registers[register_index] = value;
+    pcb->in_p->regs[register_index] = value;
 }
 
 void store (cpu* cpu, ram* memory_ram, process_control_block* pcb, char* instruction, unsigned short int index_core) {
@@ -236,6 +237,7 @@ void store (cpu* cpu, ram* memory_ram, process_control_block* pcb, char* instruc
 
     address = verify_address(memory_address, num_positions);
 
+    printf("Resultado: %s\n",buffer);
     write_ram(memory_ram, address, buffer);
 
     add_result_of_process_to_pcb(pcb, buffer);

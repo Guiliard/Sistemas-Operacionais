@@ -6,7 +6,7 @@ int current_core = 0;
 bool running_core[NUM_CORES];
 bool has_process[NUM_CORES];
 bool more_process[NUM_CORES];
-int end_thread = 0;
+int total_running_cores = NUM_CORES;
 
 void initialize_log_s_file() {
     FILE* file = fopen("output/start.txt", "w");  
@@ -64,14 +64,46 @@ void log_block(process* proc) {
     fclose(file);  
 }
 
-process *get_process(queue_start *queue) {
+bool avaliable_process(queue_start *queue) {
+    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++)
+    {
+        if (!queue->initial_queue[i].pcb->is_running && !queue->initial_queue[i].pcb->is_blocked && !queue->initial_queue[i].pcb->is_terminated)
+            return true;
+    }
+    return false;
+}
+
+process *get_process(cpu* cpu, queue_start *queue, unsigned short int core_id) {
     pthread_mutex_lock(&queue_mutex);
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {      
-        if (!queue->initial_queue[i].pcb->is_running && !queue->initial_queue[i].pcb->is_terminated) {
-            queue->initial_queue[i].pcb->is_running = true;
-            pthread_mutex_unlock(&queue_mutex);
-            return &queue->initial_queue[i];
+    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
+        if (has_process[core_id]) {
+            if (queue->initial_queue[i].pcb->is_running && queue->initial_queue[i].pcb->on_core == core_id) {
+                pthread_mutex_unlock(&queue_mutex);
+                return &queue->initial_queue[i];
+            }
         }
+        else {
+            if (queue->initial_queue[i].pcb->on_core == -1) {
+                queue->initial_queue[i].pcb->is_running = true;
+                queue->initial_queue[i].pcb->on_core = core_id;
+                update_regs(cpu, queue->initial_queue[i].pcb, core_id);
+                printf("Core %hd iniciou o processo id: %hd\n", core_id, queue->initial_queue[i].pcb->process_id);
+                has_process[core_id] = true;
+                log_start(&queue->initial_queue[i]);
+                pthread_mutex_unlock(&queue_mutex);
+                return &queue->initial_queue[i];
+            }
+            else if (queue->initial_queue[i].pcb->is_blocked && !avaliable_process(queue)) {
+                queue->initial_queue[i].pcb->is_running = true;
+                queue->initial_queue[i].pcb->on_core = core_id;
+                queue->initial_queue[i].pcb->is_blocked = false;
+                update_regs(cpu, queue->initial_queue[i].pcb, core_id);
+                printf("Core %hd reativou o processo id: %hd\n", core_id, queue->initial_queue[i].pcb->process_id);
+                has_process[core_id] = true;
+                pthread_mutex_unlock(&queue_mutex);
+                return &queue->initial_queue[i];
+            }
+        }       
     }
     pthread_mutex_unlock(&queue_mutex);
     return NULL;
@@ -87,18 +119,44 @@ void *core_function(void *args) {
         }
         pthread_mutex_unlock(&queue_mutex);
 
-        process *proc = t_args->assigned_process;
-        if (proc && !proc->pcb->is_terminated && !quantum_over(t_args->assigned_process)) {
+        process *proc = get_process(t_args->cpu, t_args->queue_start, t_args->core_id);
+
+        pthread_mutex_lock(&queue_mutex);
+        if (proc == NULL) {
+            printf("Core %hd finalizado.\n", t_args->core_id);
+            running_core[t_args->core_id] = false;
+            total_running_cores--;
+
+            // Se não houver mais cores rodando, sinaliza fim do sistema
+            if (total_running_cores == 0) {
+                pthread_cond_broadcast(&cond_var);  // Acorda qualquer thread esperando e permite finalização
+                pthread_mutex_unlock(&queue_mutex);
+                break;
+            }
+
+            // Se ainda houver cores ativos, escolhe o próximo
+            do {
+                current_core = (current_core + 1) % NUM_CORES;
+            } while (!running_core[current_core]);
+
+            pthread_cond_broadcast(&cond_var);  // Notifica os outros threads sobre a mudança
+            pthread_mutex_unlock(&queue_mutex);
+            break;
+        }
+        pthread_mutex_unlock(&queue_mutex);
+
+        if (proc && !proc->pcb->is_terminated && !quantum_over(proc)) {
             init_pipeline(t_args->cpu, t_args->memory_ram, proc, t_args->core_id, t_args->queue_end);
         }
 
         pthread_mutex_lock(&queue_mutex);
-        if (quantum_over(t_args->assigned_process)) {
-            printf("Core %d bloqueou o processo id: %hd, quantum zerado\n", t_args->core_id, t_args->assigned_process->pcb->process_id);
+        if (proc && quantum_over(proc)) {
+            printf("Core %hd bloqueou o processo id: %hd, quantum zerado\n", t_args->core_id, proc->pcb->process_id);
             has_process[t_args->core_id] = false;
-            log_block(t_args->assigned_process);
-            t_args->assigned_process->pcb->is_running = false;
-            t_args->assigned_process->pcb->is_terminated = false;
+            log_block(proc);
+            proc->pcb->is_running = false;
+            proc->pcb->is_blocked = true;
+            proc->pcb->is_terminated = false;
         }
         pthread_mutex_unlock(&queue_mutex);
 
@@ -113,18 +171,12 @@ void *core_function(void *args) {
             do {
                 current_core = (current_core + 1) % NUM_CORES;
             } while (!running_core[current_core]);
+
             pthread_cond_broadcast(&cond_var);
         }
         pthread_mutex_unlock(&queue_mutex);
-
-        if (!more_process[t_args->core_id]) {
-            printf("Core %d finalizado.\n", t_args->core_id);
-            break;
-        }
     }
 
-    running_core[t_args->core_id] = false;
-    end_thread++;
     pthread_exit(NULL);
 }
 
@@ -148,36 +200,9 @@ void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end
         t_args[i].queue_end = queue_end;
         running_core[i] = true;
         more_process[i] = true;
-        t_args[i].assigned_process = get_process(queue_start);
-        has_process[i] = t_args[i].assigned_process != NULL;
-
-        if (!has_process[i]) {
-            printf("Nenhum processo disponível para o core %d\n", i);
-        } else {
-            printf("Core %d iniciou com processo id: %hd\n", i, t_args[i].assigned_process->pcb->process_id);
-        }
-        log_start(t_args[i].assigned_process);
+        has_process[i] = false;
 
         pthread_create(&threads[i], NULL, core_function, &t_args[i]);
-    }
-
-    while (end_thread < cores_ativos) {
-        for (int i = 0; i < cores_ativos; i++) {
-            if (!has_process[i] && running_core[i]) {
-                process* new_proc = get_process(queue_start);
-                if (new_proc) {
-                    update_regs(t_args->cpu, t_args[i].assigned_process->pcb, t_args->core_id);
-                    t_args[i].assigned_process = new_proc;
-                    log_start(t_args[i].assigned_process);
-                    has_process[i] = true;
-                    printf("Core %d recebeu novo processo id: %hd\n", i, t_args[i].assigned_process->pcb->process_id);
-                } else {
-                    //printf("Nenhum novo processo disponível para o core %d\n", t_args[i].core_id);
-                    more_process[i] = false;
-                }
-            }
-        }
-        pthread_cond_broadcast(&cond_var);
     }
 
     for (int i = 0; i < cores_ativos; i++) {
@@ -186,6 +211,7 @@ void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end
 
     pthread_mutex_destroy(&queue_mutex);
     pthread_cond_destroy(&cond_var);
+
     free(t_args);
     printf("Execução finalizada.\n");
 }
