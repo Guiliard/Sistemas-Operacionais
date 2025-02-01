@@ -1,7 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 
-#define NUM_CORES 2
+#define NUM_CORES 3
 #define NUM_REGISTERS 32
 
 #include "libs.h"

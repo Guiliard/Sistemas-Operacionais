@@ -9,9 +9,8 @@ SUB B0 0
 L_END
 STORE C0 A1050
 
-PCB of process: 1/ State: RUNNING/ Priority: 1
+PCB of process: 1/ State: BLOCK/ Priority: 1
 Quantum remaining: 10/ Base address: 49/ Memory limit: 250
-Used resources: A1050, 
 
 ------------------PROGRAM 3------------------
 LOAD A0 4
@@ -20,7 +19,6 @@ SUB A0 1
 L_END
 STORE A0 A2010
 
-PCB of process: 3/ State: RUNNING/ Priority: 3
+PCB of process: 3/ State: BLOCK/ Priority: 3
 Quantum remaining: 10/ Base address: 193/ Memory limit: 250
-Used resources: A2010, 
 

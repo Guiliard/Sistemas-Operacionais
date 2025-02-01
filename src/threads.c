@@ -29,10 +29,8 @@ void log_start(process* proc) {
     fprintf(file, "%s\n", proc->program);
     fprintf(file, "PCB of process: %hd/ State: %s/ Priority: %hd\n",
     proc->pcb->process_id,print_enum_state(proc->pcb->state_of_process),proc->pcb->priority);
-    fprintf(file, "Quantum remaining: %hd/ Base address: %hd/ Memory limit: %hd\n",
+    fprintf(file, "Quantum remaining: %hd/ Base address: %hd/ Memory limit: %hd\n\n",
     proc->pcb->quantum_remaining,proc->pcb->base_address,proc->pcb->limit_of_memory);
-    fprintf(file, "Used resources: %s\n\n",
-    proc->pcb->resource_name);
 
     fclose(file);  
 }
@@ -57,10 +55,9 @@ void log_block(process* proc) {
     fprintf(file, "%s\n", proc->program);
     fprintf(file, "PCB of process: %hd/ State: %s/ Priority: %hd\n",
     proc->pcb->process_id,print_enum_state(proc->pcb->state_of_process),proc->pcb->priority);
-    fprintf(file, "Quantum remaining: %hd/ Base address: %hd/ Memory limit: %hd\n",
+    fprintf(file, "Quantum remaining: %hd/ Base address: %hd/ Memory limit: %hd\n\n",
     proc->pcb->quantum_remaining,proc->pcb->base_address,proc->pcb->limit_of_memory);
-    fprintf(file, "Used resources: %s\n\n",
-    proc->pcb->resource_name);
+
     fclose(file);  
 }
 
@@ -153,6 +150,7 @@ void *core_function(void *args) {
         if (proc && quantum_over(proc)) {
             printf("Core %hd bloqueou o processo id: %hd, quantum zerado\n", t_args->core_id, proc->pcb->process_id);
             has_process[t_args->core_id] = false;
+            proc->pcb->state_of_process = BLOCK;
             log_block(proc);
             proc->pcb->is_running = false;
             proc->pcb->is_blocked = true;

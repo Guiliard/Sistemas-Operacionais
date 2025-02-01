@@ -75,6 +75,7 @@ void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short i
         log_end(process);
         process->pcb->is_terminated = true;
         process->pcb->is_running = false;
+        process->pcb->state_of_process = READY;
         reset_cpu(cpu, core_number);
         process->pcb->in_p->num_instruction++;
     }
