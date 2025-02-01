@@ -42,7 +42,7 @@ int main() {
 
     print_ram(memory_ram);
 
-    //free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end);
+    free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end);
 
     end_time = clock();
     time_taken = ((double) (end_time - start_time)) / CLOCKS_PER_SEC;

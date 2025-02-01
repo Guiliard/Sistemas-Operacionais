@@ -7,6 +7,7 @@ bool running_core[NUM_CORES];
 bool has_process[NUM_CORES];
 bool more_process[NUM_CORES];
 int total_running_cores = NUM_CORES;
+cache *cache_table;
 
 void initialize_log_s_file() {
     FILE* file = fopen("output/start.txt", "w");  
@@ -91,6 +92,7 @@ process *get_process(cpu* cpu, queue_start *queue, unsigned short int core_id) {
                 return &queue->initial_queue[i];
             }
             else if (queue->initial_queue[i].pcb->is_blocked && !avaliable_process(queue)) {
+                queue->initial_queue[i].pcb = search_cache(cache_table, queue->initial_queue[i].pcb->process_id);
                 queue->initial_queue[i].pcb->is_running = true;
                 queue->initial_queue[i].pcb->on_core = core_id;
                 queue->initial_queue[i].pcb->is_blocked = false;
@@ -155,6 +157,7 @@ void *core_function(void *args) {
             proc->pcb->is_running = false;
             proc->pcb->is_blocked = true;
             proc->pcb->is_terminated = false;
+            add_cache(&cache_table, proc->pcb->process_id, proc->pcb);
         }
         pthread_mutex_unlock(&queue_mutex);
 
@@ -186,6 +189,7 @@ void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end
         cores_ativos = NUM_CORES;
     pthread_t threads[cores_ativos];
     thread_args *t_args = malloc(sizeof(thread_args) * cores_ativos);
+    init_cache(&cache_table);
 
     pthread_mutex_init(&queue_mutex, NULL);
     pthread_cond_init(&cond_var, NULL);
@@ -211,5 +215,6 @@ void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end
     pthread_cond_destroy(&cond_var);
 
     free(t_args);
+    empty_cache(&cache_table);
     printf("Execução finalizada.\n");
 }

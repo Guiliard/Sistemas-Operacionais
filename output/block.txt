@@ -15,7 +15,7 @@ Quantum remaining: 10/ Base address: 49/ Memory limit: 250
 ------------------PROGRAM 3------------------
 LOAD A0 4
 LOOP A0
-SUB A0 1
+ADD A0 2
 L_END
 STORE A0 A2010
 

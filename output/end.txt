@@ -38,11 +38,11 @@ Result of process: 1,
 ------------------PROGRAM 3------------------
 LOAD A0 4
 LOOP A0
-SUB A0 1
+ADD A0 2
 L_END
 STORE A0 A2010
 
 PCB of process: 3/ State: READY/ Priority: 3
 Quantum remaining: 6/ Base address: 193/ Memory limit: 250
-Result of process: 0, 
+Result of process: 12, 
 
