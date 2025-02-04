@@ -25,13 +25,10 @@ int main() {
     }
 
     check_instructions_on_ram(memory_ram);
-    print_ram(memory_ram);
-    printf("\n");
 
     populate_queue_start(queue_start, memory_ram);
+    
     check_resources_on_queue_start(queue_start);
-
-    reset_ram(memory_ram);
 
     initialize_log_s_file();
     initialize_log_e_file();
@@ -39,13 +36,15 @@ int main() {
 
     init_threads(cpu, memory_ram, queue_start);
 
-    print_ram(memory_ram);
+    reset_ram(memory_ram);
 
     free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start);
 
     end_time = clock();
     time_taken = ((double) (end_time - start_time)) / CLOCKS_PER_SEC;
     printf("\nExecution time: %.4f seconds\n", time_taken);
+
+    printf("Please, check the output files in the 'output' folder.\n");
 
     return 0;
 }
