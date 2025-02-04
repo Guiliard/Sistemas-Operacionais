@@ -15,18 +15,6 @@ void init_queue_start(queue_start* initial_queue) {
     }
 }
 
-void init_queue_end(queue_end* final_queue) {
-    final_queue->final_queue = malloc(NUM_PROGRAMS * sizeof(process*));
-    if (final_queue->final_queue == NULL) {
-        printf("Error: memory allocation failed in queue_end\n");
-        exit(1);
-    }
-
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
-        final_queue->final_queue[i].program = NULL;
-    }
-}
-
 void initialize_log_e_file() {
     FILE* file = fopen("output/end.txt", "w");  
     if (file == NULL) {
@@ -50,8 +38,6 @@ void log_end(process* proc) {
     proc->pcb->process_id,print_enum_state(proc->pcb->state_of_process),proc->pcb->priority);
     fprintf(file, "Quantum remaining: %hd/ Base address: %hd/ Memory limit: %hd\n",
     proc->pcb->quantum_remaining,proc->pcb->base_address,proc->pcb->limit_of_memory);
-    fprintf(file, "Used registers: %s\n",
-    proc->pcb->bank_of_register_used);
     fprintf(file, "Result of process: %s\n\n",
     proc->pcb->result_of_process);
 
@@ -160,19 +146,6 @@ void check_resources_on_queue_start(queue_start* initial_queue) {
         }   
         num = 0;
         num_line = 0;
-    }
-}
-
-void add_process_to_queue_end(queue_end* final_queue, process* process) {
-
-    process->pcb->state_of_process = READY;
-    process->pcb->is_terminated = true;
-
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
-        if (final_queue->final_queue[i].program == NULL) {
-            final_queue->final_queue[i] = *process;
-            break;
-        }
     }
 }
 

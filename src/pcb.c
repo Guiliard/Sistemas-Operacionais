@@ -14,12 +14,14 @@ process_control_block* init_pcb() {
     pcb->total_quantum = 10;
     pcb->base_address = 0;
     pcb->limit_of_memory = 250;
+    pcb->on_core = -1;
     pcb->bank_of_register_used = NULL; 
     pcb->result_of_process = NULL;
     pcb->waiting_resource = false;
     pcb->resource_name = NULL; 
     pcb->is_terminated = false;
     pcb->is_running = false;
+    pcb->is_blocked = false;
     pcb->in_p = init_in_p();
 
     return pcb;

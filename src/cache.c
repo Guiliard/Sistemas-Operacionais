@@ -1,9 +1,13 @@
 #include "cache.h"
 
-void add_cache(cache **cache_table, unsigned short int address, unsigned short int data) {
+void init_cache(cache **cache_table) {
+    *cache_table = NULL;
+}
+
+void add_cache(cache **cache_table, unsigned short int process_id, process_control_block *process_pcb) {
     cache *item = NULL;
 
-    HASH_FIND(hh, *cache_table, &address, sizeof(unsigned short int), item);
+    HASH_FIND(hh, *cache_table, &process_id, sizeof(unsigned short int), item);
 
     if (item == NULL) {
         item = (cache *)malloc(sizeof(cache));
@@ -11,38 +15,32 @@ void add_cache(cache **cache_table, unsigned short int address, unsigned short i
             printf("Error: memory allocation failed in add to cache\n");
             exit(1);
         }
-        item->address = address; 
-        HASH_ADD(hh, *cache_table, address, sizeof(unsigned short int), item);
+        item->process_id = process_id;
+        item->process_pcb = process_pcb; // Armazena o ponteiro para PCB
+        HASH_ADD(hh, *cache_table, process_id, sizeof(unsigned short int), item);
+    } else {
+        item->process_pcb = process_pcb; // Atualiza o valor caso já exista
     }
-
-    item->data = data;
 }
 
-cache *search_cache(cache *cache_table, unsigned short int address) {
+process_control_block *search_cache(cache *cache_table, unsigned short int process_id) {
     cache *item = NULL;
 
-    HASH_FIND(hh, cache_table, &address, sizeof(unsigned short int), item);
+    HASH_FIND(hh, cache_table, &process_id, sizeof(unsigned short int), item);
 
-    return item;
+    return item ? item->process_pcb : NULL;
 }
 
-void remove_cache(cache **cache_table, unsigned short int address) {
-    cache *item = search_cache(*cache_table, address);
+void remove_cache(cache **cache_table, unsigned short int process_id) {
+    cache *item = NULL;
 
+    HASH_FIND(hh, *cache_table, &process_id, sizeof(unsigned short int), item);
     if (item != NULL) {
         HASH_DEL(*cache_table, item);
         free(item);
     } else {
-        printf("Error: address not found in cache\n");
+        printf("Error: process_id not found in cache\n");
         exit(1);
-    }
-}
-
-void print_cache(cache *cache_table) {
-    cache *item;
-    
-    for (item = cache_table; item != NULL; item = (cache*)(item->hh.next)) {
-        printf("Address: %hu, Data: %hu\n", item->address, item->data);
     }
 }
 

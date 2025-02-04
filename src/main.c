@@ -12,11 +12,10 @@ int main() {
     disc* memory_disc = malloc(sizeof(disc));
     peripherals* peripherals = malloc(sizeof(peripherals));
     queue_start* queue_start = malloc(sizeof(queue_start));
-    queue_end* queue_end = malloc(sizeof(queue_end));
 
     char filename[25];
 
-    init_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end);
+    init_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start);
 
     for (unsigned short int index_program = 0; index_program < NUM_PROGRAMS; index_program++) {
         sprintf(filename, "dataset/program%d.txt", index_program);
@@ -35,13 +34,11 @@ int main() {
     initialize_log_e_file();
     initialize_log_b_file();
 
-    printf("\nStarting execution of programs...\n");
-
-    init_threads(cpu, memory_ram, queue_start, queue_end);
+    init_threads(cpu, memory_ram, queue_start);
 
     reset_ram(memory_ram);
 
-    free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start, queue_end);
+    free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start);
 
     end_time = clock();
     time_taken = ((double) (end_time - start_time)) / CLOCKS_PER_SEC;
