@@ -1,12 +1,11 @@
 #include "architecture.h"
 
-void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end) {
+void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start) {
     init_cpu(cpu);
     init_ram(memory_ram);
     init_disc(memory_disc);
     init_peripherals(peripherals);
     init_queue_start(queue_start);
-    init_queue_end(queue_end);
 }
 
 void load_program_on_ram(ram* memory_ram, char* program) {
@@ -64,14 +63,13 @@ void check_instructions_on_ram(ram* memory_ram) {
     }
 }
 
-void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short int core_number, queue_end* queue_end) {   
+void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short int core_number) {   
     unsigned short int num_lines = 0;
 
     num_lines = count_lines(process->program);
 
     if (process->pcb->in_p->num_instruction == num_lines) {
         printf("Core %hd finalizou o processo id: %hd\n", core_number, process->pcb->process_id);
-        add_process_to_queue_end(queue_end,process);
         log_end(process);
         process->pcb->is_terminated = true;
         process->pcb->is_running = false;
@@ -103,11 +101,10 @@ void update_regs(cpu* cpu, process_control_block* pcb, unsigned short int core_n
     cpu->core[core_number].PC = pcb->in_p->num_instruction;
 }
 
-void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start, queue_end* queue_end) {
+void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start) {
     free(cpu);
     free(memory_ram);
     free(memory_disc);
     free(peripherals);
     free(queue_start);
-    free(queue_end);
 }

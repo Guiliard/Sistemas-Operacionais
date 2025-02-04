@@ -145,7 +145,7 @@ void *core_function(void *args) {
         pthread_mutex_unlock(&queue_mutex);
 
         if (proc && !proc->pcb->is_terminated && !quantum_over(proc)) {
-            init_pipeline(t_args->cpu, t_args->memory_ram, proc, t_args->core_id, t_args->queue_end);
+            init_pipeline(t_args->cpu, t_args->memory_ram, proc, t_args->core_id);
         }
 
         pthread_mutex_lock(&queue_mutex);
@@ -181,7 +181,7 @@ void *core_function(void *args) {
     pthread_exit(NULL);
 }
 
-void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end *queue_end) {
+void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start) {
     int cores_ativos;
     if (NUM_PROGRAMS < NUM_CORES)
         cores_ativos = NUM_PROGRAMS;
@@ -199,7 +199,6 @@ void init_threads(cpu *cpu, ram *memory_ram, queue_start *queue_start, queue_end
         t_args[i].cpu = cpu;
         t_args[i].memory_ram = memory_ram;
         t_args[i].queue_start = queue_start;
-        t_args[i].queue_end = queue_end;
         running_core[i] = true;
         more_process[i] = true;
         has_process[i] = false;

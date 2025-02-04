@@ -18,12 +18,7 @@ typedef struct queue_start {
     process *initial_queue;
 } queue_start;
 
-typedef struct queue_end {
-    process *final_queue;
-} queue_end;
-
 void init_queue_start(queue_start* initial_queue);
-void init_queue_end(queue_end* final_queue);
 
 void initialize_log_e_file();
 void log_end(process* proc);
@@ -32,8 +27,6 @@ void populate_queue_start(queue_start* initial_queue, ram* memory_ram);
 
 void check_resources_on_queue_start(queue_start* initial_queue);
 void add_resource_to_pcb(process_control_block *pcb, char *memory_adress);
-
-void add_process_to_queue_end(queue_end* final_queue, process* process);
 
 void organize_process_of_queue_start(queue_start* initial_queue, unsigned short int process_id);
 
