@@ -6,9 +6,10 @@
 #include "cpu.h"
 #include "interpreter.h"
 #include "pcb.h"
+#include "cache.h"
 
-void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core);
-unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation);
+void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core, cache2* cache_table);
+unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation, cache2* cache_table);
 
 unsigned short int get_register_index(char* reg_name);
 unsigned short int verify_address(char* address, unsigned short int num_positions);
@@ -16,10 +17,10 @@ unsigned short int verify_address(char* address, unsigned short int num_position
 void load(cpu* cpu, char* instruction, process_control_block* pcb, unsigned short int index_core);
 void store(cpu* cpu, ram* memory_ram, process_control_block* pcb, char* instruction, unsigned short int index_core);
 
-unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core);
-unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_core);
-unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_core);
-unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_core);
+unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core, cache2* cache_table);
+unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_core, cache2* cache_table);
+unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_core, cache2* cache_table);
+unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_core, cache2* cache_table);
 
 void if_i(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core);
 void if_end(instruction_processor* instr_processor);

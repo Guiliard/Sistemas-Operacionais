@@ -1,20 +1,20 @@
 #include "control_unit.h"
 #include "pipeline.h"
 
-void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core) {
+void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core, cache2* cache_table) {
     instr_processor->result = 0;
 
     if (instr_processor->type == ADD) {
-        instr_processor->result = add(cpu, instr_processor->instruction, index_core);
+        instr_processor->result = add(cpu, instr_processor->instruction, index_core, cache_table);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == SUB) {
-        instr_processor->result = sub(cpu, instr_processor->instruction, index_core);
+        instr_processor->result = sub(cpu, instr_processor->instruction, index_core, cache_table);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == MUL) {
-        instr_processor->result = mul(cpu, instr_processor->instruction, index_core);
+        instr_processor->result = mul(cpu, instr_processor->instruction, index_core, cache_table);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == DIV) {
-        instr_processor->result = div_c(cpu, instr_processor->instruction, index_core);
+        instr_processor->result = div_c(cpu, instr_processor->instruction, index_core, cache_table);
         instr_processor->num_instruction++;
     } else if (instr_processor->type == LOOP) {
         loop(cpu, instr_processor, index_core);
@@ -39,23 +39,47 @@ void control_unit(cpu* cpu, char* program, instruction_processor* instr_processo
     }
 }
 
-unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation) {
+unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation, cache2* cache_table) {
+    char new_inst[50], *inst, new_inst2[50], *inst2;
+    unsigned short int result;
     switch(operation) {
         case ADD:
-            return operating_a + operating_b;
+            result = operating_a + operating_b;
+            snprintf(new_inst, sizeof(new_inst), "%d %u %u", operation, operating_a, operating_b);
+            inst = strdup(new_inst);
+            add_cache2(&cache_table, inst, result);
+            snprintf(new_inst2, sizeof(new_inst), "%d %u %u", operation, operating_b, operating_a);
+            inst2 = strdup(new_inst);
+            add_cache2(&cache_table, inst2, result);
+            return result;
 
         case SUB:
-            return operating_a - operating_b;
+            result = operating_a - operating_b;
+            snprintf(new_inst, sizeof(new_inst), "%d %u %u", operation, operating_a, operating_b);
+            inst = strdup(new_inst);
+            add_cache2(&cache_table, inst, result);
+            return result;
 
         case MUL:
-            return operating_a * operating_b; 
+            result = operating_a * operating_b;
+            snprintf(new_inst, sizeof(new_inst), "%d %u %u", operation, operating_a, operating_b);
+            inst = strdup(new_inst);
+            add_cache2(&cache_table, inst, result);
+            snprintf(new_inst2, sizeof(new_inst), "%d %u %u", operation, operating_b, operating_a);
+            inst2 = strdup(new_inst);
+            add_cache2(&cache_table, inst2, result);
+            return result;
 
         case DIV:
             if (operating_b == 0) {
                 printf("Error: Division by zero.\n");
                 exit(1); 
             }
-            return operating_a / operating_b;
+            result = operating_a / operating_b;
+            snprintf(new_inst, sizeof(new_inst), "%d %u %u", operation, operating_a, operating_b);
+            inst = strdup(new_inst);
+            add_cache2(&cache_table, inst, result);
+            return result;
 
         default:
             printf("Error: Invalid operation.\n");
@@ -243,7 +267,7 @@ void store (cpu* cpu, ram* memory_ram, process_control_block* pcb, char* instruc
     add_result_of_process_to_pcb(pcb, buffer);
 }
 
-unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core) {
+unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core, cache2* cache_table) {
     char *instruction_copy, *token,*register_name1, *register_name2;
     unsigned short int value, register_index1, register_index2, result;
 
@@ -271,7 +295,7 @@ unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_cor
         trim(register_name1);
         register_index1 = get_register_index(register_name1);
 
-        result = ula(cpu->core[index_core].registers[register_index1], value, ADD);
+        result = ula(cpu->core[index_core].registers[register_index1], value, ADD, cache_table);
     } else {
         register_name2 = token;
 
@@ -282,13 +306,13 @@ unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_cor
 
         result = ula(cpu->core[index_core].registers[register_index1], 
                      cpu->core[index_core].registers[register_index2], 
-                     ADD);
+                     ADD, cache_table);
     }
 
     return result; 
 }
 
-unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_core) {
+unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_core, cache2* cache_table) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value, register_index1, register_index2, result;
 
@@ -316,7 +340,7 @@ unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_cor
         trim(register_name1);
         register_index1 = get_register_index(register_name1);
 
-        result = ula(cpu->core[index_core].registers[register_index1], value, SUB);
+        result = ula(cpu->core[index_core].registers[register_index1], value, SUB, cache_table);
     } else {
         register_name2 = token;
 
@@ -327,13 +351,13 @@ unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_cor
 
         result = ula(cpu->core[index_core].registers[register_index1], 
                      cpu->core[index_core].registers[register_index2], 
-                     SUB);
+                     SUB, cache_table);
     }
 
     return result; 
 }
 
-unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_core) {
+unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_core, cache2* cache_table) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value, register_index1, register_index2, result;
 
@@ -361,7 +385,7 @@ unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_cor
         trim(register_name1);
         register_index1 = get_register_index(register_name1);
 
-        result = ula(cpu->core[index_core].registers[register_index1], value, MUL);
+        result = ula(cpu->core[index_core].registers[register_index1], value, MUL, cache_table);
     } else {
         register_name2 = token;
 
@@ -372,13 +396,13 @@ unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_cor
 
         result = ula(cpu->core[index_core].registers[register_index1], 
                      cpu->core[index_core].registers[register_index2], 
-                     MUL);
+                     MUL, cache_table);
     }
 
     return result; 
 }
 
-unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_core) {
+unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_core, cache2* cache_table) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value, register_index1, register_index2, result;
 
@@ -406,7 +430,7 @@ unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_c
         trim(register_name1);
         register_index1 = get_register_index(register_name1);
 
-        result = ula(cpu->core[index_core].registers[register_index1], value, DIV);
+        result = ula(cpu->core[index_core].registers[register_index1], value, DIV, cache_table);
     } else {
         register_name2 = token;
 
@@ -417,7 +441,7 @@ unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_c
 
         result = ula(cpu->core[index_core].registers[register_index1], 
                      cpu->core[index_core].registers[register_index2], 
-                     DIV);
+                     DIV, cache_table);
     }
 
     return result;  
