@@ -24,10 +24,11 @@ void remove_cache(cache **cache_table, unsigned short int process_id);
 void empty_cache(cache **cache_table);
 
 void init_cache2(cache2 **cache_table);
-void add_cache2(cache2 **cache_table, char* instruction, unsigned short int result);
-bool search_cache2(cache2 *cache_table, char *instruction);
-unsigned short int get_result_cache(cache2 *cache_table, char* instruction);
+void add_cache2(cache2 **cache_table, const char* instruction, unsigned short int result);
+bool search_cache2(cache2 *cache_table, const char *instruction);
+unsigned short int get_result_cache(cache2 *cache_table, const char* instruction);
 void remove_cache2(cache2 **cache_table, char* instruction);
 void empty_cache2(cache2 **cache_table);
+void print_cache(cache2 *cache_table);
 
 #endif

@@ -1,7 +1,7 @@
 #include "control_unit.h"
 #include "pipeline.h"
 
-void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core, cache2* cache_table) {
+void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core, cache2** cache_table) {
     instr_processor->result = 0;
 
     if (instr_processor->type == ADD) {
@@ -39,47 +39,50 @@ void control_unit(cpu* cpu, char* program, instruction_processor* instr_processo
     }
 }
 
-unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation, cache2* cache_table) {
-    char new_inst[50], *inst, new_inst2[50], *inst2;
+unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation, cache2** cache_table) {
+    char new_inst[50], new_inst2[50];
     unsigned short int result;
+    if (operation == ADD) {
+        result = operating_a + operating_b;
+        snprintf(new_inst, sizeof(new_inst), "ADD %u %u", operating_a, operating_b);
+        add_cache2(cache_table, new_inst, result);
+        snprintf(new_inst2, sizeof(new_inst), "ADD %u %u", operating_b, operating_a);
+        add_cache2(cache_table, new_inst2, result);
+    }
+    else if (operation == SUB) {
+        result = operating_a - operating_b;
+        snprintf(new_inst, sizeof(new_inst), "SUB %u %u", operating_a, operating_b);
+        add_cache2(cache_table, new_inst, result);
+    }
+    else if (operation == MUL) {
+        result = operating_a * operating_b;
+        snprintf(new_inst, sizeof(new_inst), "MUL %u %u", operating_a, operating_b);
+        add_cache2(cache_table, new_inst, result);
+        snprintf(new_inst2, sizeof(new_inst), "MUL %u %u", operating_b, operating_a);
+        add_cache2(cache_table, new_inst2, result);
+    }
+    else {
+        result = operating_a / operating_b;
+        snprintf(new_inst, sizeof(new_inst), "DIV %u %u", operating_a, operating_b);
+        add_cache2(cache_table, new_inst, result);
+    }
+
     switch(operation) {
         case ADD:
-            result = operating_a + operating_b;
-            snprintf(new_inst, sizeof(new_inst), "%d %u %u", operation, operating_a, operating_b);
-            inst = strdup(new_inst);
-            add_cache2(&cache_table, inst, result);
-            snprintf(new_inst2, sizeof(new_inst), "%d %u %u", operation, operating_b, operating_a);
-            inst2 = strdup(new_inst);
-            add_cache2(&cache_table, inst2, result);
-            return result;
+            return operating_a + operating_b;
 
         case SUB:
-            result = operating_a - operating_b;
-            snprintf(new_inst, sizeof(new_inst), "%d %u %u", operation, operating_a, operating_b);
-            inst = strdup(new_inst);
-            add_cache2(&cache_table, inst, result);
-            return result;
+            return operating_a - operating_b;
 
-        case MUL:
-            result = operating_a * operating_b;
-            snprintf(new_inst, sizeof(new_inst), "%d %u %u", operation, operating_a, operating_b);
-            inst = strdup(new_inst);
-            add_cache2(&cache_table, inst, result);
-            snprintf(new_inst2, sizeof(new_inst), "%d %u %u", operation, operating_b, operating_a);
-            inst2 = strdup(new_inst);
-            add_cache2(&cache_table, inst2, result);
-            return result;
+        case MUL: 
+            return operating_a * operating_b;
 
         case DIV:
             if (operating_b == 0) {
                 printf("Error: Division by zero.\n");
                 exit(1); 
             }
-            result = operating_a / operating_b;
-            snprintf(new_inst, sizeof(new_inst), "%d %u %u", operation, operating_a, operating_b);
-            inst = strdup(new_inst);
-            add_cache2(&cache_table, inst, result);
-            return result;
+            return operating_a / operating_b;
 
         default:
             printf("Error: Invalid operation.\n");
@@ -267,7 +270,7 @@ void store (cpu* cpu, ram* memory_ram, process_control_block* pcb, char* instruc
     add_result_of_process_to_pcb(pcb, buffer);
 }
 
-unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core, cache2* cache_table) {
+unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core, cache2** cache_table) {
     char *instruction_copy, *token,*register_name1, *register_name2;
     unsigned short int value, register_index1, register_index2, result;
 
@@ -312,7 +315,7 @@ unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_cor
     return result; 
 }
 
-unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_core, cache2* cache_table) {
+unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_core, cache2** cache_table) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value, register_index1, register_index2, result;
 
@@ -357,7 +360,7 @@ unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_cor
     return result; 
 }
 
-unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_core, cache2* cache_table) {
+unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_core, cache2** cache_table) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value, register_index1, register_index2, result;
 
@@ -402,7 +405,7 @@ unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_cor
     return result; 
 }
 
-unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_core, cache2* cache_table) {
+unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_core, cache2** cache_table) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value, register_index1, register_index2, result;
 

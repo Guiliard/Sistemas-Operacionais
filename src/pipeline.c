@@ -11,7 +11,7 @@ cache_item* init_c_item() {
 }
 
 void verify_cache_instruction(cpu* cpu, unsigned short int index_core, cache2* cache_table, char* instruction, cache_item* c_i) {
-    char *instruction_copy, *token,*register_name1, *register_name2, *type, new_inst[50], *inst;
+    char *instruction_copy, *token,*register_name1, *register_name2, *type, new_inst[50];
     unsigned short int value, reg_1, reg_2;
 
     instruction_copy = strdup(instruction);
@@ -50,10 +50,9 @@ void verify_cache_instruction(cpu* cpu, unsigned short int index_core, cache2* c
             snprintf(new_inst, sizeof(new_inst), "%s %u %u", type, reg_1, reg_2);
         }
 
-        inst = strdup(new_inst);
-        c_i->is_cached = search_cache2(cache_table, inst);
+        c_i->is_cached = search_cache2(cache_table, strdup(new_inst));
         if (c_i->is_cached)
-            c_i->result = get_result_cache(cache_table, inst);
+            c_i->result = get_result_cache(cache_table, strdup(new_inst));
     }
 
 }
@@ -75,7 +74,7 @@ type_of_instruction instruction_decode(char* instruction, unsigned short int num
     }
 }
 
-void execute(cpu* cpu, char* program, instruction_processor * instr_processor, unsigned short int index_core, cache2* cache_table) {
+void execute(cpu* cpu, char* program, instruction_processor * instr_processor, unsigned short int index_core, cache2** cache_table) {
     control_unit(cpu, program, instr_processor, index_core, cache_table);
 }
 

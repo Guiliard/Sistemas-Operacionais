@@ -57,63 +57,52 @@ void init_cache2(cache2 **cache_table) {
     *cache_table = NULL;
 }
 
-void add_cache2(cache2 **cache_table, char *instruction, unsigned short int result) {
-    cache2 *item = NULL;
+void add_cache2(cache2 **cache_table, const char* instruction, unsigned short int result) {
+    cache2 *entry = NULL;
+    HASH_FIND_STR(*cache_table, instruction, entry);
 
-    HASH_FIND_STR(*cache_table, instruction, item);
-
-    if (item == NULL) {
-        item = (cache2 *)malloc(sizeof(cache2));
-        if (item == NULL) {
-            printf("Error: memory allocation failed in add to cache2\n");
-            exit(1);
-        }
-        item->instruction = strdup(instruction); // Copia a string para evitar problemas de ponteiro
-        item->result = result;
-        HASH_ADD_STR(*cache_table, instruction, item);
-    } else {
-        item->result = result; // Atualiza o valor caso já exista
+    if (entry == NULL) {
+        cache2 *entry = malloc(sizeof(cache2));
+        entry->instruction = strdup(instruction);
+        entry->result = result;
+        HASH_ADD_KEYPTR(hh, *cache_table, entry->instruction, strlen(entry->instruction), entry);
     }
 }
 
-bool search_cache2(cache2 *cache_table, char *instruction) {
-    cache2 *item = NULL;
-    HASH_FIND_STR(cache_table, instruction, item);
-    
-    if (item) {
-        return true;
-    } else {
-        return false; // Retorna 0 se não encontrar
-    }
+bool search_cache2(cache2 *cache_table, const char *instruction) {
+    cache2 *entry;
+    HASH_FIND_STR(cache_table, instruction, entry);
+    return entry != NULL;
 }
 
-unsigned short int get_result_cache(cache2 *cache_table, char *instruction) {
-    cache2 *item = NULL;
-    HASH_FIND_STR(cache_table, instruction, item);
-    
-    return item->result;
+unsigned short int get_result_cache(cache2 *cache_table, const char* instruction) {
+    cache2 *entry;
+    HASH_FIND_STR(cache_table, instruction, entry);
+    return entry->result;
 }
 
-void remove_cache2(cache2 **cache_table, char *instruction) {
-    cache2 *item = NULL;
-
-    HASH_FIND_STR(*cache_table, instruction, item);
-    if (item != NULL) {
-        HASH_DEL(*cache_table, item);
-        free(item->instruction); // Libera a string alocada
-        free(item);
-    } else {
-        printf("Error: instruction not found in cache2\n");
-        exit(1);
+void remove_cache2(cache2 **cache_table, char* instruction) {
+    cache2 *entry;
+    HASH_FIND_STR(*cache_table, instruction, entry);
+    if (entry) {
+        HASH_DEL(*cache_table, entry);
+        free(entry->instruction); // Liberar memória alocada para a string
+        free(entry);
     }
 }
 
 void empty_cache2(cache2 **cache_table) {
-    cache2 *item, *tmp;
-    
-    HASH_ITER(hh, *cache_table, item, tmp) {
-        HASH_DEL(*cache_table, item);
-        free(item->instruction); // Libera a string alocada
-        free(item);
+    cache2 *entry, *tmp;
+    HASH_ITER(hh, *cache_table, entry, tmp) {
+        HASH_DEL(*cache_table, entry);
+        free(entry->instruction);
+        free(entry);
+    }
+}
+
+void print_cache(cache2 *cache_table) {
+    cache2 *entry;
+    for (entry = cache_table; entry != NULL; entry = entry->hh.next) {
+        printf("Instrucao: %s, Resultado: %d\n", entry->instruction, entry->result);
     }
 }

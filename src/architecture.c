@@ -1,5 +1,5 @@
 #include "architecture.h"
-cache2* cache_table;
+cache2 *cache_table2;
 
 void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start) {
     init_cpu(cpu);
@@ -7,7 +7,7 @@ void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals
     init_disc(memory_disc);
     init_peripherals(peripherals);
     init_queue_start(queue_start);
-    init_cache2(&cache_table);
+    init_cache2(&cache_table2);
 }
 
 void load_program_on_ram(ram* memory_ram, char* program) {
@@ -84,26 +84,25 @@ void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short i
     else {
         process->pcb->in_p->instruction = instruction_fetch(cpu, process->program, core_number);
 
-        verify_cache_instruction(cpu, core_number, cache_table, process->pcb->in_p->instruction, c_i);
+        verify_cache_instruction(cpu, core_number, cache_table2, process->pcb->in_p->instruction, c_i);
         if (c_i->is_cached) {
             cpu->core[core_number].registers[c_i->reg_index] = c_i->result;
             process->pcb->in_p->regs[c_i->reg_index] = c_i->result;
-            printf("cache find\n");
-            c_i->is_cached = false;
+            process->pcb->in_p->num_instruction++;
+            printf("cache find %s\n",process->pcb->in_p->instruction);
         }
         else {
-            printf("did not find cache\n");
             process->pcb->in_p->type = instruction_decode(process->pcb->in_p->instruction, process->pcb->in_p->num_instruction);
 
-            execute(cpu, process->program, process->pcb->in_p, core_number, cache_table);
+            execute(cpu, process->program, process->pcb->in_p, core_number, &cache_table2);
 
             memory_access(cpu, memory_ram, process->pcb, process->pcb->in_p->type, process->pcb->in_p->instruction, core_number);
 
             write_back(cpu, process->pcb->in_p->type, process->pcb, process->pcb->in_p->instruction, process->pcb->in_p->result, core_number);
         }
+        c_i->is_cached = false;
         process->pcb->quantum_remaining--;
     }
-    free(c_i);
 }
 
 void update_regs(cpu* cpu, process_control_block* pcb, unsigned short int core_number) {
@@ -119,5 +118,5 @@ void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals
     free(memory_disc);
     free(peripherals);
     free(queue_start);
-    empty_cache2(&cache_table);
+    empty_cache2(&cache_table2);
 }

@@ -11,7 +11,7 @@ MUL B0 3
 STORE C0 A1050
 
 PCB of process: 1/ State: BLOCK/ Priority: 1
-Quantum remaining: 10/ Base address: 49/ Memory limit: 250
+Quantum remaining: 10/ Base address: 59/ Memory limit: 250
 
 ------------------PROGRAM 3------------------
 LOAD A0 4
@@ -21,4 +21,5 @@ L_END
 STORE A0 A2010
 
 PCB of process: 3/ State: BLOCK/ Priority: 3
-Quantum remaining: 10/ Base address: 242/ Memory limit: 250
+Quantum remaining: 10/ Base address: 252/ Memory limit: 250
+
