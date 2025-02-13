@@ -25,7 +25,7 @@ void add_cache_process(cache *cache_table, unsigned short int process_id, proces
     }
 }
 
-void add_cache_instruction(cache *cache_table, char *instruction, unsigned short int result) {
+void add_cache_instruction(cache *cache_table, const char *instruction, unsigned short int result) {
     hash_instruction *item = NULL;
 
     HASH_FIND_STR(cache_table->instruction_table, instruction, item);
@@ -39,7 +39,7 @@ void add_cache_instruction(cache *cache_table, char *instruction, unsigned short
         item->instruction = strdup(instruction); 
         item->result = result;  
 
-        HASH_ADD_KEYPTR(hh, cache_table->instruction_table, instruction, strlen(item->instruction), item);
+        HASH_ADD_KEYPTR(hh, cache_table->instruction_table, item->instruction, strlen(item->instruction), item);
     }
 }
 
@@ -54,7 +54,7 @@ process_control_block *search_cache_process(cache *cache_table, unsigned short i
     return NULL; 
 }
 
-bool search_cache_instruction(cache *cache_table, char *instruction) {
+bool search_cache_instruction(cache *cache_table, const char *instruction) {
 
     hash_instruction *item = NULL;
 

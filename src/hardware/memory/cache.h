@@ -32,10 +32,10 @@ typedef struct instruction_cache_item {
 void init_cache(cache *cache_table);
 
 void add_cache_process(cache *cache_table, unsigned short int process_id, process_control_block *process_pcb);
-void add_cache_instruction(cache *cache_table, char* instruction, unsigned short int result);
+void add_cache_instruction(cache *cache_table, const char* instruction, unsigned short int result);
 
 process_control_block *search_cache_process(cache *cache_table, unsigned short int process_id);
-bool search_cache_instruction(cache *cache_table, char *instruction);
+bool search_cache_instruction(cache *cache_table, const char *instruction);
 
 void remove_cache_process(cache *cache_table, unsigned short int process_id);
 void remove_cache_instruction(cache *cache_table, char* instruction);
