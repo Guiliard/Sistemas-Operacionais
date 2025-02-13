@@ -1,4 +1,5 @@
-#include "threads.h"
+#include "software/threads/threads.h"
+#include "utils/logs.h"
 #include <time.h>
 
 int main() {
@@ -11,11 +12,11 @@ int main() {
     ram* memory_ram = malloc(sizeof(ram));
     disc* memory_disc = malloc(sizeof(disc));
     peripherals* peripherals = malloc(sizeof(peripherals));
-    queue_start* queue_start = malloc(sizeof(queue_start));
+    process* process_queue = malloc(NUM_PROGRAMS * sizeof(process));
 
     char filename[25];
 
-    init_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start);
+    init_architecture(cpu, memory_ram, memory_disc, peripherals, process_queue);
 
     for (unsigned short int index_program = 0; index_program < NUM_PROGRAMS; index_program++) {
         sprintf(filename, "dataset/program%d.txt", index_program);
@@ -26,19 +27,17 @@ int main() {
 
     check_instructions_on_ram(memory_ram);
 
-    populate_queue_start(queue_start, memory_ram);
+    populate_process_queue(process_queue, memory_ram);
     
-    check_resources_on_queue_start(queue_start);
+    check_resources_on_process_queue(process_queue);
 
-    initialize_log_s_file();
-    initialize_log_e_file();
-    initialize_log_b_file();
+    init_logs();
 
-    init_threads(cpu, memory_ram, queue_start);
+    init_threads(cpu, memory_ram, process_queue);
 
     reset_ram(memory_ram);
 
-    free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start);
+    free_architecture(cpu, memory_ram, memory_disc, peripherals, process_queue);
 
     end_time = clock();
     time_taken = ((double) (end_time - start_time)) / CLOCKS_PER_SEC;

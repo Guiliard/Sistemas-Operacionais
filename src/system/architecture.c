@@ -1,13 +1,11 @@
 #include "architecture.h"
-cache2 *cache_table2;
 
-void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start) {
+void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, process* process_queue) {
     init_cpu(cpu);
     init_ram(memory_ram);
     init_disc(memory_disc);
     init_peripherals(peripherals);
-    init_queue_start(queue_start);
-    init_cache2(&cache_table2);
+    init_process_queue(process_queue);
 }
 
 void load_program_on_ram(ram* memory_ram, char* program) {
@@ -65,42 +63,41 @@ void check_instructions_on_ram(ram* memory_ram) {
     }
 }
 
-void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short int core_number) {   
+void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short int core_number, cache* cache_table) {   
     unsigned short int num_lines = 0;
-    cache_item* c_i = init_c_item();
+    instruction_cache_item* inst_cache_item = init_instruction_cache_item();
 
     num_lines = count_lines(process->program);
 
     if (process->pcb->in_p->num_instruction == num_lines) {
         printf("Core %hd finalizou o processo id: %hd\n", core_number, process->pcb->process_id);
-        log_end(process);
+        write_logs_end_file(process);
         process->pcb->is_terminated = true;
         process->pcb->is_running = false;
         process->pcb->state_of_process = READY;
         reset_cpu(cpu, core_number);
         process->pcb->in_p->num_instruction++;
     }
-    else if (process->pcb->in_p->num_instruction > num_lines) {}
     else {
         process->pcb->in_p->instruction = instruction_fetch(cpu, process->program, core_number);
 
-        verify_cache_instruction(cpu, core_number, cache_table2, process->pcb->in_p->instruction, c_i);
-        if (c_i->is_cached) {
-            cpu->core[core_number].registers[c_i->reg_index] = c_i->result;
-            process->pcb->in_p->regs[c_i->reg_index] = c_i->result;
+        verify_cache_instruction(cpu, core_number, cache_table, process->pcb->in_p->instruction, inst_cache_item);
+
+        if (inst_cache_item->is_cached) {
+            cpu->core[core_number].registers[inst_cache_item->reg_index] = inst_cache_item->result;
+            process->pcb->in_p->regs[inst_cache_item->reg_index] = inst_cache_item->result;
             process->pcb->in_p->num_instruction++;
             printf("cache find %s\n",process->pcb->in_p->instruction);
-        }
-        else {
+        } else {
             process->pcb->in_p->type = instruction_decode(process->pcb->in_p->instruction, process->pcb->in_p->num_instruction);
 
-            execute(cpu, process->program, process->pcb->in_p, core_number, &cache_table2);
+            execute(cpu, process->program, process->pcb->in_p, core_number, cache_table);
 
             memory_access(cpu, memory_ram, process->pcb, process->pcb->in_p->type, process->pcb->in_p->instruction, core_number);
 
             write_back(cpu, process->pcb->in_p->type, process->pcb, process->pcb->in_p->instruction, process->pcb->in_p->result, core_number);
         }
-        c_i->is_cached = false;
+        inst_cache_item->is_cached = false;
         process->pcb->quantum_remaining--;
     }
 }
@@ -112,11 +109,10 @@ void update_regs(cpu* cpu, process_control_block* pcb, unsigned short int core_n
     cpu->core[core_number].PC = pcb->in_p->num_instruction;
 }
 
-void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, queue_start* queue_start) {
+void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, process* process_queue) {
     free(cpu);
     free(memory_ram);
     free(memory_disc);
     free(peripherals);
-    free(queue_start);
-    empty_cache2(&cache_table2);
+    free(process_queue);
 }

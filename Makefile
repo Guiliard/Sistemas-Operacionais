@@ -1,38 +1,30 @@
-CC       := gcc
-CXXFLAGS := -Wall -Wextra -Werror
-LDFLAGS  := -lpthread -lstdc++ -lm
-BUILD    := ./build
-OBJ_DIR  := $(BUILD)/objects
-EXEC_DIR := $(BUILD)
-TARGET   := executable
-INCLUDE  := -Iinclude/
-SRC      := $(wildcard src/*.c)
+CC        := gcc
+CFLAGS    := -Wall -Wextra -Werror -Iinclude/
+LDFLAGS   := -lpthread -lm
+SRC_DIR   := src
+BUILD_DIR := build/objects
+TARGET    := build/executable
 
-OBJECTS := $(SRC:src/%.c=$(OBJ_DIR)/%.o)
+SRCS      := $(shell find $(SRC_DIR) -name '*.c')
+OBJS      := $(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%,$(SRCS:.c=.o))
 
-all: build $(EXEC_DIR)/$(TARGET)
+all: create_dirs $(TARGET)
 
-$(OBJ_DIR)/%.o: src/%.c
-	@mkdir -p $(@D) 
-	$(CC) $(CXXFLAGS) $(INCLUDE) -c $< -o $@
+$(TARGET): $(OBJS)
+	$(CC) $^ -o $@ $(LDFLAGS)
 
-$(EXEC_DIR)/$(TARGET): $(OBJECTS)
-	@mkdir -p $(@D) 
-	$(CC) $(OBJECTS) $(CXXFLAGS) $(LDFLAGS) -o $@
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-build:
-	@mkdir -p $(EXEC_DIR) 
-	@mkdir -p $(OBJ_DIR)
-
-debug: CXXFLAGS += -DDEBUG -g
-debug: all
-
-release: CXXFLAGS += -O3
-release: all
+create_dirs:
+	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(dir $(TARGET))
 
 clean:
-	-@rm -rvf $(OBJ_DIR)/*
-	-@rm -rvf $(EXEC_DIR)/*
+	rm -rf build/
 
 run: all
 	./$(EXEC_DIR)/$(TARGET)
+
+.PHONY: all create_dirs clean

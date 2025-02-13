@@ -1,8 +1,8 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
-#include "libs.h"
-#include "reader.h"
+#include "../../utils/libs.h"
+#include "../../utils/reader.h"
 
 typedef enum type_of_instruction {
     LOAD,

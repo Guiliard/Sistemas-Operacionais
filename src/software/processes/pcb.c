@@ -90,3 +90,39 @@ char* print_enum_state(state state) {
             return "UNKNOWN";
     }
 }
+
+void add_resource_to_pcb(process_control_block *pcb, char *memory_adress) {
+    if (pcb->resource_name == NULL) {
+        size_t length = strlen(memory_adress) + 3; 
+        pcb->resource_name = (char *)malloc(length);
+
+        if (pcb->resource_name == NULL) {
+            printf("Error: memory allocation failed in bank of register used\n");
+            exit(1);
+        }
+
+        snprintf(pcb->resource_name, length, "%s, ", memory_adress);
+    } else {
+
+        size_t bank_length = strlen(pcb->resource_name);
+        char *pattern = (char *)malloc(strlen(memory_adress) + 3);
+        snprintf(pattern, strlen(memory_adress) + 3, "%s, ", memory_adress);
+
+        if (strstr(pcb->resource_name, pattern) == NULL) {
+            size_t new_length = bank_length + strlen(memory_adress) + 3; 
+            char *new_memory = (char *)realloc(pcb->resource_name, new_length);
+
+            if (new_memory == NULL) {
+                printf("Error: memory allocation failed in resource name\n");
+                free(pattern);
+                exit(1);
+            }
+
+            pcb->resource_name = new_memory;
+            strcat(pcb->resource_name, memory_adress);
+            strcat(pcb->resource_name, ", ");
+        }
+
+        free(pattern);
+    }
+}

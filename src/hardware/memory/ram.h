@@ -3,7 +3,7 @@
 
 #define NUM_MEMORY 2048
 
-#include "libs.h"
+#include "../../utils/libs.h"
 
 typedef struct ram {
     char *vector;

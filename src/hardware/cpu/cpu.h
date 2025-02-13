@@ -4,7 +4,7 @@
 #define NUM_CORES 4
 #define NUM_REGISTERS 32
 
-#include "libs.h"
+#include "../../utils/libs.h"
 
 typedef struct core {
     unsigned short int *registers;

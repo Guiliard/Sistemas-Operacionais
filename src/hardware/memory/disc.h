@@ -3,7 +3,7 @@
 
 #define NUM_DISC 4096
 
-#include "libs.h"
+#include "../../utils/libs.h"
 
 typedef struct disc {
     unsigned short int **matriz;

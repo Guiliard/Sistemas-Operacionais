@@ -1,7 +1,7 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
-#include "architecture.h"
+#include "../processes/queue_process.h"
 
 int compare_priority(const void* a, const void* b);
 bool quantum_over(process* process);

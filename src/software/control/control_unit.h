@@ -1,26 +1,27 @@
 #ifndef CONTROL_UNIT_H
 #define CONTROL_UNIT_H
 
-#include "libs.h"
-#include "ram.h"
-#include "cpu.h"
+#include "../../utils/libs.h"
+#include "../../hardware/memory/ram.h"
+#include "../../hardware/cpu/cpu.h"
 #include "interpreter.h"
-#include "pcb.h"
-#include "cache.h"
+#include "../processes/pcb.h"
+#include "../../hardware/memory/cache.h"
 
-void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core, cache2** cache_table);
-unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation, cache2** cache_table);
+void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core, cache* cache_table);
+unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation, cache* cache_table);
 
 unsigned short int get_register_index(char* reg_name);
 unsigned short int verify_address(char* address, unsigned short int num_positions);
+void verify_cache_instruction(cpu* cpu, unsigned short int index_core, cache* cache_table, char* instruction, instruction_cache_item* inst_cache_item);
 
 void load(cpu* cpu, char* instruction, process_control_block* pcb, unsigned short int index_core);
 void store(cpu* cpu, ram* memory_ram, process_control_block* pcb, char* instruction, unsigned short int index_core);
 
-unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core, cache2** cache_table);
-unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_core, cache2** cache_table);
-unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_core, cache2** cache_table);
-unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_core, cache2** cache_table);
+unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core, cache* cache_table);
+unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_core, cache* cache_table);
+unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_core, cache* cache_table);
+unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_core, cache* cache_table);
 
 void if_i(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core);
 void if_end(instruction_processor* instr_processor);

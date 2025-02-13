@@ -1,9 +1,9 @@
 #ifndef PCB_H
 #define PCB_H
 
-#include "libs.h"
-#include "interpreter.h"
-#include "cpu.h"
+#include "../../utils/libs.h"
+#include "../control/interpreter.h"
+#include "../../hardware/cpu/cpu.h"
 
 typedef enum state {
     RUNNING,
@@ -51,5 +51,7 @@ void print_pcb(process_control_block* pcb);
 void print_in_p(instruction_processor* in_p);
 
 char* print_enum_state(state state);
+
+void add_resource_to_pcb(process_control_block *pcb, char *memory_adress);
 
 #endif

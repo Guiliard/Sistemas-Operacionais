@@ -1,7 +1,7 @@
 #include "control_unit.h"
-#include "pipeline.h"
+#include "../pipeline/pipeline.h"
 
-void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core, cache2** cache_table) {
+void control_unit(cpu* cpu, char* program, instruction_processor* instr_processor, unsigned short int index_core, cache* cache_table) {
     instr_processor->result = 0;
 
     if (instr_processor->type == ADD) {
@@ -39,32 +39,34 @@ void control_unit(cpu* cpu, char* program, instruction_processor* instr_processo
     }
 }
 
-unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation, cache2** cache_table) {
+unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation, cache* cache_table) {
     char new_inst[50], new_inst2[50];
     unsigned short int result;
     if (operation == ADD) {
         result = operating_a + operating_b;
         snprintf(new_inst, sizeof(new_inst), "ADD %u %u", operating_a, operating_b);
-        add_cache2(cache_table, new_inst, result);
+        add_cache_instruction(cache_table, new_inst, result);
+
         snprintf(new_inst2, sizeof(new_inst), "ADD %u %u", operating_b, operating_a);
-        add_cache2(cache_table, new_inst2, result);
+        add_cache_instruction(cache_table, new_inst2, result);
     }
     else if (operation == SUB) {
         result = operating_a - operating_b;
         snprintf(new_inst, sizeof(new_inst), "SUB %u %u", operating_a, operating_b);
-        add_cache2(cache_table, new_inst, result);
+        add_cache_instruction(cache_table, new_inst, result);
     }
     else if (operation == MUL) {
         result = operating_a * operating_b;
         snprintf(new_inst, sizeof(new_inst), "MUL %u %u", operating_a, operating_b);
-        add_cache2(cache_table, new_inst, result);
+        add_cache_instruction(cache_table, new_inst, result);
+
         snprintf(new_inst2, sizeof(new_inst), "MUL %u %u", operating_b, operating_a);
-        add_cache2(cache_table, new_inst2, result);
+        add_cache_instruction(cache_table, new_inst2, result);
     }
     else {
         result = operating_a / operating_b;
         snprintf(new_inst, sizeof(new_inst), "DIV %u %u", operating_a, operating_b);
-        add_cache2(cache_table, new_inst, result);
+        add_cache_instruction(cache_table, new_inst, result);
     }
 
     switch(operation) {
@@ -107,6 +109,53 @@ unsigned short int get_register_index(char* reg_name) {
     
     printf("Error: Invalid register name.\n");
     exit(1);
+}
+
+void verify_cache_instruction(cpu* cpu, unsigned short int index_core, cache* cache_table, char* instruction, instruction_cache_item* inst_cache_item) {
+    char *instruction_copy, *token, *register_name1, *register_name2, *type, new_inst[50];
+    unsigned short int value, reg_1, reg_2;
+
+    instruction_copy = strdup(instruction);
+
+    token = strtok(instruction_copy, " "); 
+    trim(token);
+
+    if (strcmp(token, "ADD") == 0 || strcmp(token, "SUB") == 0 || strcmp(token, "MUL") == 0 || strcmp(token, "DIV") == 0) {
+        type = token;
+        token = strtok(NULL, " ");
+        trim(token);
+
+        register_name1 = token;
+
+        token = strtok(NULL, " ");
+        trim(token);
+
+        if (isdigit(token[0])) {
+            value = atoi(token);
+
+            trim(register_name1);
+            reg_1 = get_register_index(register_name1);
+            inst_cache_item->reg_index = reg_1;
+            reg_1 = cpu->core[index_core].registers[reg_1];
+            snprintf(new_inst, sizeof(new_inst), "%s %u %u", type, reg_1, value);
+        } else {
+            register_name2 = token;
+
+            trim(register_name1);
+            trim(register_name2);
+            reg_1 = get_register_index(register_name1);
+            inst_cache_item->reg_index = reg_1;
+            reg_1 = cpu->core[index_core].registers[reg_1];
+            reg_2 = get_register_index(register_name2);
+            reg_2 = cpu->core[index_core].registers[reg_2];
+            snprintf(new_inst, sizeof(new_inst), "%s %u %u", type, reg_1, reg_2);
+        }
+
+        inst_cache_item->is_cached = search_cache_instruction(cache_table, new_inst);
+        
+        if (inst_cache_item->is_cached)
+            inst_cache_item->result = get_result_cache_instruction(cache_table, strdup(new_inst));
+    }
 }
 
 void add_register_to_bank(process_control_block *pcb, char *register_name) {
@@ -270,7 +319,7 @@ void store (cpu* cpu, ram* memory_ram, process_control_block* pcb, char* instruc
     add_result_of_process_to_pcb(pcb, buffer);
 }
 
-unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core, cache2** cache_table) {
+unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_core, cache* cache_table) {
     char *instruction_copy, *token,*register_name1, *register_name2;
     unsigned short int value, register_index1, register_index2, result;
 
@@ -315,7 +364,7 @@ unsigned short int add(cpu* cpu, char* instruction, unsigned short int index_cor
     return result; 
 }
 
-unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_core, cache2** cache_table) {
+unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_core, cache* cache_table) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value, register_index1, register_index2, result;
 
@@ -360,7 +409,7 @@ unsigned short int sub(cpu* cpu, char* instruction, unsigned short int index_cor
     return result; 
 }
 
-unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_core, cache2** cache_table) {
+unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_core, cache* cache_table) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value, register_index1, register_index2, result;
 
@@ -405,7 +454,7 @@ unsigned short int mul(cpu* cpu, char* instruction, unsigned short int index_cor
     return result; 
 }
 
-unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_core, cache2** cache_table) {
+unsigned short int div_c(cpu* cpu, char* instruction, unsigned short int index_core, cache* cache_table) {
     char *instruction_copy, *token, *register_name1, *register_name2;
     unsigned short int value, register_index1, register_index2, result;
 
