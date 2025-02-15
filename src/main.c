@@ -1,8 +1,7 @@
 #include "software/threads/threads.h"
-#include "utils/logs.h"
-#include <time.h>
 
 int main() {
+    srand(time(NULL));
     clock_t start_time, end_time;
     double time_taken;
 
@@ -13,6 +12,7 @@ int main() {
     disc* memory_disc = malloc(sizeof(disc));
     peripherals* peripherals = malloc(sizeof(peripherals));
     process* process_queue = malloc(NUM_PROGRAMS * sizeof(process));
+    type_scheduler scheduler_type = FIFO;
 
     char filename[25];
 
@@ -27,7 +27,7 @@ int main() {
 
     check_instructions_on_ram(memory_ram);
 
-    populate_process_queue(process_queue, memory_ram);
+    populate_process_queue(process_queue, memory_ram, scheduler_type);
 
     init_logs();
 

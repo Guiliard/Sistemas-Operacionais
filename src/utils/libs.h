@@ -9,5 +9,6 @@
 #include <pthread.h>
 #include <sched.h>
 #include <unistd.h>
+#include <time.h>
 
 #endif

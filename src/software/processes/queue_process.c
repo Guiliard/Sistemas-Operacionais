@@ -13,7 +13,7 @@ void init_process_queue(process* process_queue) {
     }
 }
 
-void populate_process_queue(process* process_queue, ram* memory_ram) {
+void populate_process_queue(process* process_queue, ram* memory_ram, type_scheduler scheduler_type) {
     
     char* programs_on_ram = strdup(memory_ram->vector); 
     
@@ -41,12 +41,13 @@ void populate_process_queue(process* process_queue, ram* memory_ram) {
         strcpy(process_queue[i].program, only_process);
 
         process_queue[i].pcb->process_id = i;
-        process_queue[i].pcb->priority = i;
         process_queue[i].pcb->base_address = (unsigned long)(only_process - programs_on_ram);
 
         i++;
         only_process = strtok(NULL, "#"); 
     }
+
+    scheduler(process_queue, scheduler_type);
 
     free(programs_on_ram); 
 }

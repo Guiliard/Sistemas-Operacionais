@@ -2,7 +2,6 @@
 #define THREADS_H
 
 #include "../../system/architecture.h"
-#include "../scheduler/scheduler.h"
 
 typedef struct thread_args {
     cpu *cpu;

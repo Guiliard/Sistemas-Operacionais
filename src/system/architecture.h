@@ -11,6 +11,7 @@
 #include "../software/processes/queue_process.h"
 #include "../software/processes/pcb.h"
 #include "../utils/logs.h"
+#include "../software/scheduler/scheduler.h"
 
 void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, process* process_queue);
 void load_program_on_ram(ram* memory, char* program);

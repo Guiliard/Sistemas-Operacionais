@@ -10,8 +10,8 @@ process_control_block* init_pcb() {
     pcb->process_id = 0;
     pcb->state_of_process = RUNNING;  
     pcb->priority = 0;
-    pcb->quantum_remaining = 10;
-    pcb->total_quantum = 10;
+    pcb->quantum_remaining = 0;
+    pcb->total_quantum = 0;
     pcb->base_address = 0;
     pcb->limit_of_memory = 250;
     pcb->on_core = -1;
