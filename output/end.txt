@@ -1,4 +1,4 @@
-Queue of done executed programs.
+Queue of terminated programs.
 
 ------------------PROGRAM 0------------------
 LOAD A0 10
@@ -7,9 +7,17 @@ ADD A0 B0
 ADD B0 10
 STORE A0 A1000
 
-PCB of process: 0/ State: RUNNING/ Priority: 0
-Quantum remaining: 5/ Base address: 0/ Memory limit: 250
-Result of process: 30, 
+Process ID: 0
+State: READY
+Priority: 0
+Quantum Remaining: 5
+Base Address: 0
+Limit of Memory: 250
+Bank of Register Used: A0, B0, 
+Result of Process: 30, 
+Is Terminated: 1
+Is Running: 0
+Is Blocked: 0
 
 ------------------PROGRAM 2------------------
 LOAD A0 8
@@ -22,9 +30,17 @@ MUL B0 3
 STORE A0 A2000
 STORE B0 A2005
 
-PCB of process: 2/ State: RUNNING/ Priority: 2
-Quantum remaining: 1/ Base address: 148/ Memory limit: 250
-Result of process: 9, 
+Process ID: 2
+State: READY
+Priority: 2
+Quantum Remaining: 1
+Base Address: 148
+Limit of Memory: 250
+Bank of Register Used: A0, B0, 
+Result of Process: 9, 
+Is Terminated: 1
+Is Running: 0
+Is Blocked: 0
 
 ------------------PROGRAM 1------------------
 LOAD A0 10
@@ -36,9 +52,17 @@ L_END
 MUL B0 3
 STORE C0 A1050
 
-PCB of process: 1/ State: BLOCK/ Priority: 1
-Quantum remaining: 6/ Base address: 59/ Memory limit: 250
-Result of process: 1, 
+Process ID: 1
+State: READY
+Priority: 1
+Quantum Remaining: 6
+Base Address: 59
+Limit of Memory: 250
+Bank of Register Used: A0, B0, C0, 
+Result of Process: 1, 
+Is Terminated: 1
+Is Running: 0
+Is Blocked: 0
 
 ------------------PROGRAM 3------------------
 LOAD A0 4
@@ -47,7 +71,14 @@ ADD A0 2
 L_END
 STORE A0 A2010
 
-PCB of process: 3/ State: BLOCK/ Priority: 3
-Quantum remaining: 6/ Base address: 252/ Memory limit: 250
-Result of process: 12, 
-
+Process ID: 3
+State: READY
+Priority: 3
+Quantum Remaining: 6
+Base Address: 252
+Limit of Memory: 250
+Bank of Register Used: A0, 
+Result of Process: 12, 
+Is Terminated: 1
+Is Running: 0
+Is Blocked: 0

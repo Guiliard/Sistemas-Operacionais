@@ -17,8 +17,6 @@ process_control_block* init_pcb() {
     pcb->on_core = -1;
     pcb->bank_of_register_used = NULL; 
     pcb->result_of_process = NULL;
-    pcb->waiting_resource = false;
-    pcb->resource_name = NULL; 
     pcb->is_terminated = false;
     pcb->is_running = false;
     pcb->is_blocked = false;
@@ -49,33 +47,18 @@ instruction_processor* init_in_p() {
     return in_p;
 }
 
-void print_pcb(process_control_block* pcb) {
-    printf("Process ID: %hd\n", pcb->process_id);
-    printf("State: %s\n", print_enum_state(pcb->state_of_process));
-    printf("Priority: %hd\n", pcb->priority);
-    printf("Quantum Remaining: %hd\n", pcb->quantum_remaining);
-    printf("Base Address: %hd\n", pcb->base_address);
-    printf("Limit of Memory: %hd\n", pcb->limit_of_memory);
-    printf("Bank of Register Used: %s\n", pcb->bank_of_register_used);
-    printf("Result of Process: %s\n", pcb->result_of_process);
-    printf("Waiting Resource: %d\n", pcb->waiting_resource);
-    printf("Resource Name: %s\n", pcb->resource_name);
-    printf("Is Terminated: %d\n", pcb->is_terminated);
-    printf("Is Running: %d\n", pcb->is_running);
-    printf("\n");
-}
-
-void print_in_p(instruction_processor* in_p) {
-    printf("has if: %d\n", in_p->has_if);
-    printf("instruction: %s\n", in_p->instruction);
-    printf("loop number: %d\n", in_p->loop);
-    printf("where loop start: %hd\n", in_p->loop_start);
-    printf("loop limit: %hd\n", in_p->loop_value);
-    printf("num instruction: %hd\n", in_p->num_instruction);
-    printf("result: %hd\n", in_p->result);
-    printf("is if running: %d\n", in_p->running_if);
-    printf("valid_if %d\n", in_p->valid_if);
-    printf("\n");
+void write_pcb_to_file(FILE* file, process_control_block* pcb) {
+    fprintf(file, "Process ID: %hd\n", pcb->process_id);
+    fprintf(file, "State: %s\n", print_enum_state(pcb->state_of_process));
+    fprintf(file, "Priority: %hd\n", pcb->priority);
+    fprintf(file, "Quantum Remaining: %hd\n", pcb->quantum_remaining);
+    fprintf(file, "Base Address: %hd\n", pcb->base_address);
+    fprintf(file, "Limit of Memory: %hd\n", pcb->limit_of_memory);
+    fprintf(file, "Bank of Register Used: %s\n", pcb->bank_of_register_used);
+    fprintf(file, "Result of Process: %s\n", pcb->result_of_process);
+    fprintf(file, "Is Terminated: %d\n", pcb->is_terminated);
+    fprintf(file, "Is Running: %d\n", pcb->is_running);
+    fprintf(file, "Is Blocked: %d", pcb->is_blocked);
 }
 
 char* print_enum_state(state state) {
@@ -88,41 +71,5 @@ char* print_enum_state(state state) {
             return "BLOCK";
         default:
             return "UNKNOWN";
-    }
-}
-
-void add_resource_to_pcb(process_control_block *pcb, char *memory_adress) {
-    if (pcb->resource_name == NULL) {
-        size_t length = strlen(memory_adress) + 3; 
-        pcb->resource_name = (char *)malloc(length);
-
-        if (pcb->resource_name == NULL) {
-            printf("Error: memory allocation failed in bank of register used\n");
-            exit(1);
-        }
-
-        snprintf(pcb->resource_name, length, "%s, ", memory_adress);
-    } else {
-
-        size_t bank_length = strlen(pcb->resource_name);
-        char *pattern = (char *)malloc(strlen(memory_adress) + 3);
-        snprintf(pattern, strlen(memory_adress) + 3, "%s, ", memory_adress);
-
-        if (strstr(pcb->resource_name, pattern) == NULL) {
-            size_t new_length = bank_length + strlen(memory_adress) + 3; 
-            char *new_memory = (char *)realloc(pcb->resource_name, new_length);
-
-            if (new_memory == NULL) {
-                printf("Error: memory allocation failed in resource name\n");
-                free(pattern);
-                exit(1);
-            }
-
-            pcb->resource_name = new_memory;
-            strcat(pcb->resource_name, memory_adress);
-            strcat(pcb->resource_name, ", ");
-        }
-
-        free(pattern);
     }
 }

@@ -36,8 +36,6 @@ typedef struct process_control_block {
     int on_core;
     char* bank_of_register_used;     
     char* result_of_process;    
-    bool waiting_resource;    
-    char* resource_name;   
     bool is_terminated;
     bool is_running;
     bool is_blocked;
@@ -47,11 +45,8 @@ typedef struct process_control_block {
 process_control_block* init_pcb();
 instruction_processor* init_in_p();
 
-void print_pcb(process_control_block* pcb);
-void print_in_p(instruction_processor* in_p);
+void write_pcb_to_file(FILE* file, process_control_block* pcb);
 
 char* print_enum_state(state state);
-
-void add_resource_to_pcb(process_control_block *pcb, char *memory_adress);
 
 #endif

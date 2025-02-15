@@ -100,10 +100,11 @@ void *core_function(void *args) {
             printf("Core %hd bloqueou o processo id: %hd, quantum zerado\n", t_args->core_id, proc->pcb->process_id);
             has_process[t_args->core_id] = false;
             proc->pcb->state_of_process = BLOCK;
-            write_logs_block_file(proc);
             proc->pcb->is_running = false;
             proc->pcb->is_blocked = true;
             proc->pcb->is_terminated = false;
+            write_logs_block_file(proc);
+            proc->pcb->quantum_remaining = proc->pcb->total_quantum;
             add_cache_process(cache_table, proc->pcb->process_id, proc->pcb);
         }
         pthread_mutex_unlock(&queue_mutex);

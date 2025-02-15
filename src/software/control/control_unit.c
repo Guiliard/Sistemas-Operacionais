@@ -42,6 +42,7 @@ void control_unit(cpu* cpu, char* program, instruction_processor* instr_processo
 unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation, cache* cache_table) {
     char new_inst[50], new_inst2[50];
     unsigned short int result;
+
     if (operation == ADD) {
         result = operating_a + operating_b;
         snprintf(new_inst, sizeof(new_inst), "ADD %u %u", operating_a, operating_b);
@@ -158,7 +159,7 @@ void verify_cache_instruction(cpu* cpu, unsigned short int index_core, cache* ca
     }
 }
 
-void add_register_to_bank(process_control_block *pcb, char *register_name) {
+void add_register_bank_to_pcb(process_control_block *pcb, char *register_name) {
     if (pcb->bank_of_register_used == NULL) {
         size_t length = strlen(register_name) + 3; 
         pcb->bank_of_register_used = (char *)malloc(length);
@@ -230,19 +231,6 @@ void add_result_of_process_to_pcb(process_control_block *pcb, char *buffer) {
     }
 }
 
-unsigned short int verify_address(char* address, unsigned short int num_positions) {
-    unsigned short int address_without_a;
-    
-    address_without_a = atoi(address + 1);  
-
-    if (address_without_a + num_positions > NUM_MEMORY) {
-        printf("Error: Invalid memory address - out of bounds.\n");
-        exit(1);
-    }
-
-    return address_without_a; 
-}
-
 void load (cpu* cpu, char* instruction, process_control_block* pcb, unsigned short int index_core) {
 
     char *instruction_copy, *token, *register_name;
@@ -271,7 +259,7 @@ void load (cpu* cpu, char* instruction, process_control_block* pcb, unsigned sho
     trim(register_name);
     register_index = get_register_index(register_name);
 
-    add_register_to_bank(pcb, register_name);
+    add_register_bank_to_pcb(pcb, register_name);
 
     cpu->core[index_core].registers[register_index] = value;
     pcb->in_p->regs[register_index] = value;
@@ -313,7 +301,6 @@ void store (cpu* cpu, ram* memory_ram, process_control_block* pcb, char* instruc
 
     address = verify_address(memory_address, num_positions);
 
-    printf("Resultado: %s\n",buffer);
     write_ram(memory_ram, address, buffer);
 
     add_result_of_process_to_pcb(pcb, buffer);

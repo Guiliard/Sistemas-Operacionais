@@ -16,6 +16,5 @@ typedef struct process {
 
 void init_process_queue(process* process_queue);
 void populate_process_queue(process* process_queue, ram* memory_ram);
-void check_resources_on_process_queue(process* process_queue);
 
 #endif

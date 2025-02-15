@@ -12,7 +12,7 @@ void init_logs_start_file() {
         perror("Error: Cannot create output/start.txt");
         exit(1);  
     }
-    fprintf(file, "Queue of programs to be executed.\n\n");
+    fprintf(file, "Queue of programs to be executed.");
     fclose(file);
 }
 
@@ -22,7 +22,7 @@ void init_logs_block_file() {
         perror("Error: Cannot create output/block.txt");
         exit(1);  
     }
-    fprintf(file, "Queue of blocked programs.\n\n");
+    fprintf(file, "Queue of blocked programs.");
     fclose(file);
 }
 
@@ -32,7 +32,7 @@ void init_logs_end_file() {
         perror("Error: Cannot create output/end.txt");
         exit(1);  
     }
-    fprintf(file, "Queue of done executed programs.\n\n");
+    fprintf(file, "Queue of terminated programs.");
     fclose(file);
 }
 
@@ -43,12 +43,10 @@ void write_logs_start_file(process* proc) {
         return;
     }
 
-    fprintf(file, "------------------PROGRAM %hd------------------\n", proc->pcb->process_id);
+    fprintf(file, "\n\n------------------PROGRAM %hd------------------\n", proc->pcb->process_id);
     fprintf(file, "%s\n", proc->program);
-    fprintf(file, "PCB of process: %hd/ State: %s/ Priority: %hd\n",
-    proc->pcb->process_id,print_enum_state(proc->pcb->state_of_process),proc->pcb->priority);
-    fprintf(file, "Quantum remaining: %hd/ Base address: %hd/ Memory limit: %hd\n\n",
-    proc->pcb->quantum_remaining,proc->pcb->base_address,proc->pcb->limit_of_memory);
+    
+    write_pcb_to_file(file, proc->pcb);
 
     fclose(file);  
 }
@@ -59,12 +57,10 @@ void write_logs_block_file(process* proc) {
         perror("Error: Cannot open output/block.txt");
         return;
     }
-    fprintf(file, "------------------PROGRAM %hd------------------\n", proc->pcb->process_id);
+    fprintf(file, "\n\n------------------PROGRAM %hd------------------\n", proc->pcb->process_id);
     fprintf(file, "%s\n", proc->program);
-    fprintf(file, "PCB of process: %hd/ State: %s/ Priority: %hd\n",
-    proc->pcb->process_id,print_enum_state(proc->pcb->state_of_process),proc->pcb->priority);
-    fprintf(file, "Quantum remaining: %hd/ Base address: %hd/ Memory limit: %hd\n\n",
-    proc->pcb->quantum_remaining,proc->pcb->base_address,proc->pcb->limit_of_memory);
+    
+    write_pcb_to_file(file, proc->pcb);
 
     fclose(file);  
 }
@@ -76,14 +72,10 @@ void write_logs_end_file(process* proc) {
         return;
     }
 
-    fprintf(file, "------------------PROGRAM %hd------------------\n", proc->pcb->process_id);
+    fprintf(file, "\n\n------------------PROGRAM %hd------------------\n", proc->pcb->process_id);
     fprintf(file, "%s\n", proc->program);
-    fprintf(file, "PCB of process: %hd/ State: %s/ Priority: %hd\n",
-    proc->pcb->process_id,print_enum_state(proc->pcb->state_of_process),proc->pcb->priority);
-    fprintf(file, "Quantum remaining: %hd/ Base address: %hd/ Memory limit: %hd\n",
-    proc->pcb->quantum_remaining,proc->pcb->base_address,proc->pcb->limit_of_memory);
-    fprintf(file, "Result of process: %s\n\n",
-    proc->pcb->result_of_process);
+   
+    write_pcb_to_file(file, proc->pcb);
 
     fclose(file);  
 }

@@ -15,7 +15,6 @@ int compare_priority(const void* a, const void* b) {
 
 bool quantum_over(process* process) {
     if (process->pcb->quantum_remaining <= 0) {
-        process->pcb->quantum_remaining = process->pcb->total_quantum;
         return true;
     }
     return false;

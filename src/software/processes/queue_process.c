@@ -50,34 +50,3 @@ void populate_process_queue(process* process_queue, ram* memory_ram) {
 
     free(programs_on_ram); 
 }
-
-void check_resources_on_process_queue(process* process_queue) {
-    char* line;
-    unsigned short int num_line = 0;
-    unsigned short int num;
-    char register_name1[10];
-    char memory_address[10];
-    type_of_instruction type;
-
-    for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
-
-        num = count_lines(process_queue[i].program);
-
-        while (num_line < num) {
-            line = get_line_of_program(process_queue[i].program, num_line);
-            type = verify_instruction(line, num_line);
-
-            if (type == STORE) {
-                sscanf(line, "STORE %9s %9s", register_name1, memory_address);
-
-                trim(memory_address);
-
-                add_resource_to_pcb(process_queue[i].pcb, memory_address);
-            }
-
-            num_line++;
-        }   
-        num = 0;
-        num_line = 0;
-    }
-}

@@ -71,10 +71,10 @@ void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short i
 
     if (process->pcb->in_p->num_instruction == num_lines) {
         printf("Core %hd finalizou o processo id: %hd\n", core_number, process->pcb->process_id);
-        write_logs_end_file(process);
         process->pcb->is_terminated = true;
         process->pcb->is_running = false;
         process->pcb->state_of_process = READY;
+        write_logs_end_file(process);
         reset_cpu(cpu, core_number);
         process->pcb->in_p->num_instruction++;
     }

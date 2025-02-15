@@ -12,7 +12,6 @@ void control_unit(cpu* cpu, char* program, instruction_processor* instr_processo
 unsigned short int ula(unsigned short int operating_a, unsigned short int operating_b, type_of_instruction operation, cache* cache_table);
 
 unsigned short int get_register_index(char* reg_name);
-unsigned short int verify_address(char* address, unsigned short int num_positions);
 void verify_cache_instruction(cpu* cpu, unsigned short int index_core, cache* cache_table, char* instruction, instruction_cache_item* inst_cache_item);
 
 void load(cpu* cpu, char* instruction, process_control_block* pcb, unsigned short int index_core);
@@ -30,7 +29,7 @@ void else_end(instruction_processor* instr_processor);
 void loop(cpu* cpu, instruction_processor* instr_processor, unsigned short int index_core);
 void loop_end(cpu* cpu, instruction_processor* instr_processor, unsigned short int index_core);
 
-void add_register_to_bank(process_control_block *pcb, char *register_name);
+void add_register_bank_to_pcb(process_control_block *pcb, char *register_name);
 void add_result_of_process_to_pcb(process_control_block *pcb, char *buffer);
 
 #endif

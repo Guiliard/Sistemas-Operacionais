@@ -28,8 +28,6 @@ int main() {
     check_instructions_on_ram(memory_ram);
 
     populate_process_queue(process_queue, memory_ram);
-    
-    check_resources_on_process_queue(process_queue);
 
     init_logs();
 
