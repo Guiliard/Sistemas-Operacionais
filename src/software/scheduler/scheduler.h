@@ -21,6 +21,10 @@ void scheduler(process* process_queue, type_scheduler scheduler_type);
 void fifo(process* process_queue);
 void round_robin(process* process_queue);
 void priority(process* process_queue);
+
+void similiarity(process* process_queue);
+void sort_by_similarity(process* process_queue, similarity_score* score);
+
 void shuffle(unsigned short int* arr);
 
 bool quantum_over(process* process);

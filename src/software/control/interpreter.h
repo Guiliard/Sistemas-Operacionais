@@ -21,8 +21,17 @@ typedef enum type_of_instruction {
     DELIMITER
 } type_of_instruction;
 
+typedef struct similarity_score {
+    unsigned short int score_arithmetic;
+    unsigned short int score_control;
+    unsigned short int score_memory;
+} similarity_score;
+
 type_of_instruction verify_instruction(char *line, unsigned short int line_number);
 type_of_instruction get_type_of_instruction(char *line);
+
+similarity_score* init_similarity_score();
+void get_similarity_score(similarity_score* score, char* line);
 
 bool check_load_format(char *line);
 bool check_store_format(char *line);

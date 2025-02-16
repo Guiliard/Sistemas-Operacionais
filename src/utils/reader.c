@@ -29,8 +29,8 @@ char* read_program(char *filename) {
 char* get_line_of_program(char *program, int line_number) {
 
     char* program_copy = strdup(program); 
-
     char *line = strtok(program_copy, "\n"); 
+
     for (int i = 0; i < line_number; i++) {
         if (line != NULL) {
             line = strtok(NULL, "\n");  
@@ -42,6 +42,7 @@ char* get_line_of_program(char *program, int line_number) {
 
     char* line_copy = strdup(line);
     free(program_copy);
+    
     return line_copy;  
 }
 
@@ -56,6 +57,8 @@ unsigned short int count_lines(char *program) {
         count++; 
         line = strtok(NULL, "\n"); 
     }
+
+    free(program_copy);
 
     return count; 
 }

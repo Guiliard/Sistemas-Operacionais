@@ -119,6 +119,39 @@ type_of_instruction get_type_of_instruction(char* line){
     }
 }
 
+similarity_score* init_similarity_score() {
+    similarity_score* score = malloc(sizeof(similarity_score));
+    if (score == NULL) {
+        printf("Memory allocation failed for similarity score\n");
+        exit(1);
+    }
+
+    score->score_arithmetic = 0;
+    score->score_control = 0;
+    score->score_memory = 0;
+
+    return score;
+}
+
+void get_similarity_score(similarity_score *score, char *line) {
+    if (strstr(line, "LOAD") != NULL || 
+        strstr(line, "STORE") != NULL) {
+        score->score_memory++;
+    } else if ( strstr(line, "ADD") != NULL || 
+                strstr(line, "SUB") != NULL || 
+                strstr(line, "MUL") != NULL || 
+                strstr(line, "DIV") != NULL) {
+        score->score_arithmetic++;
+    } else if ( strstr(line, "IF") != NULL || 
+                strstr(line, "ELSE") != NULL || 
+                strstr(line, "LOOP") != NULL || 
+                strstr(line, "L_END") != NULL ||
+                strstr(line, "I_END") != NULL || 
+                strstr(line, "ELS_END") != NULL) {
+        score->score_control++;
+    }
+}
+
 bool check_load_format(char *line) {  // "LOAD <register> <value>
 
     char register_name[10];
