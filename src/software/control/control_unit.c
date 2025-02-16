@@ -547,7 +547,7 @@ void if_i(cpu* cpu, char* program, instruction_processor* instr_processor, unsig
             instr_processor->num_instruction++;
             instr_processor->instruction = instruction_fetch(cpu, program, index_core);
 
-            instr_processor->type = instruction_decode(instr_processor->instruction, instr_processor->num_instruction);
+            instr_processor->type = instruction_decode(instr_processor->instruction);
 
             instruction_copy = strdup(instr_processor->instruction);
 
@@ -610,7 +610,7 @@ void else_i(cpu* cpu, char* program, instruction_processor* instr_processor, uns
             instr_processor->num_instruction++;
             instr_processor->instruction = instruction_fetch(cpu, program, index_core);
 
-            instr_processor->type = instruction_decode(instr_processor->instruction, instr_processor->num_instruction);
+            instr_processor->type = instruction_decode(instr_processor->instruction);
             instruction_copy = strdup(instr_processor->instruction);
             token = strtok(instruction_copy, " "); 
 

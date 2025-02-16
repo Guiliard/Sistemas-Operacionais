@@ -10,7 +10,7 @@ STORE A0 A1000
 Process ID: 0
 State: RUNNING
 Priority: 0
-Quantum Remaining: 7
+Quantum Remaining: 10
 Base Address: 0
 Limit of Memory: 250
 Bank of Register Used: (null)
@@ -32,7 +32,7 @@ STORE C0 A1050
 Process ID: 1
 State: RUNNING
 Priority: 0
-Quantum Remaining: 10
+Quantum Remaining: 5
 Base Address: 59
 Limit of Memory: 250
 Bank of Register Used: (null)

@@ -87,6 +87,38 @@ type_of_instruction verify_instruction(char *line, unsigned short int line_numbe
     } 
 }
 
+type_of_instruction get_type_of_instruction(char* line){
+    if (strstr(line, "LOAD") != NULL) {
+        return LOAD;
+    } else if (strstr(line, "STORE") != NULL) {
+        return STORE;
+    } else if (strstr(line, "ADD") != NULL) {
+        return ADD;
+    } else if (strstr(line, "SUB") != NULL) {
+        return SUB;
+    } else if (strstr(line, "MUL") != NULL) {
+        return MUL;
+    } else if (strstr(line, "DIV") != NULL) {
+        return DIV;
+    } else if (strstr(line, "IF") != NULL) {
+        return IF;
+    } else if (strstr(line, "ELSE") != NULL) {
+        return ELSE;
+    } else if (strstr(line, "LOOP") != NULL) {
+        return LOOP;
+    } else if (strstr(line, "L_END") != NULL) {
+        return L_END;
+    } else if (strstr(line, "I_END") != NULL) {
+        return I_END;
+    } else if (strstr(line, "ELS_END") != NULL) {
+        return ELS_END;
+    } else if (strstr(line, "#") != NULL) {
+        return DELIMITER;
+    } else {
+        return INVALID;
+    }
+}
+
 bool check_load_format(char *line) {  // "LOAD <register> <value>
 
     char register_name[10];

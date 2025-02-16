@@ -7,8 +7,8 @@ char* instruction_fetch(cpu* cpu, char* program, unsigned short int index_core) 
     return instruction;
 }
 
-type_of_instruction instruction_decode(char* instruction, unsigned short int num_instruction) {
-    type_of_instruction type = verify_instruction(instruction, num_instruction);
+type_of_instruction instruction_decode(char* instruction) {
+    type_of_instruction type = get_type_of_instruction(instruction);
 
     if (type == INVALID) {
         exit(1);    

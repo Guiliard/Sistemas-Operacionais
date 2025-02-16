@@ -89,7 +89,7 @@ void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short i
             process->pcb->in_p->num_instruction++;
             printf("cache find %s\n",process->pcb->in_p->instruction);
         } else {
-            process->pcb->in_p->type = instruction_decode(process->pcb->in_p->instruction, process->pcb->in_p->num_instruction);
+            process->pcb->in_p->type = instruction_decode(process->pcb->in_p->instruction);
 
             execute(cpu, process->program, process->pcb->in_p, core_number, cache_table);
 

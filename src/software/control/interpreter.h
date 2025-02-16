@@ -22,6 +22,7 @@ typedef enum type_of_instruction {
 } type_of_instruction;
 
 type_of_instruction verify_instruction(char *line, unsigned short int line_number);
+type_of_instruction get_type_of_instruction(char *line);
 
 bool check_load_format(char *line);
 bool check_store_format(char *line);
