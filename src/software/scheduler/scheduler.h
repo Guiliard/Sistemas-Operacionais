@@ -4,8 +4,6 @@
 #include "../../utils/libs.h"
 #include "../processes/pcb.h"
 
-#define NUM_PROGRAMS 4
-
 typedef enum type_scheduler {
     FIFO,
     ROUND_ROBIN,

@@ -43,13 +43,11 @@ void scheduler(process* process_queue, type_scheduler scheduler_type) {
 
 void similiarity(process* process_queue) {
     similarity_score* score = malloc(NUM_PROGRAMS* sizeof(similarity_score));
-    unsigned short int* indexs = malloc(NUM_PROGRAMS * sizeof(unsigned short int));
     char* line;
     unsigned short int num_line = 0;
 
     for (unsigned short int i = 0; i < NUM_PROGRAMS; i++) {
         score[i] = *init_similarity_score(); 
-        indexs[i] = i;
         num_line = count_lines(process_queue[i].program);
 
         for (unsigned short int j = 0; j < num_line; j++) {

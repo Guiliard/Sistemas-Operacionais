@@ -9,6 +9,7 @@
 typedef struct hash_instruction {
     char* instruction; // Chave (instruction)
     unsigned short int result; // Valor (resultado da instrução)
+    unsigned int frequency; // Frequência de uso
     UT_hash_handle hh; 
 } hash_instruction;
 
@@ -29,10 +30,21 @@ typedef struct instruction_cache_item {
     unsigned short int result;
 } instruction_cache_item;
 
+typedef enum type_policy {
+    FIFO_POLICY,
+    LEAST_RECENTLY_USED,
+    RANDOM_REPLACEMENT
+} type_policy;
+
 void init_cache(cache *cache_table);
 
+void policy(cache *cache_table, type_policy policy_type);
+void fifo_policy(cache *cache_table);
+void lru_policy(cache *cache_table);
+void random_policy(cache *cache_table);
+
 void add_cache_process(cache *cache_table, unsigned short int process_id, process_control_block *process_pcb);
-void add_cache_instruction(cache *cache_table, const char* instruction, unsigned short int result);
+void add_cache_instruction(cache *cache_table, const char* instruction, unsigned short int result, type_policy policy_type);
 
 process_control_block *search_cache_process(cache *cache_table, unsigned short int process_id);
 bool search_cache_instruction(cache *cache_table, const char *instruction);

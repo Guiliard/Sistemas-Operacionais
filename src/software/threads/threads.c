@@ -8,6 +8,7 @@ bool has_process[NUM_CORES];
 bool more_process[NUM_CORES];
 int total_running_cores = NUM_CORES;
 cache *cache_table;
+type_policy policy_type = FIFO_POLICY;
 
 bool avaliable_process(process* process_queue) {
     for (unsigned short int i = 0; i < NUM_PROGRAMS; i++)
@@ -92,7 +93,7 @@ void *core_function(void *args) {
         pthread_mutex_unlock(&queue_mutex);
 
         if (proc && !proc->pcb->is_terminated && !quantum_over(proc)) {
-            init_pipeline(t_args->cpu, t_args->memory_ram, proc, t_args->core_id, cache_table);
+            init_pipeline(t_args->cpu, t_args->memory_ram, proc, t_args->core_id, cache_table, policy_type);
         }
 
         pthread_mutex_lock(&queue_mutex);
@@ -131,7 +132,7 @@ void *core_function(void *args) {
 
 void init_threads(cpu *cpu, ram *memory_ram, process* process_queue) {
     int cores_ativos;
-    
+
     cache_table = malloc(sizeof(cache));
     init_cache(cache_table);
 

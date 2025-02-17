@@ -1,8 +1,6 @@
 #ifndef RAM_H
 #define RAM_H
 
-#define NUM_MEMORY 2048
-
 #include "../../utils/libs.h"
 
 typedef struct ram {

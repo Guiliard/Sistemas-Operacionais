@@ -63,7 +63,7 @@ void check_instructions_on_ram(ram* memory_ram) {
     }
 }
 
-void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short int core_number, cache* cache_table) {   
+void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short int core_number, cache* cache_table, type_policy policy_type) {   
     unsigned short int num_lines = 0;
     instruction_cache_item* inst_cache_item = init_instruction_cache_item();
 
@@ -87,11 +87,10 @@ void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short i
             cpu->core[core_number].registers[inst_cache_item->reg_index] = inst_cache_item->result;
             process->pcb->in_p->regs[inst_cache_item->reg_index] = inst_cache_item->result;
             process->pcb->in_p->num_instruction++;
-            printf("cache find %s\n",process->pcb->in_p->instruction);
         } else {
             process->pcb->in_p->type = instruction_decode(process->pcb->in_p->instruction);
 
-            execute(cpu, process->program, process->pcb->in_p, core_number, cache_table);
+            execute(cpu, process->program, process->pcb->in_p, core_number, cache_table, policy_type);
 
             memory_access(cpu, memory_ram, process->pcb, process->pcb->in_p->type, process->pcb->in_p->instruction, core_number);
 

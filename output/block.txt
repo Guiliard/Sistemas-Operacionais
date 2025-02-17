@@ -1,24 +1,5 @@
 Queue of blocked programs.
 
-------------------PROGRAM 0------------------
-LOAD A0 10
-LOAD B0 20
-ADD A0 B0
-ADD B0 10
-STORE A0 A1000
-
-Process ID: 0
-State: BLOCK
-Priority: 0
-Quantum Remaining: 0
-Base Address: 0
-Limit of Memory: 250
-Bank of Register Used: A0, B0, 
-Result of Process: 30, 
-Is Terminated: 0
-Is Running: 0
-Is Blocked: 1
-
 ------------------PROGRAM 3------------------
 LOAD A0 4
 LOOP A0
