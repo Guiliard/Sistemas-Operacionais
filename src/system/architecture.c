@@ -1,5 +1,7 @@
 #include "architecture.h"
 
+char message_arc[80];
+
 void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, process* process_queue) {
     init_cpu(cpu);
     init_ram(memory_ram);
@@ -70,7 +72,8 @@ void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short i
     num_lines = count_lines(process->program);
 
     if (process->pcb->in_p->num_instruction == num_lines) {
-        printf("Core %hd finalizou o processo id: %hd\n", core_number, process->pcb->process_id);
+        sprintf(message_arc, "Core %hd finished process ID: %hd.\n", core_number, process->pcb->process_id);
+        write_logs_system_file(message_arc);
         process->pcb->is_terminated = true;
         process->pcb->is_running = false;
         process->pcb->state_of_process = READY;

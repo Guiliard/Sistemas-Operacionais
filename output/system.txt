@@ -1,0 +1,28 @@
+Logs of Operating System.
+
+Type of scheduler: FIFO
+Type of policy cache: FIFO
+
+Core 0 started process ID: 2.
+Core 1 started process ID: 0.
+Core 2 started process ID: 1.
+Core 3 started process ID: 3.
+Core 0 blocked process ID: 2.
+Core 0 resumed process ID: 2.
+Core 1 finished process ID: 0.
+Core 1 finalized.
+Core 2 blocked process ID: 1.
+Core 2 resumed process ID: 1.
+Core 3 blocked process ID: 3.
+Core 3 resumed process ID: 3.
+Core 0 finished process ID: 2.
+Core 0 finalized.
+Core 2 blocked process ID: 1.
+Core 2 resumed process ID: 1.
+Core 2 finished process ID: 1.
+Core 3 finished process ID: 3.
+Core 2 finalized.
+Core 3 finalized.
+All cores finalized.
+
+Execution time: 0.0510 seconds

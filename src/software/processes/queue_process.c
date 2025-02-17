@@ -41,6 +41,7 @@ void populate_process_queue(process* process_queue, ram* memory_ram, type_schedu
         strcpy(process_queue[i].program, only_process);
 
         process_queue[i].pcb->process_id = i;
+        process_queue[i].pcb->virtual_address = 'A' + i;
         process_queue[i].pcb->base_address = (unsigned long)(only_process - programs_on_ram);
 
         i++;

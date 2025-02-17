@@ -27,6 +27,7 @@ typedef struct instruction_processor {
 
 typedef struct process_control_block {
     unsigned short int process_id;           
+    char virtual_address;
     state state_of_process; // RUNNING, READY, BLOCK
     unsigned short int priority;
     unsigned short int total_quantum;  

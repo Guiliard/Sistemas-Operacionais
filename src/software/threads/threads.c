@@ -9,6 +9,7 @@ bool more_process[NUM_CORES];
 int total_running_cores = NUM_CORES;
 cache *cache_table;
 type_policy policy_type = FIFO_POLICY;
+char message[80];
 
 bool avaliable_process(process* process_queue) {
     for (unsigned short int i = 0; i < NUM_PROGRAMS; i++)
@@ -33,7 +34,8 @@ process *get_process(cpu* cpu, process* process_queue, unsigned short int core_i
                 process_queue[i].pcb->is_running = true;
                 process_queue[i].pcb->on_core = core_id;
                 update_regs(cpu, process_queue[i].pcb, core_id);
-                printf("Core %hd iniciou o processo id: %hd\n", core_id, process_queue[i].pcb->process_id);
+                sprintf(message, "Core %hd started process ID: %hd.\n", core_id, process_queue[i].pcb->process_id);
+                write_logs_system_file(message);
                 has_process[core_id] = true;
                 write_logs_start_file(&process_queue[i]);
                 pthread_mutex_unlock(&queue_mutex);
@@ -45,7 +47,8 @@ process *get_process(cpu* cpu, process* process_queue, unsigned short int core_i
                 process_queue[i].pcb->on_core = core_id;
                 process_queue[i].pcb->is_blocked = false;
                 update_regs(cpu, process_queue[i].pcb, core_id);
-                printf("Core %hd reativou o processo id: %hd\n", core_id, process_queue[i].pcb->process_id);
+                sprintf(message, "Core %hd resumed process ID: %hd.\n", core_id, process_queue[i].pcb->process_id);
+                write_logs_system_file(message);
                 has_process[core_id] = true;
                 pthread_mutex_unlock(&queue_mutex);
                 return &process_queue[i];
@@ -70,23 +73,22 @@ void *core_function(void *args) {
 
         pthread_mutex_lock(&queue_mutex);
         if (proc == NULL) {
-            printf("Core %hd finalizado.\n", t_args->core_id);
+            sprintf(message, "Core %hd finalized.\n", t_args->core_id);
+            write_logs_system_file(message);
             running_core[t_args->core_id] = false;
             total_running_cores--;
 
-            // Se não houver mais cores rodando, sinaliza fim do sistema
             if (total_running_cores == 0) {
-                pthread_cond_broadcast(&cond_var);  // Acorda qualquer thread esperando e permite finalização
+                pthread_cond_broadcast(&cond_var);  
                 pthread_mutex_unlock(&queue_mutex);
                 break;
             }
 
-            // Se ainda houver cores ativos, escolhe o próximo
             do {
                 current_core = (current_core + 1) % NUM_CORES;
             } while (!running_core[current_core]);
 
-            pthread_cond_broadcast(&cond_var);  // Notifica os outros threads sobre a mudança
+            pthread_cond_broadcast(&cond_var);
             pthread_mutex_unlock(&queue_mutex);
             break;
         }
@@ -98,7 +100,8 @@ void *core_function(void *args) {
 
         pthread_mutex_lock(&queue_mutex);
         if (proc && quantum_over(proc)) {
-            printf("Core %hd bloqueou o processo id: %hd, quantum zerado\n", t_args->core_id, proc->pcb->process_id);
+            sprintf(message, "Core %hd blocked process ID: %hd.\n", t_args->core_id, proc->pcb->process_id);
+            write_logs_system_file(message);
             has_process[t_args->core_id] = false;
             proc->pcb->state_of_process = BLOCK;
             proc->pcb->is_running = false;
@@ -136,6 +139,8 @@ void init_threads(cpu *cpu, ram *memory_ram, process* process_queue) {
     cache_table = malloc(sizeof(cache));
     init_cache(cache_table);
 
+    write_logs_system_file(enum_cache_policy_to_string(policy_type));
+
     if (NUM_PROGRAMS < NUM_CORES)
         cores_ativos = NUM_PROGRAMS;
     else
@@ -167,5 +172,5 @@ void init_threads(cpu *cpu, ram *memory_ram, process* process_queue) {
 
     free(t_args);
     empty_cache(cache_table);
-    printf("Execução finalizada.\n");
+    write_logs_system_file("All cores finalized.");
 }

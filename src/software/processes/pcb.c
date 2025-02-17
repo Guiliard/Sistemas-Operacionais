@@ -9,6 +9,7 @@ process_control_block* init_pcb() {
 
     pcb->process_id = 0;
     pcb->state_of_process = RUNNING;  
+    pcb->virtual_address = 'A';
     pcb->priority = 0;
     pcb->quantum_remaining = 0;
     pcb->total_quantum = 0;
@@ -50,6 +51,7 @@ instruction_processor* init_in_p() {
 void write_pcb_to_file(FILE* file, process_control_block* pcb) {
     fprintf(file, "Process ID: %hd\n", pcb->process_id);
     fprintf(file, "State: %s\n", print_enum_state(pcb->state_of_process));
+    fprintf(file, "Virtual Address: %c\n", pcb->virtual_address);
     fprintf(file, "Priority: %hd\n", pcb->priority);
     fprintf(file, "Quantum Remaining: %hd\n", pcb->quantum_remaining);
     fprintf(file, "Base Address: %hd\n", pcb->base_address);
