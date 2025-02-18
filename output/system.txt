@@ -14,12 +14,10 @@ Core 0 blocked process ID: 3.
 Core 0 resumed process ID: 2.
 Core 0 finished process ID: 2.
 Core 0 resumed process ID: 1.
-Core 0 blocked process ID: 1.
-Core 0 resumed process ID: 1.
 Core 0 finished process ID: 1.
 Core 0 resumed process ID: 3.
 Core 0 finished process ID: 3.
 Core 0 finalized.
 All cores finalized.
 
-Time total of core 0: 40 quantum
+Time total of core 0: 41 quantum

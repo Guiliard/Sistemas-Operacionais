@@ -594,31 +594,30 @@ void else_i(cpu* cpu, char* program, instruction_processor* instr_processor, uns
         exit(1);
     }
 
-    if (instr_processor->has_if && !instr_processor->valid_if) {
-        instr_processor->has_if = false;
-    }
-    else if (instr_processor->running_if) {
-        printf("Error: Invalid instruction\n");
-        exit(1);
-    }
-    else if (!instr_processor->has_if) {
-        printf("Error: Invalid instruction. No IF before ELSE. Line %hd.\n",instr_processor->num_instruction + 1);
-        exit(1);
-    }
-    else if (instr_processor->has_if && instr_processor->valid_if) {
+    if (instr_processor->has_if && instr_processor->valid_if) {
+        // IF foi verdadeiro, ignorar o bloco ELSE
         while (1) {
             instr_processor->num_instruction++;
             instr_processor->instruction = instruction_fetch(cpu, program, index_core);
 
             instr_processor->type = instruction_decode(instr_processor->instruction);
-            instruction_copy = strdup(instr_processor->instruction);
-            token = strtok(instruction_copy, " "); 
 
-            if (strcmp(token, "ELS_END") == 0)
+            instruction_copy = strdup(instr_processor->instruction);
+            token = strtok(instruction_copy, " ");
+            trim(token);
+
+            if (strcmp(token, "ELS_END") == 0) {
                 break;
+            }
         }
+    } else if (instr_processor->has_if && !instr_processor->valid_if) {
+        // IF foi falso, então executamos o bloco ELSE
+        instr_processor->valid_if = true;
+    } else {
+        printf("Error: Invalid instruction. No IF before ELSE. Line %hd.\n",instr_processor->num_instruction + 1);
+        exit(1);
     }
-    
+
     free(instruction_copy);
 }
 
@@ -635,6 +634,10 @@ void else_end(instruction_processor* instr_processor) {
     }
 
     instr_processor->has_if = false;
+    instr_processor->valid_if = false;
+    instr_processor->running_if = false;
+
+    free(instruction_copy);
 }
 
 void loop(cpu* cpu, instruction_processor* instr_processor, unsigned short int index_core) {

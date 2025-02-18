@@ -11,7 +11,7 @@ Process ID: 0
 State: READY
 Virtual Address: A
 Priority: 0
-Quantum Remaining: 4
+Quantum Remaining: 5
 Base Address: 0
 Limit of Memory: 250
 Bank of Register Used: A0, B0, 
@@ -26,6 +26,9 @@ LOAD B0 6
 IF A0 > B0
 ADD A0 1
 I_END
+ELSE
+ADD A0 8
+ELS_END
 DIV B0 2
 MUL B0 3
 STORE A0 A2000
@@ -35,7 +38,7 @@ Process ID: 2
 State: READY
 Virtual Address: C
 Priority: 0
-Quantum Remaining: 7
+Quantum Remaining: 8
 Base Address: 148
 Limit of Memory: 250
 Bank of Register Used: A0, B0, 
@@ -58,7 +61,7 @@ Process ID: 1
 State: READY
 Virtual Address: B
 Priority: 0
-Quantum Remaining: 2
+Quantum Remaining: 5
 Base Address: 59
 Limit of Memory: 250
 Bank of Register Used: A0, B0, C0, 
@@ -79,7 +82,7 @@ State: READY
 Virtual Address: D
 Priority: 0
 Quantum Remaining: 2
-Base Address: 252
+Base Address: 277
 Limit of Memory: 250
 Bank of Register Used: A0, 
 Result of Process: 12, 
