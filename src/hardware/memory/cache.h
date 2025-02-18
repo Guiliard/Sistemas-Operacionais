@@ -49,9 +49,6 @@ void add_cache_instruction(cache *cache_table, const char* instruction, unsigned
 process_control_block *search_cache_process(cache *cache_table, unsigned short int process_id);
 bool search_cache_instruction(cache *cache_table, const char *instruction);
 
-void remove_cache_process(cache *cache_table, unsigned short int process_id);
-void remove_cache_instruction(cache *cache_table, char* instruction);
-
 void empty_cache(cache *cache_table);
 
 unsigned short int get_result_cache_instruction(cache *cache_table, char* instruction);

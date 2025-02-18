@@ -10,6 +10,7 @@ int total_running_cores = NUM_CORES;
 cache *cache_table;
 type_policy policy_type = FIFO_POLICY;
 char message[80];
+unsigned short int time_quantum[NUM_CORES];
 
 bool avaliable_process(process* process_queue) {
     for (unsigned short int i = 0; i < NUM_PROGRAMS; i++)
@@ -95,7 +96,7 @@ void *core_function(void *args) {
         pthread_mutex_unlock(&queue_mutex);
 
         if (proc && !proc->pcb->is_terminated && !quantum_over(proc)) {
-            init_pipeline(t_args->cpu, t_args->memory_ram, proc, t_args->core_id, cache_table, policy_type);
+            init_pipeline(t_args->cpu, t_args->memory_ram, proc, t_args->core_id, cache_table, policy_type, time_quantum);
         }
 
         pthread_mutex_lock(&queue_mutex);
@@ -172,5 +173,9 @@ void init_threads(cpu *cpu, ram *memory_ram, process* process_queue) {
 
     free(t_args);
     empty_cache(cache_table);
-    write_logs_system_file("All cores finalized.");
+    write_logs_system_file("All cores finalized.\n");
+    for (unsigned short int i = 0; i < NUM_CORES; i++) {
+        sprintf(message, "\nTime total of core %hd: %hd quantum", i, time_quantum[i]);
+        write_logs_system_file(message);
+    }
 }

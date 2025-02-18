@@ -5,7 +5,6 @@
 #define NUM_REGISTERS 32
 #define NUM_PROGRAMS 4
 
-#define NUM_DISC 4096
 #define NUM_MEMORY 2048
 #define NUM_CACHE 10
 #define REMOVE_CACHE 5
@@ -18,6 +17,5 @@
 #include <pthread.h>
 #include <sched.h>
 #include <unistd.h>
-#include <time.h>
 
 #endif

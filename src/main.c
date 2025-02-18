@@ -2,21 +2,15 @@
 
 int main() {
     srand(time(NULL));
-    clock_t start_time, end_time;
-    double time_taken;
-
-    start_time = clock();
 
     cpu* cpu = malloc(sizeof(cpu));
     ram* memory_ram = malloc(sizeof(ram));
-    disc* memory_disc = malloc(sizeof(disc));
-    peripherals* peripherals = malloc(sizeof(peripherals));
     process* process_queue = malloc(NUM_PROGRAMS * sizeof(process));
     type_scheduler scheduler_type = FIFO;
 
-    char filename[25], message[80];
+    char filename[25];
 
-    init_architecture(cpu, memory_ram, memory_disc, peripherals, process_queue);
+    init_architecture(cpu, memory_ram, process_queue);
 
     for (unsigned short int index_program = 0; index_program < NUM_PROGRAMS; index_program++) {
         sprintf(filename, "dataset/program%d.txt", index_program);
@@ -37,13 +31,7 @@ int main() {
 
     reset_ram(memory_ram);
 
-    free_architecture(cpu, memory_ram, memory_disc, peripherals, process_queue);
-
-    end_time = clock();
-    time_taken = ((double) (end_time - start_time)) / CLOCKS_PER_SEC;
-
-    sprintf(message, "\n\nExecution time: %.4f seconds", time_taken);
-    write_logs_system_file(message);
+    free_architecture(cpu, memory_ram, process_queue);
 
     printf("Please, check the output files in the 'output' folder.\n");
 

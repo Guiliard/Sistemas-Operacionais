@@ -6,7 +6,7 @@
 typedef struct thread_args {
     cpu *cpu;
     ram *memory_ram;
-    unsigned short int core_id;    // ID do núcleo associado
+    unsigned short int core_id;
     process* process_queue;
 } thread_args;
 

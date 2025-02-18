@@ -140,35 +140,6 @@ bool search_cache_instruction(cache *cache_table, const char *instruction) {
     return item != NULL;
 }
 
-void remove_cache_process(cache *cache_table, unsigned short int process_id) {
-    hash_process *item = NULL;
-
-    HASH_FIND(hh, cache_table->process_table, &process_id, sizeof(unsigned short int), item);
-
-    if (item != NULL) {
-        HASH_DEL(cache_table->process_table, item);  
-        free(item);  
-    } else {
-        printf("Error: process_id not found in cache\n");
-        exit(1);
-    }
-}
-
-void remove_cache_instruction(cache *cache_table, char* instruction) {
-    hash_instruction *item = NULL;
-
-    HASH_FIND_STR(cache_table->instruction_table, instruction, item);
-
-    if (item != NULL) {
-        HASH_DEL(cache_table->instruction_table, item);  
-        free(item->instruction); 
-        free(item);  
-    } else {
-        printf("Error: instruction not found in cache\n");
-        exit(1);
-    }
-}
-
 void empty_cache(cache *cache_table) {
     hash_process *process_item, *tmp_process;
     hash_instruction *instruction_item, *tmp_instruction;

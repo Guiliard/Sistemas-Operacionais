@@ -2,11 +2,9 @@
 
 char message_arc[80];
 
-void init_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, process* process_queue) {
+void init_architecture(cpu* cpu, ram* memory_ram, process* process_queue) {
     init_cpu(cpu);
     init_ram(memory_ram);
-    init_disc(memory_disc);
-    init_peripherals(peripherals);
     init_process_queue(process_queue);
 }
 
@@ -65,7 +63,7 @@ void check_instructions_on_ram(ram* memory_ram) {
     }
 }
 
-void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short int core_number, cache* cache_table, type_policy policy_type) {   
+void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short int core_number, cache* cache_table, type_policy policy_type, unsigned short int* time_quantum) {   
     unsigned short int num_lines = 0;
     instruction_cache_item* inst_cache_item = init_instruction_cache_item();
 
@@ -98,9 +96,11 @@ void init_pipeline(cpu* cpu, ram* memory_ram, process* process, unsigned short i
             memory_access(cpu, memory_ram, process->pcb, process->pcb->in_p->type, process->pcb->in_p->instruction, core_number);
 
             write_back(cpu, process->pcb->in_p->type, process->pcb, process->pcb->in_p->instruction, process->pcb->in_p->result, core_number);
+            
+            process->pcb->quantum_remaining--;
+            time_quantum[core_number]++;
         }
         inst_cache_item->is_cached = false;
-        process->pcb->quantum_remaining--;
     }
 }
 
@@ -111,10 +111,8 @@ void update_regs(cpu* cpu, process_control_block* pcb, unsigned short int core_n
     cpu->core[core_number].PC = pcb->in_p->num_instruction;
 }
 
-void free_architecture(cpu* cpu, ram* memory_ram, disc* memory_disc, peripherals* peripherals, process* process_queue) {
+void free_architecture(cpu* cpu, ram* memory_ram, process* process_queue) {
     free(cpu);
     free(memory_ram);
-    free(memory_disc);
-    free(peripherals);
     free(process_queue);
 }

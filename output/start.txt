@@ -15,7 +15,7 @@ Process ID: 2
 State: RUNNING
 Virtual Address: C
 Priority: 0
-Quantum Remaining: 5
+Quantum Remaining: 8
 Base Address: 148
 Limit of Memory: 250
 Bank of Register Used: (null)
@@ -58,7 +58,7 @@ Process ID: 1
 State: RUNNING
 Virtual Address: B
 Priority: 0
-Quantum Remaining: 9
+Quantum Remaining: 5
 Base Address: 59
 Limit of Memory: 250
 Bank of Register Used: (null)
@@ -78,7 +78,7 @@ Process ID: 3
 State: RUNNING
 Virtual Address: D
 Priority: 0
-Quantum Remaining: 5
+Quantum Remaining: 8
 Base Address: 252
 Limit of Memory: 250
 Bank of Register Used: (null)
