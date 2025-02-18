@@ -11,7 +11,7 @@
 
 O Simulador de Arquitetura Von Neumann é uma aplicação desenvolvida em C que simula o funcionamento de um computador baseado no modelo de Von Neumann. Nesse modelo, tanto os dados quanto as instruções são armazenados na mesma memória e acessados pelo mesmo barramento, o que caracteriza sua estrutura fundamental.
 
-O simulador tem como objetivo ilustrar como o processador interage com a memória para executar processos, implementando diferentes algoritmos de escalonamento de processos. Além disso, ele realiza o gerenciamento de memória, incluindo o controle de memória cache e a simulação de sistemas multitarefas, oferecendo uma visão prática da arquitetura de Von Neumann em ação.
+O projeto tem como objetivo ilustrar como o processador interage com a memória para executar processos, implementando diferentes algoritmos de escalonamento de processos. Além disso, ele realiza o gerenciamento de memória, incluindo o controle de memória cache e a simulação de sistemas multitarefas.
 
 ## Requisitos
 
