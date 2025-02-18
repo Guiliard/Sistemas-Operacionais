@@ -1,7 +1,7 @@
 #ifndef LIBS_H
 #define LIBS_H
 
-#define NUM_CORES 4
+#define NUM_CORES 1
 #define NUM_REGISTERS 32
 #define NUM_PROGRAMS 4
 

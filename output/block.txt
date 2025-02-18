@@ -67,25 +67,22 @@ Is Terminated: 0
 Is Running: 0
 Is Blocked: 1
 
-------------------PROGRAM 1------------------
-LOAD A0 10
-LOAD B0 3
-LOAD C0 1
-LOOP B0
-LOAD A0 20
+------------------PROGRAM 3------------------
+LOAD A0 4
+LOOP A0
+ADD A0 2
 L_END
-MUL B0 3
-STORE C0 A1050
+STORE A0 A2010
 
-Process ID: 1
+Process ID: 3
 State: BLOCK
-Virtual Address: B
+Virtual Address: D
 Priority: 0
 Quantum Remaining: 0
-Base Address: 59
+Base Address: 252
 Limit of Memory: 250
-Bank of Register Used: A0, B0, C0, 
-Result of Process: 1, 
+Bank of Register Used: A0, 
+Result of Process: (null)
 Is Terminated: 0
 Is Running: 0
 Is Blocked: 1
