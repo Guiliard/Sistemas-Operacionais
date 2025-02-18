@@ -3,21 +3,47 @@ Logs of Operating System.
 Type of scheduler: FIFO
 Type of policy cache: FIFO
 
-Core 0 started process ID: 2.
-Core 0 blocked process ID: 2.
-Core 0 started process ID: 0.
-Core 0 finished process ID: 0.
+Core 0 started process ID: 4.
+Core 0 blocked process ID: 4.
 Core 0 started process ID: 1.
 Core 0 blocked process ID: 1.
+Core 0 started process ID: 2.
+Core 0 blocked process ID: 2.
+Core 0 started process ID: 5.
+Core 0 blocked process ID: 5.
+Core 0 started process ID: 6.
+Core 0 blocked process ID: 6.
+Core 0 started process ID: 7.
+Core 0 blocked process ID: 7.
+Core 0 started process ID: 0.
+Core 0 finished process ID: 0.
 Core 0 started process ID: 3.
 Core 0 blocked process ID: 3.
-Core 0 resumed process ID: 2.
-Core 0 finished process ID: 2.
+Core 0 resumed process ID: 4.
+Core 0 blocked process ID: 4.
+Core 0 resumed process ID: 4.
+Core 0 finished process ID: 4.
+Core 0 resumed process ID: 1.
+Core 0 blocked process ID: 1.
+Core 0 resumed process ID: 1.
+Core 0 blocked process ID: 1.
 Core 0 resumed process ID: 1.
 Core 0 finished process ID: 1.
+Core 0 resumed process ID: 2.
+Core 0 finished process ID: 2.
+Core 0 resumed process ID: 5.
+Core 0 finished process ID: 5.
+Core 0 resumed process ID: 6.
+Core 0 finished process ID: 6.
+Core 0 resumed process ID: 7.
+Core 0 blocked process ID: 7.
+Core 0 resumed process ID: 7.
+Core 0 finished process ID: 7.
+Core 0 resumed process ID: 3.
+Core 0 blocked process ID: 3.
 Core 0 resumed process ID: 3.
 Core 0 finished process ID: 3.
 Core 0 finalized.
 All cores finalized.
 
-Time total of core 0: 41 quantum
+Time total of core 0: 102 quantum

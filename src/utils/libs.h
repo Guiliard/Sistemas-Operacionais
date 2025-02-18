@@ -3,7 +3,7 @@
 
 #define NUM_CORES 1
 #define NUM_REGISTERS 32
-#define NUM_PROGRAMS 4
+#define NUM_PROGRAMS 8
 
 #define NUM_MEMORY 2048
 #define NUM_CACHE 10
