@@ -1,16 +1,186 @@
 Queue of blocked programs.
 
+------------------PROGRAM 4------------------
+LOAD A0 7
+LOAD B0 4
+IF A0 == B0
+SUB A0 3
+I_END
+ELSE
+ADD B0 6
+ELS_END
+MUL A0 5
+DIV B0 3
+STORE A0 A1500
+STORE B0 A1505
+LOAD C0 5
+LOAD D0 3
+IF C0 < D0
+ADD C0 4
+I_END
+ELSE
+SUB D0 1
+ELS_END
+MUL C0 2
+DIV D0 2
+STORE C0 A1510
+STORE D0 A1525
+
+Process ID: 4
+State: BLOCK
+Virtual Address: E
+Priority: 0
+Quantum Remaining: 0
+Base Address: 460
+Limit of Memory: 250
+Bank of Register Used: A0, B0, 
+Result of Process: (null)
+Is Terminated: 0
+Is Running: 0
+Is Blocked: 1
+
 ------------------PROGRAM 1------------------
-LOAD A0 5
+LOAD A0 10
 LOAD B0 3
 LOAD C0 1
 LOOP B0
-SUB B0 0
+LOAD A0 20
 L_END
+MUL B0 3
 STORE C0 A1050
+LOAD E0 6
+LOAD F0 7
+IF E0 != F0
+ADD E0 3
+I_END
+ELSE
+SUB F0 5
+ELS_END
+MUL E0 6
+DIV F0 2
+STORE E0 A1200
+STORE F0 A1204
 
-PCB of process: 1/ State: BLOCK/ Priority: 1
-Quantum remaining: 10/ Base address: 49/ Memory limit: 250
+Process ID: 1
+State: BLOCK
+Virtual Address: B
+Priority: 0
+Quantum Remaining: 0
+Base Address: 59
+Limit of Memory: 250
+Bank of Register Used: A0, B0, C0, 
+Result of Process: (null)
+Is Terminated: 0
+Is Running: 0
+Is Blocked: 1
+
+------------------PROGRAM 2------------------
+LOAD A0 8
+LOAD B0 6
+IF A0 > B0
+ADD A0 1
+I_END
+ELSE
+ADD A0 8
+ELS_END
+DIV B0 2
+MUL B0 3
+STORE A0 A2000
+STORE B0 A2005
+
+Process ID: 2
+State: BLOCK
+Virtual Address: C
+Priority: 0
+Quantum Remaining: 0
+Base Address: 277
+Limit of Memory: 250
+Bank of Register Used: A0, B0, 
+Result of Process: (null)
+Is Terminated: 0
+Is Running: 0
+Is Blocked: 1
+
+------------------PROGRAM 5------------------
+LOAD A0 10
+LOAD B0 2
+IF A0 >= B0
+ADD A0 5
+I_END
+ELSE
+SUB B0 2
+ELS_END
+MUL A0 4
+DIV B0 1
+STORE A0 A1700
+STORE B0 A1750
+
+Process ID: 5
+State: BLOCK
+Virtual Address: F
+Priority: 0
+Quantum Remaining: 0
+Base Address: 695
+Limit of Memory: 250
+Bank of Register Used: A0, B0, 
+Result of Process: (null)
+Is Terminated: 0
+Is Running: 0
+Is Blocked: 1
+
+------------------PROGRAM 6------------------
+LOAD C0 5
+LOAD D0 3
+IF C0 < D0
+ADD C0 4
+I_END
+ELSE
+SUB D0 1
+ELS_END
+MUL C0 2
+DIV D0 2
+STORE C0 A1400
+STORE D0 A1405
+
+Process ID: 6
+State: BLOCK
+Virtual Address: G
+Priority: 0
+Quantum Remaining: 0
+Base Address: 815
+Limit of Memory: 250
+Bank of Register Used: C0, D0, 
+Result of Process: 10, 1, 
+Is Terminated: 0
+Is Running: 0
+Is Blocked: 1
+
+------------------PROGRAM 7------------------
+LOAD A0 3
+LOAD B0 5
+IF A0 > B0
+ADD A0 7
+I_END
+ELSE
+SUB B0 4
+ELS_END
+MUL A0 3
+DIV B0 5
+STORE A0 A900
+STORE B0 A905
+
+Process ID: 7
+State: BLOCK
+Virtual Address: H
+Priority: 0
+Quantum Remaining: 0
+Base Address: 933
+Limit of Memory: 250
+Bank of Register Used: A0, B0, 
+Result of Process: (null)
+Is Terminated: 0
+Is Running: 0
+Is Blocked: 1
 
 ------------------PROGRAM 3------------------
 LOAD A0 4
@@ -19,6 +189,171 @@ ADD A0 2
 L_END
 STORE A0 A2010
 
-PCB of process: 3/ State: BLOCK/ Priority: 3
-Quantum remaining: 10/ Base address: 193/ Memory limit: 250
+Process ID: 3
+State: BLOCK
+Virtual Address: D
+Priority: 0
+Quantum Remaining: 0
+Base Address: 406
+Limit of Memory: 250
+Bank of Register Used: A0, 
+Result of Process: (null)
+Is Terminated: 0
+Is Running: 0
+Is Blocked: 1
 
+------------------PROGRAM 4------------------
+LOAD A0 7
+LOAD B0 4
+IF A0 == B0
+SUB A0 3
+I_END
+ELSE
+ADD B0 6
+ELS_END
+MUL A0 5
+DIV B0 3
+STORE A0 A1500
+STORE B0 A1505
+LOAD C0 5
+LOAD D0 3
+IF C0 < D0
+ADD C0 4
+I_END
+ELSE
+SUB D0 1
+ELS_END
+MUL C0 2
+DIV D0 2
+STORE C0 A1510
+STORE D0 A1525
+
+Process ID: 4
+State: BLOCK
+Virtual Address: E
+Priority: 0
+Quantum Remaining: 0
+Base Address: 460
+Limit of Memory: 250
+Bank of Register Used: A0, B0, C0, D0, 
+Result of Process: 35, 3, 
+Is Terminated: 0
+Is Running: 0
+Is Blocked: 1
+
+------------------PROGRAM 1------------------
+LOAD A0 10
+LOAD B0 3
+LOAD C0 1
+LOOP B0
+LOAD A0 20
+L_END
+MUL B0 3
+STORE C0 A1050
+LOAD E0 6
+LOAD F0 7
+IF E0 != F0
+ADD E0 3
+I_END
+ELSE
+SUB F0 5
+ELS_END
+MUL E0 6
+DIV F0 2
+STORE E0 A1200
+STORE F0 A1204
+
+Process ID: 1
+State: BLOCK
+Virtual Address: B
+Priority: 0
+Quantum Remaining: 0
+Base Address: 59
+Limit of Memory: 250
+Bank of Register Used: A0, B0, C0, 
+Result of Process: 1, 
+Is Terminated: 0
+Is Running: 0
+Is Blocked: 1
+
+------------------PROGRAM 1------------------
+LOAD A0 10
+LOAD B0 3
+LOAD C0 1
+LOOP B0
+LOAD A0 20
+L_END
+MUL B0 3
+STORE C0 A1050
+LOAD E0 6
+LOAD F0 7
+IF E0 != F0
+ADD E0 3
+I_END
+ELSE
+SUB F0 5
+ELS_END
+MUL E0 6
+DIV F0 2
+STORE E0 A1200
+STORE F0 A1204
+
+Process ID: 1
+State: BLOCK
+Virtual Address: B
+Priority: 0
+Quantum Remaining: 0
+Base Address: 59
+Limit of Memory: 250
+Bank of Register Used: A0, B0, C0, E0, F0, 
+Result of Process: 1, 
+Is Terminated: 0
+Is Running: 0
+Is Blocked: 1
+
+------------------PROGRAM 7------------------
+LOAD A0 3
+LOAD B0 5
+IF A0 > B0
+ADD A0 7
+I_END
+ELSE
+SUB B0 4
+ELS_END
+MUL A0 3
+DIV B0 5
+STORE A0 A900
+STORE B0 A905
+
+Process ID: 7
+State: BLOCK
+Virtual Address: H
+Priority: 0
+Quantum Remaining: 0
+Base Address: 933
+Limit of Memory: 250
+Bank of Register Used: A0, B0, 
+Result of Process: 30, 1, 
+Is Terminated: 0
+Is Running: 0
+Is Blocked: 1
+
+------------------PROGRAM 3------------------
+LOAD A0 4
+LOOP A0
+ADD A0 2
+L_END
+STORE A0 A2010
+
+Process ID: 3
+State: BLOCK
+Virtual Address: D
+Priority: 0
+Quantum Remaining: 0
+Base Address: 406
+Limit of Memory: 250
+Bank of Register Used: A0, 
+Result of Process: (null)
+Is Terminated: 0
+Is Running: 0
+Is Blocked: 1

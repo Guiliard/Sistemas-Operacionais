@@ -1,21 +1,16 @@
-#include "threads.h"
-#include <time.h>
+#include "software/threads/threads.h"
 
 int main() {
-    clock_t start_time, end_time;
-    double time_taken;
-
-    start_time = clock();
+    srand(time(NULL));
 
     cpu* cpu = malloc(sizeof(cpu));
     ram* memory_ram = malloc(sizeof(ram));
-    disc* memory_disc = malloc(sizeof(disc));
-    peripherals* peripherals = malloc(sizeof(peripherals));
-    queue_start* queue_start = malloc(sizeof(queue_start));
+    process* process_queue = malloc(NUM_PROGRAMS * sizeof(process));
+    type_scheduler scheduler_type = FIFO;
 
     char filename[25];
 
-    init_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start);
+    init_architecture(cpu, memory_ram, process_queue);
 
     for (unsigned short int index_program = 0; index_program < NUM_PROGRAMS; index_program++) {
         sprintf(filename, "dataset/program%d.txt", index_program);
@@ -26,23 +21,17 @@ int main() {
 
     check_instructions_on_ram(memory_ram);
 
-    populate_queue_start(queue_start, memory_ram);
-    
-    check_resources_on_queue_start(queue_start);
+    populate_process_queue(process_queue, memory_ram, scheduler_type);
 
-    initialize_log_s_file();
-    initialize_log_e_file();
-    initialize_log_b_file();
+    init_logs();
 
-    init_threads(cpu, memory_ram, queue_start);
+    write_logs_system_file(enum_schedular_to_string(scheduler_type));
+
+    init_threads(cpu, memory_ram, process_queue);
 
     reset_ram(memory_ram);
 
-    free_architecture(cpu, memory_ram, memory_disc, peripherals, queue_start);
-
-    end_time = clock();
-    time_taken = ((double) (end_time - start_time)) / CLOCKS_PER_SEC;
-    printf("\nExecution time: %.4f seconds\n", time_taken);
+    free_architecture(cpu, memory_ram, process_queue);
 
     printf("Please, check the output files in the 'output' folder.\n");
 
